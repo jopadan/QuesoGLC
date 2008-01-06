@@ -1,6 +1,6 @@
 /* QuesoGLC
  * A free implementation of the OpenGL Character Renderer (GLC)
- * Copyright (c) 2002, 2004-2007, Bertrand Coconnier
+ * Copyright (c) 2002, 2004-2008, Bertrand Coconnier
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -626,7 +626,11 @@ __GLCmaster* __glcMasterFromFamily(__GLCcontext* inContext, GLCchar8* inFamily)
     This = NULL;
     data.master = NULL;
   }
+
   DeleteDC(dc);
+#ifdef UNICODE
+  __glcFree(family);
+#endif
 
   return data.master;
 }

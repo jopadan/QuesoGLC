@@ -48,9 +48,16 @@
 #endif
 #endif
 
+#ifdef __WIN32__
+#define GLCchar8  BYTE
+#define GLCchar16 USHORT
+#define GLCchar32 UINT32
+#else
 #define GLCchar8  FcChar8
-#define GLCchar16  FcChar16
+#define GLCchar16 FcChar16
 #define GLCchar32 FcChar32
+#endif
+
 #define GLCuint   FT_UInt
 #define GLClong   FT_Long
 #define GLCulong  FT_ULong
@@ -256,7 +263,7 @@ extern void __glcAppendFont(__GLCcontext* inContext, __GLCfont* inFont);
  */
 extern __GLCfont* __glcNewFontFromMaster(__GLCfont* inFont, GLint inFontID,
 				  __GLCmaster* inMaster,
-					 __GLCcontext *inContext, GLint inCode);
+				  __GLCcontext *inContext, GLint inCode);
 
 /* This internal function tries to open the face file which name is identified
  * by 'inFace'. If it succeeds, it closes the previous face and stores the new

@@ -33,7 +33,13 @@ typedef struct __GLCfaceDescriptorRec __GLCfaceDescriptor;
 
 struct __GLCfaceDescriptorRec {
   FT_ListNodeRec node;
+#ifdef __WIN32__
+  LPGLYPHSET pattern;
+  HFONT face;
+  HDC dc;
+#else
   FcPattern* pattern;
+#endif
 #ifndef GLC_FT_CACHE
   FT_Face face;
   int faceRefCount;

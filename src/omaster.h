@@ -1,6 +1,6 @@
 /* QuesoGLC
  * A free implementation of the OpenGL Character Renderer (GLC)
- * Copyright (c) 2002, 2004-2007, Bertrand Coconnier
+ * Copyright (c) 2002, 2004-2008, Bertrand Coconnier
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -25,14 +25,25 @@
 #ifndef __glc_omaster_h
 #define __glc_omaster_h
 
+#ifndef __WIN32__
 #include <fontconfig/fontconfig.h>
+#endif
 
 #include "ocharmap.h"
 
+#ifdef __WIN32__
+GLCchar32 __glcHashValue(LPLOGFONT inLogFont);
+#define GLC_MASTER_HASH_VALUE(master) __glcHashValue(&(master)->pattern->elfLogFont)
+#else
 #define GLC_MASTER_HASH_VALUE(master) FcPatternHash((master)->pattern)
+#endif
 
 struct __GLCmasterRec {
+#ifdef __WIN32__
+  LPENUMLOGFONTEX pattern;
+#else
   FcPattern* pattern;
+#endif
 };
 
 __GLCmaster* __glcMasterCreate(GLint inMaster, __GLCcontext* inContext);

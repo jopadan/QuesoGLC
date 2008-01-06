@@ -1,6 +1,6 @@
 /* QuesoGLC
  * A free implementation of the OpenGL Character Renderer (GLC)
- * Copyright (c) 2002, 2004-2007, Bertrand Coconnier
+ * Copyright (c) 2002, 2004-2008, Bertrand Coconnier
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -39,7 +39,11 @@ struct __GLCcharMapElementRec {
 };
 
 struct __GLCcharMapRec {
+#ifdef __WIN32__
+  LPGLYPHSET charSet;
+#else
   FcCharSet* charSet;
+#endif
   __GLCarray* map;
 };
 
