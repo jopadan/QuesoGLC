@@ -917,7 +917,7 @@ GLenum glewContextInit (GLEW_CONTEXT_ARG_DEF_LIST)
 #ifdef GL_VERSION_2_1
   if (glewExperimental || GLEW_VERSION_2_1) CONST_CAST(GLEW_VERSION_2_1) = !_glewInit_GL_VERSION_2_1(GLEW_CONTEXT_ARG_VAR_INIT);
 #endif /* GL_VERSION_2_1 */
-#ifdef GL_ARB_pixel_buffer_object
+#if defined(GL_ARB_pixel_buffer_object) && !defined(GLEW_DISABLE_VBOS)
   CONST_CAST(GLEW_ARB_pixel_buffer_object) = glewGetExtension("GL_ARB_pixel_buffer_object");
 #endif /* GL_ARB_pixel_buffer_object */
 #if defined(GL_ARB_vertex_buffer_object) && !defined(GLEW_DISABLE_VBOS)

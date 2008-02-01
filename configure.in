@@ -186,9 +186,9 @@ esac
 # Work around for bug #1852883 which is not fixed as of release 0.7.0
 # -------------------------------------------------------------------
 
-case $target_alias in
-darwin*)
-  GLEW_CFLAGS+=" -DGLEW_DISABLE_VBOS"
+case $host in
+*darwin*)
+  GLEW_CFLAGS="$GLEW_CFLAGS -DGLEW_DISABLE_VBOS"
   ;;
 esac
 
