@@ -6,7 +6,7 @@ AC_PREREQ(2.57)
 # Init autoconf.
 # --------------
 
-AC_INIT([QuesoGLC], [0.6.9],
+AC_INIT([QuesoGLC], [0.7.0],
         [quesoglc-general@lists.sourceforge.net],
         [quesoglc])
 
@@ -180,6 +180,15 @@ mingw*)
   else
     GLEW_CFLAGS+=" -DGLEW_BUILD"
   fi
+  ;;
+esac
+
+# Work around for bug #1852883 which is not fixed as of release 0.7.0
+# -------------------------------------------------------------------
+
+case $target_alias in
+darwin*)
+  GLEW_CFLAGS+=" -DGLEW_DISABLE_VBOS"
   ;;
 esac
 
