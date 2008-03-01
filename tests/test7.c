@@ -1,6 +1,6 @@
 /* QuesoGLC
  * A free implementation of the OpenGL Character Renderer (GLC)
- * Copyright (c) 2002, 2004-2007, Bertrand Coconnier
+ * Copyright (c) 2002, 2004-2008, Bertrand Coconnier
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -47,6 +47,7 @@ int main(int argc, char **argv) {
   GLCenum err;
   GLint length = 0;
   GLint i, j, n;
+  GLint font = 0;
   GLfloat baseline1[4], baseline2[4];
   GLfloat boundingBox1[8], boundingBox2[8];
   GLfloat v1, v2, norm, area;
@@ -181,14 +182,17 @@ int main(int argc, char **argv) {
   v2 = fabs(baseline1[3]);
   norm = v1 > v2 ? v1 : v2;
 
-  if (fabs(v1 - v2) <= EPSILON * norm) {
+  if (fabs(v1 - v2) < EPSILON * norm) {
     v1 = fabs(baseline1[0]);
     v2 = fabs(baseline1[2]);
     norm = v1 > v2 ? v1 : v2;
-    if ((fabs(v1 - v2) <= EPSILON * norm) || (baseline1[2] < baseline1[0])) {
-      printf("Right and left side of the baseline are swapped\n");
+    if ((fabs(v1 - v2) < EPSILON * norm) || (baseline1[2] < baseline1[0])) {
+      printf("Right and left side of the max baseline are swapped\n");
       printf("%f %f %f %f\n", baseline1[0], baseline1[1], baseline1[2],
 	     baseline1[3]);
+      font = glcGetListi(GLC_FONT_LIST, 0);
+      printf("Family : %s\n", (char*)glcGetFontc(font, GLC_FAMILY));
+      printf("Face : %s\n", (char*)glcGetFontFace(font));
       return -1;
     }
   }
@@ -230,8 +234,16 @@ int main(int argc, char **argv) {
 
     CheckError();
 
+    if (!glcGetFontMap(font, ' ')) {
+      printf("INFO : Family %s %s has no space character\n",
+	     (char*)glcGetFontc(font, GLC_FAMILY), (char*)glcGetFontFace(font));
+      continue;
+    }
+
     if (!glcGetCharMetric(' ', GLC_BOUNDS, boundingBox1)) {
       printf("Failed to get the bounding box of the space character\n");
+      printf("Family : %s\n", (char*)glcGetFontc(font, GLC_FAMILY));
+      printf("Face : %s\n", (char*)glcGetFontFace(font));
       return -1;
     }
 
@@ -239,6 +251,8 @@ int main(int argc, char **argv) {
 
     if (!glcGetCharMetric(' ', GLC_BASELINE, baseline1)) {
       printf("Failed to get the baseline of the space character\n");
+      printf("Family : %s\n", (char*)glcGetFontc(font, GLC_FAMILY));
+      printf("Face : %s\n", (char*)glcGetFontFace(font));
       return -1;
     }
 
@@ -248,14 +262,16 @@ int main(int argc, char **argv) {
     v2 = fabs(baseline1[3]);
     norm = v1 > v2 ? v1 : v2;
 
-    if (fabs(v1 - v2) <= EPSILON * norm) {
+    if (fabs(v1 - v2) < EPSILON * norm) {
       v1 = fabs(baseline1[0]);
       v2 = fabs(baseline1[2]);
       norm = v1 > v2 ? v1 : v2;
-      if ((fabs(v1 - v2) <= EPSILON * norm) || (baseline1[2] < baseline1[0])) {
+      if ((fabs(v1 - v2) < EPSILON * norm) || (baseline1[2] < baseline1[0])) {
         printf("Right and left side of the baseline are swapped\n");
         printf("%f %f %f %f\n", baseline1[0], baseline1[1], baseline1[2],
                baseline1[3]);
+	printf("Family : %s\n", (char*)glcGetFontc(font, GLC_FAMILY));
+	printf("Face : %s\n", (char*)glcGetFontFace(font));
         return -1;
       }
     }

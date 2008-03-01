@@ -38,32 +38,39 @@ __GLCfont* __glcFontCreate(GLint inID, __GLCmaster* inMaster,
   __GLCfont *This = NULL;
 
   assert(inContext);
-  assert(inMaster);
 
   This = (__GLCfont*)__glcMalloc(sizeof(__GLCfont));
   if (!This) {
     __glcRaiseError(GLC_RESOURCE_ERROR);
     return NULL;
   }
-  /* At font creation, the default face is the first one.
-   * glcFontFace() can change the face.
-   */
-  This->faceDesc = __glcFaceDescCreate(inMaster, NULL, inContext, inCode);
-  if (!This->faceDesc) {
-    __glcRaiseError(GLC_RESOURCE_ERROR);
-    __glcFree(This);
-    return NULL;
+
+  if (inMaster) {
+    /* At font creation, the default face is the first one.
+     * glcFontFace() can change the face.
+     */
+    This->faceDesc = __glcFaceDescCreate(inMaster, NULL, inContext, inCode);
+    if (!This->faceDesc) {
+      __glcFree(This);
+      return NULL;
+    }
+
+    This->charMap = __glcFaceDescGetCharMap(This->faceDesc, inContext);
+    if (!This->charMap) {
+      __glcFaceDescDestroy(This->faceDesc, inContext);
+      __glcFree(This);
+      return NULL;
+    }
+
+    This->parentMasterID = __glcMasterGetID(inMaster, inContext);
+  }
+  else {
+    /* Creates an empty font (used by glcGenFontID() to reserve font IDs) */
+    This->faceDesc = NULL;
+    This->charMap = NULL;
+    This->parentMasterID = 0;
   }
 
-  This->charMap = __glcFaceDescGetCharMap(This->faceDesc, inContext);
-  if (!This->charMap) {
-    __glcRaiseError(GLC_RESOURCE_ERROR);
-    __glcFaceDescDestroy(This->faceDesc, inContext);
-    __glcFree(This);
-    return NULL;
-  }
-
-  This->parentMasterID = __glcMasterGetID(inMaster, inContext);
   This->id = inID;
 
   return This;
@@ -97,10 +104,9 @@ __GLCglyph* __glcFontGetGlyph(__GLCfont *This, GLint inCode,
   if (!glyph) {
     /* If it fails, we must extract the glyph from the face */
     glyph = __glcFaceDescGetGlyph(This->faceDesc, inCode, inContext);
-    if (!glyph) {
-      __glcRaiseError(GLC_PARAMETER_ERROR);
+    if (!glyph)
       return NULL;
-    }
+
     /* Update the character map so that the glyph will be cached */
     __glcCharMapAddChar(This->charMap, inCode, glyph);
   }
@@ -129,22 +135,22 @@ GLfloat* __glcFontGetBoundingBox(__GLCfont *This, GLint inCode,
   /* If the bounding box of the glyph is cached then copy it to outVec and
    * return.
    */
-  if (glyph->boundingBox[0] || glyph->boundingBox[1] || glyph->boundingBox[2]
-      || glyph->boundingBox[3]) {
+  if (glyph->boundingBoxCached && inContext->enableState.glObjects) {
     memcpy(outVec, glyph->boundingBox, 4 * sizeof(GLfloat));
     return outVec;
   }
 
   /* Otherwise, we must extract the bounding box from the face file */
-  if (!__glcFaceDescGetBoundingBox(This->faceDesc, glyph->index,
-				   glyph->boundingBox, inScaleX, inScaleY,
-				   inContext)) {
-    __glcRaiseError(GLC_RESOURCE_ERROR);
+  if (!__glcFaceDescGetBoundingBox(This->faceDesc, glyph->index, outVec,
+				   inScaleX, inScaleY, inContext))
     return NULL;
-  }
 
   /* Copy the result to outVec and return */
-  memcpy(outVec, glyph->boundingBox, 4 * sizeof(GLfloat));
+  if (inContext->enableState.glObjects) {
+    memcpy(glyph->boundingBox, outVec, 4 * sizeof(GLfloat));
+    glyph->boundingBoxCached = GL_TRUE;
+  }
+
   return outVec;
 }
 
@@ -169,20 +175,22 @@ GLfloat* __glcFontGetAdvance(__GLCfont* This, GLint inCode, GLfloat* outVec,
   /* If the advance of the glyph is cached then copy it to outVec and
    * return.
    */
-  if (glyph->advance[0] || glyph->advance[1]) {
+  if (glyph->advanceCached && inContext->enableState.glObjects) {
     memcpy(outVec, glyph->advance, 2 * sizeof(GLfloat));
     return outVec;
   }
 
   /* Otherwise, we must extract the advance from the face file */
-  if (!__glcFaceDescGetAdvance(This->faceDesc, glyph->index, glyph->advance,
-			       inScaleX, inScaleY, inContext)) {
-    __glcRaiseError(GLC_RESOURCE_ERROR);
+  if (!__glcFaceDescGetAdvance(This->faceDesc, glyph->index, outVec, inScaleX,
+			       inScaleY, inContext))
     return NULL;
-  }
 
   /* Copy the result to outVec and return */
-  memcpy(outVec, glyph->advance, 2 * sizeof(GLfloat));
+  if (inContext->enableState.glObjects) {
+    memcpy(glyph->advance, outVec, 2 * sizeof(GLfloat));
+    glyph->advanceCached = GL_TRUE;
+  }
+
   return outVec;
 }
 
@@ -225,22 +233,18 @@ GLboolean __glcFontFace(__GLCfont* This, const GLCchar8* inFace,
   /* TODO : Verify if the font has already the required face activated */
 
   master = __glcMasterCreate(This->parentMasterID, inContext);
-  if (!master) {
-    __glcRaiseError(GLC_RESOURCE_ERROR);
+  if (!master)
     return GL_FALSE;
-  }
 
   /* Get the face descriptor of the face identified by the string inFace */
   faceDesc = __glcFaceDescCreate(master, inFace, inContext, 0);
   if (!faceDesc) {
-    __glcRaiseError(GLC_RESOURCE_ERROR);
     __glcMasterDestroy(master);
     return GL_FALSE;
   }
 
   newCharMap = __glcFaceDescGetCharMap(faceDesc, inContext);
   if (!newCharMap) {
-    __glcRaiseError(GLC_RESOURCE_ERROR);
     __glcFaceDescDestroy(faceDesc, inContext);
     __glcMasterDestroy(master);
     return GL_FALSE;
@@ -254,7 +258,6 @@ GLboolean __glcFontFace(__GLCfont* This, const GLCchar8* inFace,
 
     /* Open the new face */
     if (!__glcFaceDescOpen(faceDesc, inContext)) {
-      __glcRaiseError(GLC_RESOURCE_ERROR);
       __glcFaceDescDestroy(faceDesc, inContext);
       __glcCharMapDestroy(newCharMap);
       return GL_FALSE;
@@ -281,7 +284,7 @@ GLboolean __glcFontFace(__GLCfont* This, const GLCchar8* inFace,
 
 #ifndef GLC_FT_CACHE
 /* Open the font file */
-void* __glcFontOpen(__GLCfont* This, __GLCcontext* inContext)
+inline void* __glcFontOpen(__GLCfont* This, __GLCcontext* inContext)
 {
   return __glcFaceDescOpen(This->faceDesc, inContext);
 }
@@ -289,8 +292,83 @@ void* __glcFontOpen(__GLCfont* This, __GLCcontext* inContext)
 
 
 /* Close the font file */
-void __glcFontClose(__GLCfont* This)
+inline void __glcFontClose(__GLCfont* This)
 {
    __glcFaceDescClose(This->faceDesc);
 }
 #endif
+
+
+
+/* Load a glyph of the current font face and stores the corresponding data in
+ * the corresponding face. The size of the glyph is given by inScaleX and
+ * inScaleY. 'inGlyphIndex' contains the index of the glyph in the font file.
+ */
+GLboolean __glcFontPrepareGlyph(__GLCfont* This, __GLCcontext* inContext,
+				GLfloat inScaleX, GLfloat inScaleY,
+				GLCulong inGlyphIndex)
+{
+  GLboolean result = __glcFaceDescPrepareGlyph(This->faceDesc, inContext,
+					       inScaleX, inScaleY,
+					       inGlyphIndex);
+#ifndef GLC_FT_CACHE
+  __glcFaceDescClose(This->faceDesc);
+#endif
+
+  return result;
+}
+
+
+
+/* Get the size of the bitmap in which the glyph will be rendered */
+inline GLboolean __glcFontGetBitmapSize(__GLCfont* This, GLint* outWidth,
+					GLint *outHeight, GLint* outBoundingBox,
+					GLfloat inScaleX, GLfloat inScaleY,
+					int inFactor, __GLCcontext* inContext)
+{
+  return __glcFaceDescGetBitmapSize(This->faceDesc, outWidth, outHeight,
+				    outBoundingBox, inScaleX, inScaleY,
+				    inFactor, inContext);
+}
+
+
+
+/* Get the maximum metrics of a face that is the bounding box that encloses
+ * every glyph of the face, and the maximum advance of the face.
+ */
+inline GLfloat* __glcFontGetMaxMetric(__GLCfont* This, GLfloat* outVec,
+				      __GLCcontext* inContext)
+{
+  return __glcFaceDescGetMaxMetric(This->faceDesc, outVec, inContext);
+}
+
+
+
+/* Decompose the outline of a glyph */
+inline GLboolean __glcFontOutlineDecompose(__GLCfont* This,
+					   __GLCrendererData* inData,
+					   __GLCcontext* inContext)
+{
+  return __glcFaceDescOutlineDecompose(This->faceDesc, inData, inContext);
+}
+
+
+
+/* Render the glyph in a bitmap */
+inline GLboolean __glcFontGetBitmap(__GLCfont* This, GLint inWidth,
+				    GLint inHeight, void* inBuffer,
+				    __GLCcontext* inContext)
+{
+  return __glcFaceDescGetBitmap(This->faceDesc, inWidth, inHeight, inBuffer,
+				inContext);
+}
+
+
+
+/* Chek if the outline of the glyph is empty (which means it is a spacing
+ * character).
+ */
+inline GLboolean __glcFontOutlineEmpty(__GLCfont* This, __GLCcontext* inContext)
+{
+  return __glcFaceDescOutlineEmpty(This->faceDesc, inContext);
+}

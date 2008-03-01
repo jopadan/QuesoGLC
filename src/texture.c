@@ -1,6 +1,6 @@
 /* QuesoGLC
  * A free implementation of the OpenGL Character Renderer (GLC)
- * Copyright (c) 2002, 2004-2007, Bertrand Coconnier
+ * Copyright (c) 2002, 2004-2008, Bertrand Coconnier
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -95,7 +95,7 @@ static GLboolean __glcTextureAtlasGetPosition(__GLCcontext* inContext,
      */
     glGenTextures(1, &inContext->atlas.id);
     inContext->atlas.width = size;
-    inContext->atlas.heigth = size;
+    inContext->atlas.height = size;
     inContext->atlasWidth = size / GLC_TEXTURE_SIZE;
     inContext->atlasHeight = size / GLC_TEXTURE_SIZE;
     inContext->atlasCount = 0;
@@ -184,7 +184,7 @@ static GLboolean __glcTextureAtlasGetPosition(__GLCcontext* inContext,
      */
     glBufferDataARB(GL_ARRAY_BUFFER_ARB,
 		    inContext->atlasWidth * inContext->atlasHeight
-		    * 20 * sizeof(GLfloat), NULL, GL_DYNAMIC_DRAW_ARB);
+		    * 20 * sizeof(GLfloat), NULL, GL_STATIC_DRAW_ARB);
     glInterleavedArrays(GL_T2F_V3F, 0, NULL);
   }
 
@@ -207,12 +207,16 @@ static GLboolean __glcTextureGetImmediate(__GLCcontext* inContext,
   if (inContext->texture.id) {
     /* Check if the texture size is large enough to store the glyph */
     if ((inWidth > inContext->texture.width)
-	|| (inHeight > inContext->texture.heigth)) {
+	|| (inHeight > inContext->texture.height)) {
       /* The texture is not large enough so we destroy the current texture */
       glDeleteTextures(1, &inContext->texture.id);
+      inWidth = (inWidth > inContext->texture.width) ?
+	inWidth : inContext->texture.width;
+      inHeight = (inHeight > inContext->texture.height) ?
+	inHeight : inContext->texture.height;
       inContext->texture.id = 0;
       inContext->texture.width = 0;
-      inContext->texture.heigth = 0;
+      inContext->texture.height = 0;
     }
     else {
       /* The texture is large enough, it is already bound to the current
@@ -253,7 +257,7 @@ static GLboolean __glcTextureGetImmediate(__GLCcontext* inContext,
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 
   inContext->texture.width = inWidth;
-  inContext->texture.heigth = inHeight;
+  inContext->texture.height = inHeight;
 
   if (GLEW_ARB_pixel_buffer_object) {
     /* Create a PBO, if none exists yet */
@@ -302,13 +306,13 @@ void __glcRenderCharTexture(__GLCfont* inFont, __GLCcontext* inContext,
       return;
 
     /* Compute the size of the pixmap where the glyph will be rendered */
-    atlasNode = (__GLCatlasElement*)inGlyph->textureObject;
+    atlasNode = inGlyph->textureObject;
 
     __glcFaceDescGetBitmapSize(inFont->faceDesc, &pixWidth, &pixHeight,
                                boundingBox, scale_x, scale_y, 0, inContext);
 
     texWidth = inContext->atlas.width;
-    texHeigth = inContext->atlas.heigth;
+    texHeigth = inContext->atlas.height;
     posY = (atlasNode->position / inContext->atlasWidth);
     posX = (atlasNode->position - posY*inContext->atlasWidth)*GLC_TEXTURE_SIZE;
     posY *= GLC_TEXTURE_SIZE;
@@ -327,7 +331,7 @@ void __glcRenderCharTexture(__GLCfont* inFont, __GLCcontext* inContext,
     } while (!__glcTextureGetImmediate(inContext, pixWidth, pixHeight));
 
     texWidth = inContext->texture.width;
-    texHeigth = inContext->texture.heigth;
+    texHeigth = inContext->texture.height;
     posX = 0;
     posY = 0;
   }
@@ -352,7 +356,7 @@ void __glcRenderCharTexture(__GLCfont* inFont, __GLCcontext* inContext,
   do {
     if (GLEW_ARB_pixel_buffer_object && !inContext->enableState.glObjects) {
       pixBuffer = (GLubyte *)glMapBufferARB(GL_PIXEL_UNPACK_BUFFER_ARB,
-						GL_WRITE_ONLY);
+						GL_WRITE_ONLY_ARB);
       if (!pixBuffer) {
 	__glcRaiseError(GLC_RESOURCE_ERROR);
 	return;
@@ -363,11 +367,12 @@ void __glcRenderCharTexture(__GLCfont* inFont, __GLCcontext* inContext,
     if (!__glcFaceDescGetBitmap(inFont->faceDesc, pixWidth, pixHeight,
                                 pixBuffer, inContext)) {
       glPopClientAttrib();
+
       if (GLEW_ARB_pixel_buffer_object && !inContext->enableState.glObjects)
         glUnmapBufferARB(GL_PIXEL_UNPACK_BUFFER_ARB);
       else
         __glcFree(pixBuffer);
-      __glcRaiseError(GLC_RESOURCE_ERROR);
+
       return;
     }
 
@@ -435,12 +440,12 @@ void __glcRenderCharTexture(__GLCfont* inFont, __GLCcontext* inContext,
   if (inContext->enableState.glObjects) {
     if (GLEW_ARB_vertex_buffer_object) {
       GLfloat data[20];
-      __GLCatlasElement* atlasNode = (__GLCatlasElement*)inGlyph->textureObject;
+      __GLCatlasElement* atlasNode = inGlyph->textureObject;
 
       /* The display list ID is used as a flag to declare that the VBO has been
        * initialized and can be used.
        */
-      inGlyph->displayList[1] = 0xffffffff;
+      inGlyph->glObject[1] = 0xffffffff;
 
       data[0] = posX / texWidth;
       data[1] = posY / texHeigth;
@@ -473,14 +478,14 @@ void __glcRenderCharTexture(__GLCfont* inFont, __GLCcontext* inContext,
       return;
     }
     else {
-      inGlyph->displayList[1] = glGenLists(1);
-      if (!inGlyph->displayList[1]) {
+      inGlyph->glObject[1] = glGenLists(1);
+      if (!inGlyph->glObject[1]) {
 	__glcRaiseError(GLC_RESOURCE_ERROR);
 	return;
       }
 
       /* Create the display list */
-      glNewList(inGlyph->displayList[1], GL_COMPILE);
+      glNewList(inGlyph->glObject[1], GL_COMPILE);
       glScalef(1. / 64. / scale_x, 1. / 64. / scale_y , 1.);
 
       /* Modify the bouding box dimensions to compensate the glScalef() */
@@ -508,6 +513,6 @@ void __glcRenderCharTexture(__GLCfont* inFont, __GLCcontext* inContext,
     /* Finish display list creation */
     glScalef(64. * scale_x, 64. * scale_y, 1.);
     glEndList();
-    glCallList(inGlyph->displayList[1]);
+    glCallList(inGlyph->glObject[1]);
   }
 }

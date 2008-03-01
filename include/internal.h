@@ -261,8 +261,7 @@ extern void __glcAppendFont(__GLCcontext* inContext, __GLCfont* inFont);
  * creates a new font based on the pattern 'inPattern'. The resulting font is
  * added to the list GLC_FONT_LIST.
  */
-extern __GLCfont* __glcNewFontFromMaster(__GLCfont* inFont, GLint inFontID,
-				  __GLCmaster* inMaster,
+extern __GLCfont* __glcNewFontFromMaster(GLint inFontID, __GLCmaster* inMaster,
 				  __GLCcontext *inContext, GLint inCode);
 
 /* This internal function tries to open the face file which name is identified
@@ -346,7 +345,7 @@ extern void __glcRestoreGLState(__GLCglState* inGLState,
 				__GLCcontext* inContext, GLboolean inAll);
 
 /* Function for GLEW so that it can get a context */
-extern GLEWContext* glewGetContext(void);
+GLEWAPI GLEWContext* glewGetContext(void);
 
 #ifndef HAVE_TLS
 /* This function initializes the thread management of QuesoGLC when TLS is not

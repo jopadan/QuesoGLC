@@ -1,6 +1,6 @@
 /* QuesoGLC
  * A free implementation of the OpenGL Character Renderer (GLC)
- * Copyright (c) 2002, 2004-2007, Bertrand Coconnier
+ * Copyright (c) 2002, 2004-2008, Bertrand Coconnier
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -56,17 +56,29 @@ __GLCcharMap* __glcCharMapCreate(__GLCmaster* inMaster, __GLCcontext* inContext)
     FcCharSet* charSet = NULL;
     FcFontSet* fontSet = NULL;
     int i = 0;
-    FcObjectSet* objectSet = FcObjectSetBuild(FC_CHARSET, FC_OUTLINE, NULL);
+    FcObjectSet* objectSet = NULL;
+    FcPattern* pattern = FcPatternCreate();
 
-    if (!objectSet) {
+    if (!pattern) {
       __glcRaiseError(GLC_RESOURCE_ERROR);
       FcCharSetDestroy(This->charSet);
       __glcFree(This);
       return NULL;
     }
 
-    fontSet = FcFontList(inContext->config, inMaster->pattern, objectSet);
+    objectSet = FcObjectSetBuild(FC_FAMILY, FC_FOUNDRY, FC_SPACING, FC_OUTLINE,
+				 FC_CHARSET, NULL);
+    if (!objectSet) {
+      __glcRaiseError(GLC_RESOURCE_ERROR);
+      FcPatternDestroy(pattern);
+      FcCharSetDestroy(This->charSet);
+      __glcFree(This);
+      return NULL;
+    }
+
+    fontSet = FcFontList(inContext->config, pattern, objectSet);
     FcObjectSetDestroy(objectSet);
+    FcPatternDestroy(pattern);
     if (!fontSet) {
       __glcRaiseError(GLC_RESOURCE_ERROR);
       FcCharSetDestroy(This->charSet);
@@ -75,30 +87,63 @@ __GLCcharMap* __glcCharMapCreate(__GLCmaster* inMaster, __GLCcontext* inContext)
     }
 
     for (i = 0; i < fontSet->nfont; i++) {
+      FcChar8* family = NULL;
+      int fixed = 0;
+      FcChar8* foundry = NULL;
       FcBool outline = FcFalse;
       FcResult result = FcResultMatch;
+      FcBool equal = FcFalse;
 
       /* Check whether the glyphs are outlines */
       result = FcPatternGetBool(fontSet->fonts[i], FC_OUTLINE, 0, &outline);
       assert(result != FcResultTypeMismatch);
 
-      if (outline) {
+      if (!outline)
+	continue;
+
+      result = FcPatternGetString(fontSet->fonts[i], FC_FAMILY, 0, &family);
+      assert(result != FcResultTypeMismatch);
+      result = FcPatternGetString(fontSet->fonts[i], FC_FOUNDRY, 0, &foundry);
+      assert(result != FcResultTypeMismatch);
+      result = FcPatternGetInteger(fontSet->fonts[i], FC_SPACING, 0, &fixed);
+      assert(result != FcResultTypeMismatch);
+
+      if (foundry)
+	pattern = FcPatternBuild(NULL, FC_FAMILY, FcTypeString, family,
+				 FC_FOUNDRY, FcTypeString, foundry, FC_SPACING,
+				 FcTypeInteger, fixed, NULL);
+      else
+	pattern = FcPatternBuild(NULL, FC_FAMILY, FcTypeString, family,
+				 FC_SPACING, FcTypeInteger, fixed, NULL);
+
+      if (!pattern) {
+	__glcRaiseError(GLC_RESOURCE_ERROR);
+	FcCharSetDestroy(This->charSet);
+	FcFontSetDestroy(fontSet);
+	__glcFree(This);
+	return NULL;
+      }
+
+      equal = FcPatternEqual(pattern, inMaster->pattern);
+      FcPatternDestroy(pattern);
+      if (equal) {
         FcCharSet* newCharSet = NULL;
 
-        result = FcPatternGetCharSet(fontSet->fonts[i], FC_CHARSET, 0, &charSet);
+        result = FcPatternGetCharSet(fontSet->fonts[i], FC_CHARSET, 0,
+				     &charSet);
         assert(result != FcResultTypeMismatch);
 
         newCharSet = FcCharSetUnion(This->charSet, charSet);
-		if (!newCharSet) {
+	if (!newCharSet) {
           __glcRaiseError(GLC_RESOURCE_ERROR);
           FcCharSetDestroy(This->charSet);
           FcFontSetDestroy(fontSet);
           __glcFree(This);
           return NULL;
-		}
+	}
 
-		FcCharSetDestroy(This->charSet);
-		This->charSet = newCharSet;
+	FcCharSetDestroy(This->charSet);
+	This->charSet = newCharSet;
       }
     }
 
@@ -108,7 +153,6 @@ __GLCcharMap* __glcCharMapCreate(__GLCmaster* inMaster, __GLCcontext* inContext)
   /* The array 'map' will contain the actual character map */
   This->map = __glcArrayCreate(sizeof(__GLCcharMapElement));
   if (!This->map) {
-    __glcRaiseError(GLC_RESOURCE_ERROR);
     FcCharSetDestroy(This->charSet);
     __glcFree(This);
     return NULL;
@@ -223,7 +267,7 @@ void __glcCharMapRemoveChar(__GLCcharMap* This, GLint inCode)
 /* Get the Unicode character name of the character which codepoint is inCode.
  * Note : since the character maps of the fonts can be altered, this function
  * can return 'LATIN CAPITAL LETTER B' whereas inCode contained 65 (which is
- * the Unicode code point of 'LATIN CAPITAL LETTER A'.
+ * the Unicode code point of 'LATIN CAPITAL LETTER A').
  */
 GLCchar* __glcCharMapGetCharName(__GLCcharMap* This, GLint inCode,
 				 __GLCcontext* inContext)
@@ -232,6 +276,7 @@ GLCchar* __glcCharMapGetCharName(__GLCcharMap* This, GLint inCode,
   GLCchar8* name = NULL;
   __GLCcharMapElement* element = NULL;
   int start = 0, middle = 0, end = 0;
+  GLint code = 0;
 
   assert(This->map);
   assert(GLC_ARRAY_DATA(This->map));
@@ -248,7 +293,7 @@ GLCchar* __glcCharMapGetCharName(__GLCcharMap* This, GLint inCode,
   while (start <= end) {
     middle = (start + end) >> 1;
     if (element[middle].mappedCode == (GLCulong)inCode) {
-      inCode = element[middle].glyph->codepoint;
+      code = element[middle].glyph->codepoint;
       break;
     }
     else if (element[middle].mappedCode > (GLCulong)inCode)
@@ -257,23 +302,22 @@ GLCchar* __glcCharMapGetCharName(__GLCcharMap* This, GLint inCode,
       start = middle + 1;
   }
 
-  /* If we have not found the character in the character map, it means that
-   * the mapped code is equal to 'inCode' otherwise inCode is modified to
-   * contain the mapped code.
-   */
-  name = __glcNameFromCode(inCode);
-  if (!name) {
-    __glcRaiseError(GLC_PARAMETER_ERROR);
-    return GLC_NONE;
+  if (!code) {
+    if (FcCharSetHasChar(This->charSet, inCode))
+      code = inCode;
+    else
+      return NULL;
   }
+
+  name = __glcNameFromCode(code);
+  if (!name)
+    return NULL;
 
   /* Convert the Unicode to the current string type */
   buffer = __glcConvertFromUtf8ToBuffer(inContext, name,
 					inContext->stringState.stringType);
-  if (!buffer) {
-    __glcRaiseError(GLC_RESOURCE_ERROR);
-    return GLC_NONE;
-  }
+  if (!buffer)
+    return NULL;
 
   return buffer;
 }
@@ -408,18 +452,14 @@ GLCchar* __glcCharMapGetCharNameByIndex(__GLCcharMap* This, GLint inIndex,
 	    GLCchar8* name = __glcNameFromCode(base + (i << 5) + j);
 	    GLCchar* buffer = NULL;
 
-	    if (!name) {
-	      __glcRaiseError(GLC_PARAMETER_ERROR);
+	    if (!name)
 	      return GLC_NONE;
-	    }
 
 	    /* Performs the conversion to the current string type */
 	    buffer = __glcConvertFromUtf8ToBuffer(inContext, name,
 					inContext->stringState.stringType);
-	    if (!buffer) {
-	      __glcRaiseError(GLC_RESOURCE_ERROR);
+	    if (!buffer)
 	      return GLC_NONE;
-	    }
 
 	    return buffer;
 	  }

@@ -1,6 +1,6 @@
 /* QuesoGLC
  * A free implementation of the OpenGL Character Renderer (GLC)
- * Copyright (c) 2002, 2004-2007, Bertrand Coconnier
+ * Copyright (c) 2002, 2004-2008, Bertrand Coconnier
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -49,14 +49,15 @@
  *  or equal to the value of the variable \b GLC_MASTER_COUNT.
  */
 
-#include "internal.h"
-#ifdef __WIN32__
+#if defined(__WIN32__) || defined(_MSC_VER)
 #include <io.h>
 #else
 #include <unistd.h>
 #endif
 #include <sys/types.h>
 #include <sys/stat.h>
+
+#include "internal.h"
 
 
 
@@ -246,7 +247,6 @@ const GLCchar* APIENTRY glcGetMasterMap(GLint inMaster, GLint inCode)
 
     charMap = __glcCharMapCreate(master, ctx);
     if (!charMap) {
-      __glcRaiseError(GLC_RESOURCE_ERROR);
       __glcMasterDestroy(master);
       return GLC_NONE;
     }

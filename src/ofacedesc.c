@@ -62,49 +62,15 @@ __GLCfaceDescriptor* __glcFaceDescCreate(__GLCmaster* inMaster,
   FcObjectSet* objectSet = NULL;
   FcFontSet *fontSet = NULL;
   int i = 0;
-  FcPattern* pattern = FcPatternDuplicate(inMaster->pattern);
+  FcPattern* pattern = FcPatternCreate();
 
   if (!pattern) {
     __glcRaiseError(GLC_RESOURCE_ERROR);
     return NULL;
   }
 
-  if (inFace) {
-    if (!FcPatternAddString(pattern, FC_STYLE, inFace)) {
-      __glcRaiseError(GLC_RESOURCE_ERROR);
-      FcPatternDestroy(pattern);
-      return NULL;
-    }
-  }
-
-  if (inCode) {
-    FcCharSet* charSet = FcCharSetCreate();
-
-    if (!charSet) {
-      FcPatternDestroy(pattern);
-      __glcRaiseError(GLC_RESOURCE_ERROR);
-      return NULL;
-    }
-
-    if (!FcCharSetAddChar(charSet, inCode)) {
-      FcCharSetDestroy(charSet);
-      FcPatternDestroy(pattern);
-      __glcRaiseError(GLC_RESOURCE_ERROR);
-      return NULL;
-    }
-
-    if (!FcPatternAddCharSet(pattern, FC_CHARSET, charSet)) {
-      FcCharSetDestroy(charSet);
-      FcPatternDestroy(pattern);
-      __glcRaiseError(GLC_RESOURCE_ERROR);
-      return NULL;
-    }
-
-    FcCharSetDestroy(charSet);
-  }
-
-  objectSet = FcObjectSetBuild(FC_STYLE, FC_SPACING, FC_FILE, FC_INDEX,
-			       FC_OUTLINE, FC_CHARSET, NULL);
+  objectSet = FcObjectSetBuild(FC_FAMILY, FC_FOUNDRY, FC_STYLE, FC_SPACING,
+			       FC_FILE, FC_INDEX, FC_OUTLINE, FC_CHARSET, NULL);
   if (!objectSet) {
     __glcRaiseError(GLC_RESOURCE_ERROR);
     FcPatternDestroy(pattern);
@@ -115,18 +81,63 @@ __GLCfaceDescriptor* __glcFaceDescCreate(__GLCmaster* inMaster,
   FcPatternDestroy(pattern);
   if (!fontSet) {
     __glcRaiseError(GLC_RESOURCE_ERROR);
+    FcPatternDestroy(pattern);
     return NULL;
   }
 
   for (i = 0; i < fontSet->nfont; i++) {
+    FcChar8* family = NULL;
+    int fixed = 0;
+    FcChar8* foundry = NULL;
+    FcChar8* style = NULL;
     FcBool outline = FcFalse;
+    FcCharSet* charSet = NULL;
     FcResult result = FcResultMatch;
+    FcBool equal = FcFalse;
+
+    result = FcPatternGetCharSet(fontSet->fonts[i], FC_CHARSET, 0, &charSet);
+    assert(result != FcResultTypeMismatch);
+    if (inCode && !FcCharSetHasChar(charSet, inCode))
+      continue;
 
     /* Check whether the glyphs are outlines */
     result = FcPatternGetBool(fontSet->fonts[i], FC_OUTLINE, 0, &outline);
     assert(result != FcResultTypeMismatch);
-    if (outline)
+    if (!outline)
+      continue;
+
+    result = FcPatternGetString(fontSet->fonts[i], FC_FAMILY, 0, &family);
+    assert(result != FcResultTypeMismatch);
+    result = FcPatternGetString(fontSet->fonts[i], FC_FOUNDRY, 0, &foundry);
+    assert(result != FcResultTypeMismatch);
+    result = FcPatternGetInteger(fontSet->fonts[i], FC_SPACING, 0, &fixed);
+    assert(result != FcResultTypeMismatch);
+
+    if (foundry)
+      pattern = FcPatternBuild(NULL, FC_FAMILY, FcTypeString, family,
+			       FC_FOUNDRY, FcTypeString, foundry, FC_SPACING,
+			       FcTypeInteger, fixed, NULL);
+    else
+      pattern = FcPatternBuild(NULL, FC_FAMILY, FcTypeString, family,
+			       FC_SPACING, FcTypeInteger, fixed, NULL);
+
+    if (!pattern) {
+      __glcRaiseError(GLC_RESOURCE_ERROR);
+      FcFontSetDestroy(fontSet);
+      return NULL;
+    }
+
+    equal = FcPatternEqual(pattern, inMaster->pattern);
+    FcPatternDestroy(pattern);
+    if (equal) {
+      if (inFace) {
+	result = FcPatternGetString(fontSet->fonts[i], FC_STYLE, 0, &style);
+	assert(result != FcResultTypeMismatch);
+	if (strcmp((const char*)style, (const char*)inFace))
+	  continue;
+      }
       break;
+    }
   }
 
   if (i == fontSet->nfont) {
@@ -153,8 +164,8 @@ __GLCfaceDescriptor* __glcFaceDescCreate(__GLCmaster* inMaster,
   This->node.prev = NULL;
   This->node.next = NULL;
   This->node.data = NULL;
-#ifndef GLC_FT_CACHE
   This->face = NULL;
+#ifndef GLC_FT_CACHE
   This->faceRefCount = 0;
 #endif
   This->glyphList.head = NULL;
@@ -227,13 +238,7 @@ FT_Face __glcFaceDescOpen(__GLCfaceDescriptor* This,
     }
 
     /* select a Unicode charmap */
-    if (FT_Select_Charmap(This->face, ft_encoding_unicode)) {
-      /* No Unicode charmap is available */
-      __glcRaiseError(GLC_RESOURCE_ERROR);
-      FT_Done_Face(This->face);
-      This->face = NULL;
-      return NULL;
-    }
+    FT_Select_Charmap(This->face, ft_encoding_unicode);
 
     This->faceRefCount = 1;
   }
@@ -288,9 +293,7 @@ FT_Error __glcFileOpen(FTC_FaceID inFile, FT_Library inLibrary,
   }
 
   /* select a Unicode charmap */
-  error = FT_Select_Charmap(*outFace, ft_encoding_unicode);
-  if (error)
-    __glcRaiseError(GLC_RESOURCE_ERROR);
+  FT_Select_Charmap(*outFace, ft_encoding_unicode);
 
   return error;
 }
@@ -348,16 +351,14 @@ __GLCglyph* __glcFaceDescGetGlyph(__GLCfaceDescriptor* This, GLint inCode,
 
 
 
-/* Load a FreeType glyph (FT_Glyph) of the current face and returns the 
- * corresponding FT_Face. The size of the glyph is given by inScaleX and
+/* Load a glyph of the current font face and stores the corresponding data in
+ * the corresponding face. The size of the glyph is given by inScaleX and
  * inScaleY. 'inGlyphIndex' contains the index of the glyph in the font file.
  */
-static FT_Face __glcFaceDescLoadFreeTypeGlyph(__GLCfaceDescriptor* This,
-				       __GLCcontext* inContext,
-				       GLfloat inScaleX, GLfloat inScaleY,
-				       GLCulong inGlyphIndex)
+GLboolean __glcFaceDescPrepareGlyph(__GLCfaceDescriptor* This,
+				    __GLCcontext* inContext, GLfloat inScaleX,
+				    GLfloat inScaleY, GLCulong inGlyphIndex)
 {
-  FT_Face face = NULL;
   FT_Int32 loadFlags = FT_LOAD_NO_BITMAP | FT_LOAD_IGNORE_TRANSFORM;
 #ifdef GLC_FT_CACHE
 # if FREETYPE_MAJOR == 2 \
@@ -389,9 +390,9 @@ static FT_Face __glcFaceDescLoadFreeTypeGlyph(__GLCfaceDescriptor* This,
       (inContext->renderState.resolution < GLC_EPSILON ?
        72. : inContext->renderState.resolution) / 72.);
 
-  if (FTC_Manager_Lookup_Size(inContext->cache, &font, &face, &size)) {
+  if (FTC_Manager_Lookup_Size(inContext->cache, &font, &This->face, &size)) {
     __glcRaiseError(GLC_RESOURCE_ERROR);
-    return NULL;
+    return GL_FALSE;
   }
 # else
   scaler.face_id = (FTC_FaceID)This;
@@ -405,39 +406,36 @@ static FT_Face __glcFaceDescLoadFreeTypeGlyph(__GLCfaceDescriptor* This,
 
   if (FTC_Manager_LookupSize(inContext->cache, &scaler, &size)) {
     __glcRaiseError(GLC_RESOURCE_ERROR);
-    return NULL;
+    return GL_FALSE;
   }
 
-  face = size->face;
+  This->face = size->face;
 # endif /* FREETYPE_MAJOR */
 #else
-  face = __glcFaceDescOpen(This, inContext);
-  if (!face) {
-    __glcRaiseError(GLC_RESOURCE_ERROR);
-    return NULL;
-  }
+  if (!__glcFaceDescOpen(This, inContext))
+    return GL_FALSE;
 
   /* Select the size of the glyph */
-  if (FT_Set_Char_Size(face, (FT_F26Dot6)(inScaleX * 64.),
+  if (FT_Set_Char_Size(This->face, (FT_F26Dot6)(inScaleX * 64.),
 		       (FT_F26Dot6)(inScaleY * 64.),
 		       (FT_UInt)inContext->renderState.resolution,
 		       (FT_UInt)inContext->renderState.resolution)) {
     __glcFaceDescClose(This);
     __glcRaiseError(GLC_RESOURCE_ERROR);
-    return NULL;
+    return GL_FALSE;
   }
 #endif
 
   /* Load the glyph */
-  if (FT_Load_Glyph(face, inGlyphIndex, loadFlags)) {
+  if (FT_Load_Glyph(This->face, inGlyphIndex, loadFlags)) {
     __glcRaiseError(GLC_RESOURCE_ERROR);
 #ifndef GLC_FT_CACHE
     __glcFaceDescClose(This);
 #endif
-    return NULL;
+    return GL_FALSE;
   }
 
-  return face;
+  return GL_TRUE;
 }
 
 
@@ -468,16 +466,15 @@ GLfloat* __glcFaceDescGetBoundingBox(__GLCfaceDescriptor* This,
 {
   FT_BBox boundBox;
   FT_Glyph glyph;
-  FT_Face face = __glcFaceDescLoadFreeTypeGlyph(This, inContext, inScaleX,
-						inScaleY, inGlyphIndex);
 
   assert(outVec);
 
-  if (!face)
+  if (!__glcFaceDescPrepareGlyph(This, inContext, inScaleX, inScaleY,
+				 inGlyphIndex))
     return NULL;
 
   /* Get the bounding box of the glyph */
-  FT_Get_Glyph(face->glyph, &glyph);
+  FT_Get_Glyph(This->face->glyph, &glyph);
   FT_Glyph_Get_CBox(glyph, ft_glyph_bbox_unscaled, &boundBox);
 
   /* Transform the bounding box according to the conversion from FT_F26Dot6 to
@@ -506,19 +503,17 @@ GLfloat* __glcFaceDescGetAdvance(__GLCfaceDescriptor* This,
 				 GLfloat inScaleX, GLfloat inScaleY,
 				 __GLCcontext* inContext)
 {
-  FT_Face face = __glcFaceDescLoadFreeTypeGlyph(This, inContext, inScaleX,
-						inScaleY, inGlyphIndex);
-
   assert(outVec);
 
-  if (!face)
+  if (!__glcFaceDescPrepareGlyph(This, inContext, inScaleX, inScaleY,
+				 inGlyphIndex))
     return NULL;
 
   /* Transform the advance according to the conversion from FT_F26Dot6 to
    * GLfloat.
    */
-  outVec[0] = (GLfloat) face->glyph->advance.x / 64. / inScaleX;
-  outVec[1] = (GLfloat) face->glyph->advance.y / 64. / inScaleY;
+  outVec[0] = (GLfloat) This->face->glyph->advance.x / 64. / inScaleX;
+  outVec[1] = (GLfloat) This->face->glyph->advance.y / 64. / inScaleY;
 
 #ifndef GLC_FT_CACHE
   __glcFaceDescClose(This);
@@ -735,21 +730,20 @@ GLfloat* __glcFaceDescGetKerning(__GLCfaceDescriptor* This,
 {
   FT_Vector kerning;
   FT_Error error;
-  FT_Face face = __glcFaceDescLoadFreeTypeGlyph(This, inContext, inScaleX,
-						inScaleY, inGlyphIndex);
 
   assert(outVec);
 
-  if (!face)
+  if (!__glcFaceDescPrepareGlyph(This, inContext, inScaleX, inScaleY,
+				 inGlyphIndex))
     return NULL;
 
-  if (!FT_HAS_KERNING(face)) {
+  if (!FT_HAS_KERNING(This->face)) {
     outVec[0] = 0.;
     outVec[1] = 0.;
     return outVec;
   }
 
-  error = FT_Get_Kerning(face, inPrevGlyphIndex, inGlyphIndex,
+  error = FT_Get_Kerning(This->face, inPrevGlyphIndex, inGlyphIndex,
 			 FT_KERNING_DEFAULT, &kerning);
 
 #ifndef GLC_FT_CACHE
@@ -809,10 +803,8 @@ static int __glcMoveTo(FT_Vector *inVecTo, void* inUserData)
    */
 
   if (!__glcArrayAppend(data->endContour,
-			&GLC_ARRAY_LENGTH(data->vertexArray))) {
-    __glcRaiseError(GLC_RESOURCE_ERROR);
+			&GLC_ARRAY_LENGTH(data->vertexArray)))
     return 1;
-  }
 
   data->vector[0] = (GLfloat) inVecTo->x;
   data->vector[1] = (GLfloat) inVecTo->y;
@@ -833,10 +825,8 @@ static int __glcLineTo(FT_Vector *inVecTo, void* inUserData)
 {
   __GLCrendererData *data = (__GLCrendererData *) inUserData;
 
-  if (!__glcArrayAppend(data->vertexArray, data->vector)) {
-    __glcRaiseError(GLC_RESOURCE_ERROR);
+  if (!__glcArrayAppend(data->vertexArray, data->vector))
     return 1;
-  }
 
   data->vector[0] = (GLfloat) inVecTo->x;
   data->vector[1] = (GLfloat) inVecTo->y;
@@ -977,21 +967,12 @@ GLboolean __glcFaceDescGetBitmapSize(__GLCfaceDescriptor* This, GLint* outWidth,
                                      GLfloat inScaleX, GLfloat inScaleY,
                                      int inFactor, __GLCcontext* inContext)
 {
-  FT_Face face = NULL;
   FT_Outline outline;
   FT_Matrix matrix;
   FT_BBox boundingBox;
+  FT_Face face = This->face;
 
-
-#ifndef GLC_FT_CACHE
-  face = This->face;
   assert(face);
-#else
-  if (FTC_Manager_LookupFace(inContext->cache, (FTC_FaceID)This, &face)) {
-    __glcRaiseError(GLC_RESOURCE_ERROR);
-    return GL_FALSE;
-  }
-#endif
 
   outline = face->glyph->outline;
 
@@ -1069,21 +1050,13 @@ GLboolean __glcFaceDescGetBitmap(__GLCfaceDescriptor* This, GLint inWidth,
                                  GLint inHeight, void* inBuffer,
                                  __GLCcontext* inContext)
 {
-  FT_Face face = NULL;
   FT_Outline outline;
   FT_BBox boundingBox;
   FT_Bitmap pixmap;
   FT_Matrix matrix;
+  FT_Face face = This->face;
 
-#ifndef GLC_FT_CACHE
-  face = This->face;
   assert(face);
-#else
-  if (FTC_Manager_LookupFace(inContext->cache, (FTC_FaceID)This, &face)) {
-    __glcRaiseError(GLC_RESOURCE_ERROR);
-    return GL_FALSE;
-  }
-#endif
 
   outline = face->glyph->outline;
   FT_Outline_Get_CBox(&outline, &boundingBox);
@@ -1147,20 +1120,7 @@ GLboolean __glcFaceDescGetBitmap(__GLCfaceDescriptor* This, GLint inWidth,
 GLboolean __glcFaceDescOutlineEmpty(__GLCfaceDescriptor* This,
                                     __GLCcontext* inContext)
 {
-  FT_Face face = NULL;
-  FT_Outline outline;
-
-#ifndef GLC_FT_CACHE
-  face = This->face;
-  assert(face);
-#else
-  if (FTC_Manager_LookupFace(inContext->cache, (FTC_FaceID)This, &face)) {
-    __glcRaiseError(GLC_RESOURCE_ERROR);
-    return GL_FALSE;
-  }
-#endif
-
-  outline = face->glyph->outline;
+  FT_Outline outline = This->face->glyph->outline;
 
   return outline.n_points ? GL_TRUE : GL_FALSE;
 }
@@ -1184,7 +1144,6 @@ __GLCcharMap* __glcFaceDescGetCharMap(__GLCfaceDescriptor* This,
 
   newCharSet = FcCharSetCopy(charSet);
   if (!newCharSet) {
-    __glcRaiseError(GLC_RESOURCE_ERROR);
     __glcCharMapDestroy(charMap);
     return NULL;
   }

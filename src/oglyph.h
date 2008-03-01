@@ -1,6 +1,6 @@
 /* QuesoGLC
  * A free implementation of the OpenGL Character Renderer (GLC)
- * Copyright (c) 2002, 2004-2007, Bertrand Coconnier
+ * Copyright (c) 2002, 2004-2008, Bertrand Coconnier
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -28,6 +28,7 @@
 #define __glc_oglyph_h
 
 typedef struct __GLCglyphRec __GLCglyph;
+typedef struct __GLCatlasElementRec __GLCatlasElement;
 
 struct __GLCglyphRec {
   FT_ListNodeRec node;
@@ -36,14 +37,15 @@ struct __GLCglyphRec {
   GLCulong codepoint;
   GLboolean isSpacingChar;
   /* GL objects management */
-  void* textureObject;
-  GLuint displayList[4];
-  GLuint bufferObject[3];
+  __GLCatlasElement* textureObject;
+  GLuint glObject[4];
   GLint nContour;
   GLint* contours;
   /* Measurement infos */
   GLfloat boundingBox[4];
   GLfloat advance[2];
+  GLboolean advanceCached;
+  GLboolean boundingBoxCached;
 };
 
 __GLCglyph* __glcGlyphCreate(GLCulong inIndex, GLCulong inCode);

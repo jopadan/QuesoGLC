@@ -1,6 +1,6 @@
 /* QuesoGLC
  * A free implementation of the OpenGL Character Renderer (GLC)
- * Copyright (c) 2002, 2004-2007, Bertrand Coconnier
+ * Copyright (c) 2002, 2004-2008, Bertrand Coconnier
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -96,7 +96,6 @@ int __glcdeCasteljauConic(void *inUserData)
 			GLC_ARRAY_LENGTH(data->controlPoints), 3);
 
   if (!cp) {
-    __glcRaiseError(GLC_RESOURCE_ERROR);
     GLC_ARRAY_LENGTH(data->controlPoints) = 0;
     return 1;
   }
@@ -108,7 +107,6 @@ int __glcdeCasteljauConic(void *inUserData)
   /* Append the first vertex of the curve to the vertex array */
   rank = GLC_ARRAY_LENGTH(data->vertexArray);
   if (!__glcArrayAppend(data->vertexArray, cp)) {
-    __glcRaiseError(GLC_RESOURCE_ERROR);
     GLC_ARRAY_LENGTH(data->controlPoints) = 0;
     return 1;
   }
@@ -161,7 +159,6 @@ int __glcdeCasteljauConic(void *inUserData)
 						   2*arc+1, 2);
 
       if (!pm) {
-	__glcRaiseError(GLC_RESOURCE_ERROR);
 	GLC_ARRAY_LENGTH(data->controlPoints) = 0;
 	return 1;
       }
@@ -206,7 +203,6 @@ int __glcdeCasteljauConic(void *inUserData)
        * added to the vertex array
        */
       if (!__glcArrayInsert(data->vertexArray, rank+1, pm)) {
-	__glcRaiseError(GLC_RESOURCE_ERROR);
 	GLC_ARRAY_LENGTH(data->controlPoints) = 0;
 	return 1;
       }
@@ -241,7 +237,6 @@ int __glcdeCasteljauCubic(void *inUserData)
 			GLC_ARRAY_LENGTH(data->controlPoints), 4);
 
   if (!cp) {
-    __glcRaiseError(GLC_RESOURCE_ERROR);
     GLC_ARRAY_LENGTH(data->controlPoints) = 0;
     return 1;
   }
@@ -254,7 +249,6 @@ int __glcdeCasteljauCubic(void *inUserData)
   /* Append the first vertex of the curve to the vertex array */
   rank = GLC_ARRAY_LENGTH(data->vertexArray);
   if (!__glcArrayAppend(data->vertexArray, cp)) {
-    __glcRaiseError(GLC_RESOURCE_ERROR);
     GLC_ARRAY_LENGTH(data->controlPoints) = 0;
     return 1;
   }
@@ -314,7 +308,6 @@ int __glcdeCasteljauCubic(void *inUserData)
 						   3*arc+1, 3);
 
       if (!pm) {
-	__glcRaiseError(GLC_RESOURCE_ERROR);
 	GLC_ARRAY_LENGTH(data->controlPoints) = 0;
 	return 1;
       }
@@ -379,7 +372,6 @@ int __glcdeCasteljauCubic(void *inUserData)
        * added to the vertex array
        */
       if (!__glcArrayInsert(data->vertexArray, rank+1, pm)) {
-	__glcRaiseError(GLC_RESOURCE_ERROR);
 	GLC_ARRAY_LENGTH(data->controlPoints) = 0;
 	return 1;
       }
@@ -417,10 +409,8 @@ static void CALLBACK __glcCombineCallback(GLdouble coords[3],
   /* Compute the new vertex and append it to the vertex array */
   vertex[0] = (GLfloat)coords[0];
   vertex[1] = (GLfloat)coords[1];
-  if (!__glcArrayAppend(data->vertexArray, vertex)) {
-    __glcRaiseError(GLC_RESOURCE_ERROR);
+  if (!__glcArrayAppend(data->vertexArray, vertex))
     return;
-  }
 
   /* Returns the index of the new vertex in the vertex array */
   uintInPtr.i = GLC_ARRAY_LENGTH(data->vertexArray)-1;
@@ -451,10 +441,9 @@ static void CALLBACK __glcVertexCallback(void* vertex_data, void* inUserData)
 							geomBatch->start;
   geomBatch->end = (uintInPtr.i > geomBatch->end) ? uintInPtr.i :
 						    geomBatch->end;
-  if (!__glcArrayAppend(data->vertexIndices, &uintInPtr.i)) {
-    __glcRaiseError(GLC_RESOURCE_ERROR);
+  if (!__glcArrayAppend(data->vertexIndices, &uintInPtr.i))
     return;
-  }
+
   geomBatch->length++;
 }
 
@@ -470,10 +459,7 @@ static void CALLBACK __glcBeginCallback(GLenum mode, void* inUserData)
   geomBatch.start = 0xffffffff;
   geomBatch.end = 0;
 
-  if (!__glcArrayAppend(data->geomBatches, &geomBatch)) {
-    __glcRaiseError(GLC_RESOURCE_ERROR);
-    return;
-  }
+  __glcArrayAppend(data->geomBatches, &geomBatch);
 }
 
 
@@ -553,15 +539,12 @@ void __glcRenderCharScalable(__GLCfont* inFont, __GLCcontext* inContext,
   }
 
   /* Parse the outline of the glyph */
-  if (!__glcFaceDescOutlineDecompose(inFont->faceDesc, &rendererData,
-                                     inContext))
+  if (!__glcFontOutlineDecompose(inFont, &rendererData, inContext))
     return;
 
   if (!__glcArrayAppend(rendererData.endContour,
-			&GLC_ARRAY_LENGTH(rendererData.vertexArray))) {
-    __glcRaiseError(GLC_RESOURCE_ERROR);
+			&GLC_ARRAY_LENGTH(rendererData.vertexArray)))
     goto reset;
-  }
 
   switch(inContext->renderState.renderStyle) {
   case GLC_LINE:
@@ -576,29 +559,28 @@ void __glcRenderCharScalable(__GLCfont* inFont, __GLCcontext* inContext,
   if (inContext->enableState.glObjects) {
     if (GLEW_ARB_vertex_buffer_object
 	&& (inContext->renderState.renderStyle == GLC_LINE)) {
-      glGenBuffersARB(1, &inGlyph->bufferObject[0]);
-      if (!inGlyph->bufferObject[0]) {
+      glGenBuffersARB(1, &inGlyph->glObject[0]);
+      if (!inGlyph->glObject[0]) {
 	__glcRaiseError(GLC_RESOURCE_ERROR);
 	goto reset;
       }
-      inGlyph->displayList[index] = 0xffffffff;
-      glBindBufferARB(GL_ARRAY_BUFFER_ARB, inGlyph->bufferObject[0]);
+      glBindBufferARB(GL_ARRAY_BUFFER_ARB, inGlyph->glObject[0]);
     }
     else {
-      inGlyph->displayList[index] = glGenLists(1);
-      if (!inGlyph->displayList[index]) {
+      inGlyph->glObject[index] = glGenLists(1);
+      if (!inGlyph->glObject[index]) {
 	__glcRaiseError(GLC_RESOURCE_ERROR);
 	goto reset;
       }
 
-      glNewList(inGlyph->displayList[index], GL_COMPILE);
+      glNewList(inGlyph->glObject[index], GL_COMPILE);
       glScalef(1./sx64, 1./sy64, 1.);
     }
   }
 
   if (inContext->renderState.renderStyle == GLC_TRIANGLE) {
     /* Tesselate the polygon defined by the contour returned by
-     * __glcFaceDescOutlineDecompose().
+     * __glcFontOutlineDecompose().
      */
     GLUtesselator *tess = gluNewTess();
     GLuint j = 0;
@@ -766,7 +748,7 @@ void __glcRenderCharScalable(__GLCfont* inFont, __GLCcontext* inContext,
 	|| (inContext->renderState.renderStyle != GLC_LINE)) {
       glScalef(sx64, sy64, 1.);
       glEndList();
-      glCallList(inGlyph->displayList[index]);
+      glCallList(inGlyph->glObject[index]);
     }
   }
 
