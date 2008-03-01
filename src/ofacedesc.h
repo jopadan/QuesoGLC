@@ -35,7 +35,7 @@ struct __GLCfaceDescriptorRec {
   FT_ListNodeRec node;
 #ifdef __WIN32__
   LPGLYPHSET pattern;
-  HFONT face;
+  HFONT hfont;
   HDC dc;
 #else
   FcPattern* pattern;

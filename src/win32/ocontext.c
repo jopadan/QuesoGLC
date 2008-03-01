@@ -22,8 +22,6 @@
  * defines the object __GLCcontext which is used to manage the contexts.
  */
 
-/* QuesoGLC needs Windows 2000 or newer */
-#define _WIN32_WINNT 0x0500
 #include "internal.h"
 
 #include <sys/stat.h>

@@ -32,6 +32,9 @@
 #endif
 #include <assert.h>
 
+/* QuesoGLC needs Windows 2000 or newer */
+#define _WIN32_WINNT 0x0500
+
 #ifdef HAVE_LIBGLEW
 #include <GL/glew.h>
 #else

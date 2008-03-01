@@ -317,7 +317,7 @@ __GLCcharMap* __glcMasterGetCharMap(__GLCmaster* This, __GLCcontext* inContext)
     return NULL;
   }
 
-  charMap = __glcCharMapCreate(This);
+  charMap = __glcCharMapCreate(This, inContext);
   if (!charMap) {
     __glcRaiseError(GLC_RESOURCE_ERROR);
     DeleteDC(dc);
