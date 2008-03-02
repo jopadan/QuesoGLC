@@ -2,6 +2,9 @@
  * A free implementation of the OpenGL Character Renderer (GLC)
  * Copyright (c) 2002, 2004-2008, Bertrand Coconnier
  *
+ * UTF-8 subroutines
+ * Copyright (c) 2007-2008, Giel van Schijndel
+ *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
  *  License as published by the Free Software Foundation; either
@@ -27,7 +30,541 @@
 
 #include <fribidi/fribidi.h>
 
+/* The maximum amount of octets this UTF-8 encoder/decoder can handle in a
+ * single UTF-8 sequence.
+ */
+#define GLC_UTF8_MAX_LEN 7
+
 #include "internal.h"
+
+
+
+/** Check that non-starting bytes are of the form 10xxxxxx */
+static inline int __glcIsNonStartByte(const GLCchar8 byte)
+{
+  return ((byte & 0xC0) == 0x80);
+}
+
+
+
+/** Check that starting bytes are either of the form 0xxxxxxx (ASCII) or
+ *  11xxxxxx
+ */
+static inline int __glcIsStartByte(const GLCchar8 byte)
+{
+  return ((byte & 0x80) == 0x00      /* 0xxxxxxx */
+	  || (byte & 0xC0) == 0xC0);    /* 11xxxxxx */
+}
+
+
+
+/* Determines the amount of unicode codepoints in a UTF-8 encoded string
+ * \param utf8_string the UTF-8 encoded, and nul-terminated, string to count
+ * \param[out] len the amount of codepoints found in the UTF-8 string
+ * \return non-zero on success, zero when the given string isn't a valid UTF-8,
+ *         string.
+ */
+static int __glcUtf8CharacterCount(const GLCchar8* inUtf8String, size_t* len)
+{
+  const GLCchar8* curChar = inUtf8String;
+
+  size_t length = 0;
+  while (*curChar != '\0') {
+    if (!__glcIsStartByte(*curChar))
+      return 0;
+
+    /* first octect: 0xxxxxxx: 7 bit (ASCII) */
+    if ((*curChar & 0x80) == 0x00) {
+      /* 1 byte long encoding */
+      curChar += 1;
+    }
+    /* first octect: 110xxxxx */
+    else if ((*curChar & 0xe0) == 0xc0)	{
+      /* 2 byte long encoding */
+      if (!__glcIsNonStartByte(curChar[1]))
+	return 0;
+
+      curChar += 2;
+    }
+    /* first octect: 1110xxxx */
+    else if ((*curChar & 0xf0) == 0xe0)	{
+      /* 3 byte long encoding */
+      if (!__glcIsNonStartByte(curChar[1])
+	  || !__glcIsNonStartByte(curChar[2]))
+	return 0;
+
+      curChar += 3;
+    }
+    /* first octect: 11110xxx */
+    else if ((*curChar & 0xf8) == 0xf0)	{
+      /* 4 byte long encoding */
+      if (!__glcIsNonStartByte(curChar[1])
+	  || !__glcIsNonStartByte(curChar[2])
+	  || !__glcIsNonStartByte(curChar[3]))
+	return 0;
+
+      curChar += 4;
+    }
+    /* first octect: 111110xx */
+    else if ((*curChar & 0xfc) == 0xf8)	{
+      /* 5 byte long encoding */
+      if (!__glcIsNonStartByte(curChar[1])
+	  || !__glcIsNonStartByte(curChar[2])
+	  || !__glcIsNonStartByte(curChar[3])
+	  || !__glcIsNonStartByte(curChar[4]))
+	return 0;
+
+      curChar += 5;
+    }
+    /* first octect: 1111110x */
+    else if ((*curChar & 0xfe) == 0xfc)	{
+      /* 6 byte long encoding */
+      if (!__glcIsNonStartByte(curChar[1])
+	  || !__glcIsNonStartByte(curChar[2])
+	  || !__glcIsNonStartByte(curChar[3])
+	  || !__glcIsNonStartByte(curChar[4])
+	  || !__glcIsNonStartByte(curChar[5]))
+	return 0;
+
+      curChar += 6;
+    }
+    /* first octect: 11111110 */
+    else if ((*curChar & 0xff) == 0xfe)	{
+      /* 7 byte long encoding */
+      if (!__glcIsNonStartByte(curChar[1])
+	  || !__glcIsNonStartByte(curChar[2])
+	  || !__glcIsNonStartByte(curChar[3])
+	  || !__glcIsNonStartByte(curChar[4])
+	  || !__glcIsNonStartByte(curChar[5])
+	  || !__glcIsNonStartByte(curChar[6]))
+	return 0;
+
+      curChar += 7;
+    }
+    /* first byte: 11111111 */
+    else {
+      /* apparently this character uses more than 36 bit this decoder is not
+       * developed to cope with those characters so error out
+       */
+      return 0;
+    }
+
+    ++length;
+  }
+
+  /* return non-zero to indicate success */
+  *len = length;
+  return 1;
+}
+
+
+
+/* \return the amount of octets/bytes required to store this Unicode codepoint
+ *         when encoding it as UTF-8.
+ */
+static size_t __glcUtf8Length(GLCchar32 inCode)
+{
+  /* an ASCII character, which uses 7 bit at most, which is one byte in UTF-8 */
+  if (inCode < 0x00000080)
+    return 1; /* stores 7 bits */
+  else if (inCode < 0x00000800)
+    return 2; /* stores 11 bits */
+  else if (inCode < 0x00010000)
+    return 3; /* stores 16 bits */
+  else if (inCode < 0x00200000)
+    return 4; /* stores 21 bits */
+  else if (inCode < 0x04000000)
+    return 5; /* stores 26 bits */
+  else if (inCode < 0x80000000)
+    return 6; /* stores 31 bits */
+  else /* if (inCode < 0x1000000000) */
+    return 7; /* stores 36 bits */
+
+  /* The program is not supposed to reach the end of the function.
+   * The following return is there to prevent the compiler to issue
+   * a warning about 'control reaching the end of a non-void function'.
+   */
+  return 0xdeadbeef;
+}
+
+
+
+/* Determines the amount of octets required to store this string if it's
+ * encoded as UTF-8
+ * \param ucs4_string the string to determine the UTF-8 buffer length of
+ * \return the size required to hold \c ucs4_string if encoded in UTF-8
+ */
+static size_t __glcUtf8BufferLength(const GLCchar32* inUcs4String)
+{
+  /* Determine length of string (in bytes) when encoded in UTF-8 */
+  size_t length = 0;
+  const GLCchar32* curChar;
+
+  for (curChar = inUcs4String; *curChar != 0; ++curChar)
+    length += __glcUtf8Length(*curChar);
+
+  return length;
+}
+
+
+
+/* Encodes a single UCS4 encoded Unicode codepoint (\c src) into a UTF-8
+ * encoded, octet sequence.
+ * \param src the UCS4 Unicode codepoint
+ * \param[out] dst an output buffer to store the encoded UTF-8 sequence in.
+ * \param len The buffer size of \c dst, it is advised to make this buffer at
+ *            least UTF8_MAX_LEN bytes/octets large.
+ * \return The number of octets used to encode the codepoint in UTF-8, this is
+ *         the amount of valid octets contained in \c dst. This will be zero if
+ *         encoding failed (should only happen if the output buffer is too
+ *         small).
+ */
+static size_t __glcUtf8EncodeSingle(GLCchar32 inCode, GLCchar8* dst, size_t len)
+{
+  GLCchar8* curOutPos = dst;
+
+  /* 7 bits */
+  if (inCode < 0x00000080)	{
+    /* 1 byte long encoding */
+    if (len < 1)
+      return 0;
+
+    *(curOutPos++) = inCode;
+  }
+  /* 11 bits */
+  else if (inCode < 0x00000800) {
+    /* 2 byte long encoding */
+    if (len < 2)
+      return 0;
+
+    /* 0xc0 provides the counting bits: 110
+     * then append the 5 most significant bits
+     */
+    *(curOutPos++) = 0xc0 | (inCode >> 6);
+    /* Put the next 6 bits in a byte of their own */
+    *(curOutPos++) = 0x80 | (inCode & 0x3f);
+  }
+  /* 16 bits */
+  else if (inCode < 0x00010000) {
+    /* 3 byte long encoding */
+    if (len < 3)
+      return 0;
+
+    /* 0xe0 provides the counting bits: 1110
+     * then append the 4 most significant bits
+     */
+    *(curOutPos++) = 0xe0 | (inCode >> 12);
+    /* Put the next 12 bits in two bytes of their own */
+    *(curOutPos++) = 0x80 | ((inCode >> 6) & 0x3f);
+    *(curOutPos++) = 0x80 | (inCode & 0x3f);
+  }
+  /* 21 bits */
+  else if (inCode < 0x00200000) {
+    /* 4 byte long encoding */
+    if (len < 4)
+      return 0;
+
+    /* 0xf0 provides the counting bits: 11110
+     * then append the 3 most significant bits
+     */
+    *(curOutPos++) = 0xf0 | (inCode >> 18);
+    /* Put the next 18 bits in three bytes of their own */
+    *(curOutPos++) = 0x80 | ((inCode >> 12) & 0x3f);
+    *(curOutPos++) = 0x80 | ((inCode >> 6) & 0x3f);
+    *(curOutPos++) = 0x80 | (inCode & 0x3f);
+  }
+  /* 26 bits */
+  else if (inCode < 0x04000000) {
+    /* 5 byte long encoding */
+    if (len < 5)
+      return 0;
+
+    /* 0xf8 provides the counting bits: 111110
+     * then append the 2 most significant bits
+     */
+    *(curOutPos++) = 0xf8 | (inCode >> 24 );
+    /* Put the next 24 bits in four bytes of their own */
+    *(curOutPos++) = 0x80 | ((inCode >> 18) & 0x3f);
+    *(curOutPos++) = 0x80 | ((inCode >> 12) & 0x3f);
+    *(curOutPos++) = 0x80 | ((inCode >> 6) & 0x3f);
+    *(curOutPos++) = 0x80 | (inCode & 0x3f);
+  }
+  /* 31 bits */
+  else if (inCode < 0x80000000) {
+    /* 6 byte long encoding */
+    if (len < 6)
+      return 0;
+
+    /* 0xfc provides the counting bits: 1111110
+     * then append the 1 most significant bit
+     */
+    *(curOutPos++) = 0xfc | (inCode >> 30);
+    /* Put the next 30 bits in five bytes of their own */
+    *(curOutPos++) = 0x80 | ((inCode >> 24) & 0x3f);
+    *(curOutPos++) = 0x80 | ((inCode >> 18) & 0x3f);
+    *(curOutPos++) = 0x80 | ((inCode >> 12) & 0x3f);
+    *(curOutPos++) = 0x80 | ((inCode >> 6) & 0x3f);
+    *(curOutPos++) = 0x80 | (inCode & 0x3f);
+  }
+  /* 36 bits */
+  else {
+    /* 7 byte long encoding */
+    if (len < 7)
+      return 0;
+
+    /* 0xfe provides the counting bits: 11111110 */
+    *(curOutPos++) = 0xfe;
+    /* Put the next 36 bits in six bytes of their own */
+    *(curOutPos++) = 0x80 | ((inCode >> 30) & 0x3f);
+    *(curOutPos++) = 0x80 | ((inCode >> 24) & 0x3f);
+    *(curOutPos++) = 0x80 | ((inCode >> 18) & 0x3f);
+    *(curOutPos++) = 0x80 | ((inCode >> 12) & 0x3f);
+    *(curOutPos++) = 0x80 | ((inCode >> 6) & 0x3f);
+    *(curOutPos++) = 0x80 | (inCode & 0x3f);
+  }
+
+  return curOutPos - dst;
+}
+
+
+
+/* Encodes a UCS4 encoded unicode string to a UTF-8 encoded string
+ * \param ucs4_string the UCS4 encoded unicode string to encode into UTF-8
+ * \return a UTF-8 encoded unicode nul terminated string (use free() to
+ *         deallocate it)
+ */
+static GLCchar8* __glcUtf8Encode(const GLCchar32* inUcs4String)
+{
+  const GLCchar32* curChar;
+  size_t buf_length = __glcUtf8BufferLength(inUcs4String);
+  /* Allocate memory to hold the UTF-8 encoded string (plus a terminating nul
+   * GLCchar8)
+   */
+  GLCchar8* utf8_string = __glcMalloc(buf_length + 1);
+  GLCchar8* curOutPos = utf8_string;
+
+  if (utf8_string == NULL) {
+    __glcRaiseError(GLC_RESOURCE_ERROR);
+    return NULL;
+  }
+
+  for (curChar = inUcs4String; *curChar != 0; ++curChar)	{
+    size_t stored = __glcUtf8EncodeSingle(*curChar, curOutPos, buf_length);
+
+    assert(stored != 0);
+
+    curOutPos += stored;
+    buf_length -= stored;
+  }
+
+  /* Terminate the string with a nul character */
+  *curOutPos = '\0';
+
+  return utf8_string;
+}
+
+
+
+/* Converts a single Unicode codepoint from the UTF-8 string to a UCS4
+ * representation.
+ * \param utf8_string a pointer to the beginning of a valid UTF-8 octect
+ *        sequence. (I.e. this function will decode the first Unicode codepoint
+ *        from this string).
+ * \param[out] dst the decoded UCS4 Unicode codepoint will be written in *dst.
+ * \param len \c utf8_string must be at least \c len octects long.
+ * \return the amount of octets consumed for decoding this UCS4 code point.
+ *         This can never be larger than \c len and will be zero if decoding
+ *         failed.
+ * \note The user code must check for NUL ('\0') termination octets itself (if
+ *       required), this function will decode a '\0' octet into Unicode
+ *       codepoint 0x0.
+ */
+static size_t __glcUtf8DecodeSingle(const GLCchar8* inUtf8String,
+				    GLCchar32* dst, size_t len)
+{
+  const GLCchar8* curChar = inUtf8String;
+
+  /* Verify that this is a valid starting byte */
+  if (!__glcIsStartByte(*curChar))
+    return 0;
+
+  /* first octect: 0xxxxxxx: 7 bit (ASCII) */
+  if ((*curChar & 0x80) == 0x00){
+    /* 1 byte long encoding */
+    if (len < 1)
+      return 0;
+
+    *dst = *(curChar++);
+  }
+  /* first octect: 110xxxxx: 11 bit */
+  else if ((*curChar & 0xe0) == 0xc0) {
+    /* 2 byte long encoding */
+    if (len < 2)
+      return 0;
+
+    if (!__glcIsNonStartByte(curChar[1]))
+      return 0;
+
+    *dst  = (*(curChar++) & 0x1f) << 6;
+    *dst |= (*(curChar++) & 0x3f) << 0;
+  }
+  /* first octect: 1110xxxx: 16 bit */
+  else if ((*curChar & 0xf0) == 0xe0) {
+    /* 3 byte long encoding */
+    if (len < 3)
+      return 0;
+
+    if (!__glcIsNonStartByte(curChar[1])
+	|| !__glcIsNonStartByte(curChar[2]))
+      return 0;
+
+    *dst  = (*(curChar++) & 0x0f) << 12;
+    *dst |= (*(curChar++) & 0x3f) << 6;
+    *dst |= (*(curChar++) & 0x3f) << 0;
+  }
+  /* first octect: 11110xxx: 21 bit */
+  else if ((*curChar & 0xf8) == 0xf0) {
+    /* 4 byte long encoding */
+    if (len < 4)
+      return 0;
+
+    if (!__glcIsNonStartByte(curChar[1])
+	|| !__glcIsNonStartByte(curChar[2])
+	|| !__glcIsNonStartByte(curChar[3]))
+      return 0;
+
+    *dst  = (*(curChar++) & 0x07) << 18;
+    *dst |= (*(curChar++) & 0x3f) << 12;
+    *dst |= (*(curChar++) & 0x3f) << 6;
+    *dst |= (*(curChar++) & 0x3f) << 0;
+  }
+  /* first octect: 111110xx: 26 bit */
+  else if ((*curChar & 0xfc) == 0xf8) {
+    /* 5 byte long encoding */
+    if (len < 5)
+      return 0;
+
+    if (!__glcIsNonStartByte(curChar[1])
+	|| !__glcIsNonStartByte(curChar[2])
+	|| !__glcIsNonStartByte(curChar[3])
+	|| !__glcIsNonStartByte(curChar[4]))
+      return 0;
+
+    *dst  = (*(curChar++) & 0x03) << 24;
+    *dst |= (*(curChar++) & 0x3f) << 18;
+    *dst |= (*(curChar++) & 0x3f) << 12;
+    *dst |= (*(curChar++) & 0x3f) << 6;
+    *dst |= (*(curChar++) & 0x3f) << 0;
+  }
+  /* first octect: 1111110x: 31 bit */
+  else if ((*curChar & 0xfe) == 0xfc) {
+    /* 6 byte long encoding */
+    if (len < 6)
+      return 0;
+
+    if (!__glcIsNonStartByte(curChar[1])
+	|| !__glcIsNonStartByte(curChar[2])
+	|| !__glcIsNonStartByte(curChar[3])
+	|| !__glcIsNonStartByte(curChar[4])
+	|| !__glcIsNonStartByte(curChar[5]))
+      return 0;
+
+    *dst  = (*(curChar++) & 0x01) << 30;
+    *dst |= (*(curChar++) & 0x3f) << 24;
+    *dst |= (*(curChar++) & 0x3f) << 18;
+    *dst |= (*(curChar++) & 0x3f) << 12;
+    *dst |= (*(curChar++) & 0x3f) << 6;
+    *dst |= (*(curChar++) & 0x3f) << 0;
+  }
+  /* first octect: 11111110: 36 bit (we'll only use 32bit though) */
+  else if ((*curChar & 0xff) == 0xfe) {
+    /* 7 byte long encoding */
+    if (len < 7)
+      return 0;
+
+    if (!__glcIsNonStartByte(curChar[1])
+	|| !__glcIsNonStartByte(curChar[2])
+	|| !__glcIsNonStartByte(curChar[3])
+	|| !__glcIsNonStartByte(curChar[4])
+	|| !__glcIsNonStartByte(curChar[5])
+	|| !__glcIsNonStartByte(curChar[6]))
+      return 0;
+
+    /* original: *dst  = (*(curChar++) & 0x00) << 36; */
+    /* The first octect contains no data bits */
+    *dst = 0; ++curChar;
+
+    /* original: *dst |= (*(curChar++) & 0x3f) << 30; */
+    /* Use only the 2 least significant bits of this byte
+     * to make sure we use 32bit at maximum
+     */
+    *dst |= (*(curChar++) & 0x03) << 30;
+
+    *dst |= (*(curChar++) & 0x3f) << 24;
+    *dst |= (*(curChar++) & 0x3f) << 18;
+    *dst |= (*(curChar++) & 0x3f) << 12;
+    *dst |= (*(curChar++) & 0x3f) << 6;
+    *dst |= (*(curChar++) & 0x3f) << 0;
+  }
+  /* first byte: 11111111: 41 bit or more */
+  else {
+    /* apparently this character uses more than 36 bit this decoder is not
+     * developed to cope with those characters so error out
+     */
+    return 0;
+  }
+
+  return curChar - inUtf8String;
+}
+
+
+
+#if 0 /* Comment out this function in order to prevent warning messages about
+       * this function being defined but not used.
+       */
+
+/* Decodes a UTF-8 encode string to a UCS4 encoded string (native endianess)
+ * \param utf8_string a UTF-8 encoded nul terminated string
+ * \return a UCS4 encoded unicode nul terminated string (use free() to
+ *         deallocate it)
+ */
+static GLCchar32* __glcUtf8Decode(const GLCchar8* inUtf8String)
+{
+  const GLCchar8* curChar = inUtf8String;
+  size_t unicode_length;
+  size_t utf8_len = strlen((const char*)inUtf8String);
+  GLCchar32 *ucs4_string, *curOutPos;
+
+  /* Determine the string's length (i.e. the amount of Unicode codepoints) */
+  if (!__glcUtf8CharacterCount(inUtf8String, &unicode_length)) {
+    __glcRaiseError(GLC_PARAMETER_ERROR);
+    return NULL;
+  }
+
+  /* Allocate memory to hold the UCS4 encoded string (plus a terminating nul) */
+  ucs4_string = __glcMalloc(sizeof(GLCchar32) * (unicode_length + 1));
+  if (!ucs4_string) {
+    __glcRaiseError(GLC_RESOURCE_ERROR);
+    return NULL;
+  }
+
+  curOutPos = ucs4_string;
+  while (*curChar != '\0') {
+    size_t consumedBytes = __glcUtf8DecodeSingle(curChar, curOutPos, utf8_len);
+
+    assert(consumedBytes != 0);
+
+    curChar += consumedBytes;
+    utf8_len -= consumedBytes;
+    ++curOutPos;
+  }
+
+  /* Terminate the string with a nul */
+  *curOutPos = '\0';
+
+  return ucs4_string;
+}
+#endif
 
 
 
@@ -79,51 +616,6 @@ GLint __glcCodeFromName(GLCchar* name)
   return -1;
 }
 
-
-
-/* Convert a character from UCS1 to UTF-8 and return the number of bytes
- * needed to encode the char.
- */
-static int __glcUcs1ToUtf8(GLCchar8 ucs1, GLCchar8 dest[FC_UTF8_MAX_LEN])
-{
-  GLCchar8 *d = dest;
-
-  if (ucs1 < 0x80)
-    *d++ = ucs1;
-  else {
-    *d++ = ((ucs1 >> 6) & 0x1F) | 0xC0;
-    *d++ = (ucs1 & 0x3F) | 0x80;
-  }
-
-  return d - dest;
-}
-
-
-
-/* Convert a character from UCS2 to UTF-8 and return the number of bytes
- * needed to encode the char.
- */
-static int __glcUcs2ToUtf8(GLCchar16 ucs2, GLCchar8 dest[FC_UTF8_MAX_LEN])
-{
-  GLCchar8 *d = dest;
-
-  if (ucs2 < 0x80)
-    *d++ = ucs2;
-  else if (ucs2 < 0x800) {
-    *d++ = ((ucs2 >> 6) & 0x1F) | 0xC0;
-    *d++ = (ucs2 & 0x3F) | 0x80;
-  }
-  else {
-    *d++ = ((ucs2 >> 12) & 0x0F) | 0xE0;
-    *d++ = ((ucs2 >> 6) & 0x3F) | 0x80;
-    *d++ = (ucs2 & 0x3F) | 0x80;
-  }
-
-  return d - dest;
-}
-
-
-
 /* Convert a character from UTF-8 to UCS1 and return the number of bytes
  * needed to encode the character.
  * According to the GLC specs, when the value of a character code exceed the
@@ -136,7 +628,7 @@ static int __glcUtf8ToUcs1(const GLCchar8* src_orig,
 			   int* dstlen)
 {
   GLCchar32 result = 0;
-  int src_shift = FcUtf8ToUcs4(src_orig, &result, len);
+  size_t src_shift = __glcUtf8DecodeSingle(src_orig, &result, len);
 
   if (src_shift > 0) {
     /* src_orig is a well-formed UTF-8 character */
@@ -184,7 +676,7 @@ static int __glcUtf8ToUcs2(const GLCchar8* src_orig,
 			   int* dstlen)
 {
   GLCchar32 result = 0;
-  int src_shift = FcUtf8ToUcs4(src_orig, &result, len);
+  size_t src_shift = __glcUtf8DecodeSingle(src_orig, &result, len);
 
   if (src_shift > 0) {
     /* src_orig is a well-formed UTF-8 character */
@@ -219,7 +711,7 @@ static int __glcUtf8ToUcs2(const GLCchar8* src_orig,
  */
 GLCchar8* __glcConvertToUtf8(const GLCchar* inString, const GLint inStringType)
 {
-  GLCchar8 buffer[FC_UTF8_MAX_LEN];
+  GLCchar8 buffer[GLC_UTF8_MAX_LEN];
   GLCchar8* string = NULL;
   GLCchar8* ptr = NULL;
   int len;
@@ -231,7 +723,7 @@ GLCchar8* __glcConvertToUtf8(const GLCchar* inString, const GLint inStringType)
 
       /* Determine the length of the final string */
       for (len = 0, ucs1 = (GLCchar8*)inString; *ucs1;
-	     len += __glcUcs1ToUtf8(*ucs1++, buffer));
+	   len += __glcUtf8EncodeSingle(*ucs1++, buffer, sizeof(buffer)));
       /* Allocate the room to store the final string */
       string = (GLCchar8*)__glcMalloc((len+1)*sizeof(GLCchar8));
       if (!string) {
@@ -241,7 +733,7 @@ GLCchar8* __glcConvertToUtf8(const GLCchar* inString, const GLint inStringType)
 
       /* Perform the conversion */
       for (ucs1 = (GLCchar8*)inString, ptr = string; *ucs1;
-	     ptr += __glcUcs1ToUtf8(*ucs1++, ptr));
+	   ptr += __glcUtf8EncodeSingle(*ucs1++, ptr, len - (ptr - string)));
       *ptr = 0;
     }
     break;
@@ -251,7 +743,7 @@ GLCchar8* __glcConvertToUtf8(const GLCchar* inString, const GLint inStringType)
 
       /* Determine the length of the final string */
       for (len = 0, ucs2 = (GLCchar16*)inString; *ucs2;
-	     len += __glcUcs2ToUtf8(*ucs2++, buffer));
+	     len += __glcUtf8EncodeSingle(*ucs2++, buffer, sizeof(buffer)));
       /* Allocate the room to store the final string */
       string = (GLCchar8*)__glcMalloc((len+1)*sizeof(GLCchar8));
       if (!string) {
@@ -261,28 +753,14 @@ GLCchar8* __glcConvertToUtf8(const GLCchar* inString, const GLint inStringType)
 
       /* Perform the conversion */
       for (ucs2 = (GLCchar16*)inString, ptr = string; *ucs2;
-	     ptr += __glcUcs2ToUtf8(*ucs2++, ptr));
+	     ptr += __glcUtf8EncodeSingle(*ucs2++, ptr, len - (ptr - string)));
       *ptr = 0;
     }
     break;
   case GLC_UCS4:
     {
-      GLCchar32* ucs4 = NULL;
-
-      /* Determine the length of the final string */
-      for (len = 0, ucs4 = (GLCchar32*)inString; *ucs4;
-	     len += FcUcs4ToUtf8(*ucs4++, buffer));
-      /* Allocate the room to store the final string */
-      string = (GLCchar8*)__glcMalloc((len+1)*sizeof(GLCchar8));
-      if (!string) {
-	__glcRaiseError(GLC_RESOURCE_ERROR);
-	return NULL;
-      }
-
-      /* Perform the conversion */
-      for (ucs4 = (GLCchar32*)inString, ptr = string; *ucs4;
-	     ptr += FcUcs4ToUtf8(*ucs4++, ptr));
-      *ptr = 0;
+      /* Convert the string (memory allocation is performed automatically) */
+      string = __glcUtf8Encode((GLCchar32*)inString);
     }
     break;
   case GLC_UTF8_QSO:
@@ -330,7 +808,7 @@ GLCchar* __glcConvertFromUtf8ToBuffer(__GLCcontext* This,
       while(*utf8) {
 	shift = __glcUtf8ToUcs1(utf8, buffer, strlen((const char*)utf8),
 				&len_buffer);
-	if (shift < 0) {
+	if (shift == 0) {
 	  /* There is an ill-formed character in the UTF-8 string, abort */
 	  return NULL;
 	}
@@ -366,7 +844,7 @@ GLCchar* __glcConvertFromUtf8ToBuffer(__GLCcontext* This,
       while(*utf8) {
 	shift = __glcUtf8ToUcs2(utf8, buffer, strlen((const char*)utf8),
 				&len_buffer);
-	if (shift < 0) {
+	if (shift == 0) {
 	  /* There is an ill-formed character in the UTF-8 string, abort */
 	  return NULL;
 	}
@@ -393,20 +871,13 @@ GLCchar* __glcConvertFromUtf8ToBuffer(__GLCcontext* This,
     break;
   case GLC_UCS4:
     {
-      GLCchar32 buffer = 0;
       GLCchar32* ucs4 = NULL;
+      size_t len;
 
       /* Determine the length of the final string */
-      utf8 = inString;
-      while(*utf8) {
-	shift = FcUtf8ToUcs4(utf8, &buffer, strlen((const char*)utf8));
-	if (shift < 0) {
-	  /* There is an ill-formed character in the UTF-8 string, abort */
-	  __glcRaiseError(GLC_PARAMETER_ERROR);
-	  return NULL;
-	}
-	utf8 += shift;
-	len++;
+      if (!__glcUtf8CharacterCount(inString, &len)) {
+        __glcRaiseError(GLC_PARAMETER_ERROR);
+        return NULL;
       }
 
       /* Allocate the room to store the final string */
@@ -419,8 +890,15 @@ GLCchar* __glcConvertFromUtf8ToBuffer(__GLCcontext* This,
       /* Perform the conversion */
       utf8 = inString;
       ucs4 = (GLCchar32*)string;
-      while(*utf8)
-	utf8 += FcUtf8ToUcs4(utf8, ucs4++, strlen((const char*)utf8));
+
+      while(*utf8) {
+        size_t consumedOctets = __glcUtf8DecodeSingle(utf8, ucs4++, len);
+
+        assert(consumedOctets != 0);
+
+        utf8 += consumedOctets;
+        len -= consumedOctets;
+      }
 
       *ucs4 = 0; /* Add the '\0' termination of the string */
     }
@@ -470,13 +948,9 @@ GLint __glcConvertUcs4ToGLint(__GLCcontext *inContext, GLint inCode)
       /* Codepoints lower or equal to 0x10ffff can be encoded on 4 bytes in
        * UTF-8 format
        */
-      GLCchar8 buffer[FC_UTF8_MAX_LEN];
-#ifndef NDEBUG
-      int len = FcUcs4ToUtf8((GLCchar32)inCode, buffer);
-      assert((size_t)len <= sizeof(GLint));
-#else
-      FcUcs4ToUtf8((GLCchar32)inCode, buffer);
-#endif
+      GLCchar8 buffer[GLC_UTF8_MAX_LEN];
+      assert(__glcUtf8Length((GLCchar32)inCode) <= sizeof(GLint));
+      __glcUtf8EncodeSingle((GLCchar32)inCode, buffer, sizeof(buffer));
 
       return *((GLint*)buffer);
     }
@@ -505,8 +979,8 @@ GLint __glcConvertGLintToUcs4(__GLCcontext *inContext, GLint inCode)
     /* Convert the codepoint in UCS4 format and check if it is ill-formed or
      * not
      */
-    if (FcUtf8ToUcs4((GLCchar8*)&inCode, (GLCchar32*)&code,
-		     sizeof(GLint)) < 0) {
+    if (!__glcUtf8DecodeSingle((GLCchar8*)&inCode, (GLCchar32*)&code,
+		     sizeof(GLint))) {
       __glcRaiseError(GLC_PARAMETER_ERROR);
       return -1;
     }
@@ -598,8 +1072,8 @@ GLCchar32* __glcConvertToVisualUcs4(__GLCcontext* inContext,
       /* Determine the length of the final string */
       utf8 = (GLCchar8*)inString;
       while(*utf8) {
-	shift = FcUtf8ToUcs4(utf8, &buffer, strlen((const char*)utf8));
-	if (shift < 0) {
+	shift = __glcUtf8DecodeSingle(utf8, &buffer, strlen((const char*)utf8));
+	if (shift == 0) {
 	  /* There is an ill-formed character in the UTF-8 string, abort */
 	  return NULL;
 	}
@@ -617,7 +1091,7 @@ GLCchar32* __glcConvertToVisualUcs4(__GLCcontext* inContext,
       utf8 = (GLCchar8*)inString;
       ucs4 = (GLCchar32*)string;
       while(*utf8)
-	utf8 += FcUtf8ToUcs4(utf8, ucs4++, strlen((const char*)utf8));
+	utf8 += __glcUtf8DecodeSingle(utf8, ucs4++, strlen((const char*)utf8));
 
       *ucs4 = 0; /* Add the '\0' termination of the string */
     }
@@ -730,7 +1204,7 @@ GLCchar32* __glcConvertCountedStringToVisualUcs4(__GLCcontext* inContext,
       ucs4 = (GLCchar32*)string;
 
       for (i = 0; i < inCount; i++)
-	utf8 += FcUtf8ToUcs4(utf8, ucs4++, strlen((const char*)utf8));
+	utf8 += __glcUtf8DecodeSingle(utf8, ucs4++, strlen((const char*)utf8));
 
       *ucs4 = 0; /* Add the '\0' termination of the string */
     }
