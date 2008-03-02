@@ -503,7 +503,7 @@ __GLCfont* __glcContextGetFont(__GLCcontext *This, GLint inCode)
     master = __glcMasterMatchCode(This, inCode);
     if (!master)
       return NULL;
-    font = __glcNewFontFromMaster(NULL, glcGenFontID(), master, This);
+    font = __glcNewFontFromMaster(glcGenFontID(), master, This, inCode);
     __glcMasterDestroy(master);
 
     if (font) {
@@ -555,7 +555,6 @@ static int CALLBACK __glcEnumUpdateHashTable(ENUMLOGFONTEX* inElfe,
 {
   __GLCarray* masterHashTable = (__GLCarray*)inData;
   GLCchar32* hashTable = (GLCchar32*)GLC_ARRAY_DATA(masterHashTable);
-  TCHAR* ptr = NULL;
   int length = GLC_ARRAY_LENGTH(masterHashTable);
   int i = 0;
   GLCchar32 hashValue = 0;
@@ -591,7 +590,6 @@ static int CALLBACK __glcEnumUpdateHashTable(ENUMLOGFONTEX* inElfe,
  */
 static void __glcContextUpdateHashTable(__GLCcontext *This)
 {
-  int i = 0;
   LOGFONT lfont;
   HDC dc = CreateDC(TEXT("DISPLAY"), NULL, NULL, NULL);
 
@@ -713,7 +711,6 @@ GLCchar8* __glcContextGetCatalogPath(__GLCcontext* This, GLint inIndex)
 void __glcContextRemoveCatalog(__GLCcontext* This, GLint inIndex)
 {
   FT_ListNode node = NULL;
-  int i = 0;
   WIN32_FIND_DATA FindFileData;
   LPTSTR DirSpec = NULL;
   HANDLE hFind = INVALID_HANDLE_VALUE;
