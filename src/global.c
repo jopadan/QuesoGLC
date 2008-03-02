@@ -218,9 +218,11 @@ void _init(void)
   pthread_once_t onceInit = PTHREAD_ONCE_INIT;
 #endif
 
+#ifndef __WIN32__
   /* Initialize fontconfig */
   if (!FcInit())
     goto FatalError;
+#endif
 
   __glcCommonArea.versionMajor = 0;
   __glcCommonArea.versionMinor = 2;
