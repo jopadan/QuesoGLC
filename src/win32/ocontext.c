@@ -150,7 +150,6 @@ __GLCcontext* __glcContextCreate(GLint inContext)
   This->isInCallbackFunc = GL_FALSE;
   This->buffer = NULL;
   This->bufferSize = 0;
-  This->lastFontID = 1;
   This->vertexArray = __glcArrayCreate(2 * sizeof(GLfloat));
   if (!This->vertexArray) {
     __glcArrayDestroy(This->measurementBuffer);
@@ -231,12 +230,13 @@ __GLCcontext* __glcContextCreate(GLint inContext)
 
   This->texture.id = 0;
   This->texture.width = 0;
-  This->texture.heigth = 0;
+  This->texture.height = 0;
   This->texture.bufferObjectID = 0;
 
   This->atlas.id = 0;
   This->atlas.width = 0;
-  This->atlas.heigth = 0;
+  This->atlas.height = 0;
+  This->atlas.bufferObjectID = 0;
   This->atlasList.head = NULL;
   This->atlasList.tail = NULL;
   This->atlasWidth = 0;
