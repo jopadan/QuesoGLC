@@ -16,7 +16,7 @@
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-/* $Id: ofacedesc.c,v 1.25 2007/10/21 16:49:14 bcoconni Exp $ */
+/* $Id$ */
 
 /** \file
  * defines the object __GLCfaceDescriptor that contains the description of a
