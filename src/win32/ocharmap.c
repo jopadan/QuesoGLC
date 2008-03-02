@@ -27,7 +27,10 @@
  */
 
 /* QuesoGLC needs Windows 2000 or newer */
-#define _WIN32_WINNT 0x0500
+#ifndef WINVER
+#define WINVER 0x500
+#endif
+
 #include "internal.h"
 
 
@@ -37,7 +40,7 @@
  * The user must give the initial GLYPHSET of the font or the master (which
  * may be NULL) in which case the character map will be empty.
  */
-__GLCcharMap* __glcCharMapCreate(__GLCmaster* inMaster)
+__GLCcharMap* __glcCharMapCreate(__GLCmaster* inMaster, __GLCcontext* inContext)
 {
   __GLCcharMap* This = NULL;
 

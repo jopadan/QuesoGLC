@@ -22,7 +22,14 @@
  * defines the object __GLCcontext which is used to manage the contexts.
  */
 
+/* QuesoGLC needs Windows 2000 or newer */
+#ifndef WINVER
+#define WINVER 0x500
+#endif
+
 #include "internal.h"
+
+
 
 #include <sys/stat.h>
 #include <io.h>
