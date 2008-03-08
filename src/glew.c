@@ -928,6 +928,11 @@ GLenum glewContextInit (GLEW_CONTEXT_ARG_DEF_LIST)
   CONST_CAST(GLEW_SGIS_texture_lod) = glewGetExtension("GL_SGIS_texture_lod");
 #endif /* GL_SGIS_texture_lod */
 
+#ifdef GLEW_DISABLE_VBOS
+  CONST_CAST(GLEW_ARB_pixel_buffer_object) = 0;
+  CONST_CAST(GLEW_ARB_vertex_buffer_object) = 0;
+#endif
+
   return GLEW_OK;
 }
 

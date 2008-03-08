@@ -178,14 +178,6 @@ static GLboolean __glcTextureAtlasGetPosition(__GLCcontext* inContext,
     }
     /* Bind the buffer and define/update its size */
     glBindBufferARB(GL_ARRAY_BUFFER_ARB, inContext->atlas.bufferObjectID);
-    /* Size of the buffer data is equal to the number of glyphes than can be
-     * stored in the texture times 20 GLfloat (4 vertices made of 3D coordinates
-     * plus 2D texture coordinates : 4 * (3 + 2) = 20)
-     */
-    glBufferDataARB(GL_ARRAY_BUFFER_ARB,
-		    inContext->atlasWidth * inContext->atlasHeight
-		    * 20 * sizeof(GLfloat), NULL, GL_STATIC_DRAW_ARB);
-    glInterleavedArrays(GL_T2F_V3F, 0, NULL);
   }
 
 
@@ -210,6 +202,10 @@ static GLboolean __glcTextureGetImmediate(__GLCcontext* inContext,
 	|| (inHeight > inContext->texture.heigth)) {
       /* The texture is not large enough so we destroy the current texture */
       glDeleteTextures(1, &inContext->texture.id);
+      inWidth = (inWidth > inContext->texture.width) ?
+	inWidth : inContext->texture.width;
+      inHeight = (inHeight > inContext->texture.heigth) ?
+	inHeight : inContext->texture.heigth;
       inContext->texture.id = 0;
       inContext->texture.width = 0;
       inContext->texture.heigth = 0;
@@ -435,13 +431,41 @@ void __glcRenderCharTexture(__GLCfont* inFont, __GLCcontext* inContext,
    */
   if (inContext->enableState.glObjects) {
     if (GLEW_ARB_vertex_buffer_object) {
-      GLfloat data[20];
+      GLfloat* buffer = NULL;
+      GLfloat* data = NULL;
       __GLCatlasElement* atlasNode = inGlyph->textureObject;
+
+      buffer = __glcMalloc(inContext->atlasWidth * inContext->atlasHeight * 20
+			   * sizeof(GLfloat));
+      if (!buffer) {
+	__glcRaiseError(GLC_RESOURCE_ERROR);
+	return;
+      }
 
       /* The display list ID is used as a flag to declare that the VBO has been
        * initialized and can be used.
        */
       inGlyph->glObject[1] = 0xffffffff;
+
+      /* Here we do not use the GL command glBufferSubData() since it seems to
+       * be buggy on some GL drivers (the DRI Intel specifically).
+       * Instead, we use a workaround: the current values of the VBO are stored
+       * in memory and new values are appended to them. Then, the content of
+       * the resulting array replaces all the values previously stored in the
+       * VBO.
+       */
+      if (inContext->atlasCount > 1) {
+	data = glMapBufferARB(GL_ARRAY_BUFFER_ARB, GL_READ_ONLY);
+	if (!data) {
+	  __glcRaiseError(GLC_RESOURCE_ERROR);
+	  __glcFree(buffer);
+	  return;
+	}
+	memcpy(buffer, data, inContext->atlasCount * 20 * sizeof(GLfloat));
+	glUnmapBufferARB(GL_ARRAY_BUFFER_ARB);
+      }
+
+      data = buffer + atlasNode->position * 20;
 
       data[0] = posX / texWidth;
       data[1] = posY / texHeigth;
@@ -464,11 +488,19 @@ void __glcRenderCharTexture(__GLCfont* inFont, __GLCcontext* inContext,
       data[18] = data[13];
       data[19] = 0.f;
 
-      glBufferSubDataARB(GL_ARRAY_BUFFER_ARB,
-			 atlasNode->position * 20 * sizeof(GLfloat),
-			 20 * sizeof(GLfloat), data);
+      /* Size of the buffer data is equal to the number of glyphes than can be
+       * stored in the texture times 20 GLfloat (4 vertices made of 3D
+       * coordinates plus 2D texture coordinates : 4 * (3 + 2) = 20)
+       */
+      glBufferDataARB(GL_ARRAY_BUFFER_ARB,
+		      inContext->atlasWidth * inContext->atlasHeight
+		      * 20 * sizeof(GLfloat), buffer, GL_STATIC_DRAW_ARB);
+
+      __glcFree(buffer);
 
       /* Do the actual GL rendering */
+      glInterleavedArrays(GL_T2F_V3F, 0, NULL);
+      glNormal3f(0.f, 0.f, 1.f);
       glDrawArrays(GL_QUADS, atlasNode->position * 4, 4);
 
       return;
@@ -494,7 +526,7 @@ void __glcRenderCharTexture(__GLCfont* inFont, __GLCcontext* inContext,
 
   /* Do the actual GL rendering */
   glBegin(GL_QUADS);
-  glNormal3f(0., 0., 1.);
+  glNormal3f(0.f, 0.f, 1.f);
   glTexCoord2f(posX / texWidth, posY / texHeigth);
   glVertex2i(boundingBox[0], boundingBox[1]);
   glTexCoord2f((posX + width) / texWidth, posY / texHeigth);
