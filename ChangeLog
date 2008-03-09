@@ -1,3 +1,12 @@
+Changes made from the "0.7.0" release to the "0.7.1" release:
+-----------------------------------------------------------
+
+* Bertrand Coconnier:
+
+- Fixed the bugs #1852883 and #1890660 (VBOs had an erratic behaviour on some
+  Mac OS X platforms and Intel X3100 gfx cards under Linux).
+- Removed the workaround for bug #1852883
+
 Changes made from the "0.6.5" release to the "0.7.0" release:
 -----------------------------------------------------------
 
