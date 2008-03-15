@@ -257,10 +257,10 @@ __GLCcontext* __glcContextCreate(GLint inContext)
      * First, try GLC_CATALOG_LIST...
      */
     if (getenv("GLC_CATALOG_LIST"))
-      path = strdup(getenv("GLC_CATALOG_LIST"));
+      path = _strdup(getenv("GLC_CATALOG_LIST"));
     else if (getenv("GLC_PATH")) {
       /* Try GLC_PATH which uses the same format than PATH */
-      path = strdup(getenv("GLC_PATH"));
+      path = _strdup(getenv("GLC_PATH"));
     }
 
     /* Get the list separator */
@@ -683,9 +683,9 @@ void __glcContextPrependCatalog(__GLCcontext* This, const GLCchar* inCatalog)
   if (!DirSpec)
     return;
 
-  if (!__glcArrayInsert(This->catalogList, 0, &dup)) {
+  if (!__glcArrayInsert(This->catalogList, 0, DirSpec)) {
     __glcRaiseError(GLC_RESOURCE_ERROR);
-    free(dup);
+    __glcFree(DirSpec);
     return;
   }
 
