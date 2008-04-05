@@ -20,6 +20,7 @@ EXTRA_PROGRAMS = test1 \
                  test9.7 \
                  test9.8 \
                  test10 \
+                 test11 \
                  testcontex \
                  testfont \
                  testmaster \
@@ -100,6 +101,8 @@ test9_8_CFLAGS = $(CFLAGS) @GLUT_CFLAGS@ -DRENDER_STYLE=GLC_TRIANGLE -DWITH_USER
 test9_8_LDADD = @GLUT_LIBS@ $(LDADD)
 
 test10_SOURCES = test10.c
+
+test11_SOURCES = test11.c
 
 testrender_SOURCES = testrender.c
 testrender_CFLAGS = $(CFLAGS) @GLUT_CFLAGS@
