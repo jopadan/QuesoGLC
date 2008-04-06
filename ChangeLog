@@ -1,3 +1,11 @@
+Changes made from the "0.7.1" release to the "0.7.2" release:
+-----------------------------------------------------------
+
+* Bertrand Coconnier:
+
+- Fixed bug #1935557 (Fonts are not rendered correctly when the resolution is
+  changed using glcResolution).
+
 Changes made from the "0.7.0" release to the "0.7.1" release:
 -----------------------------------------------------------
 

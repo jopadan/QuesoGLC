@@ -110,8 +110,21 @@ int main(int argc, char **argv)
 #endif
   glcFontFace(myFont, "Bold");
   glcFont(myFont);
-  glcResolution(120.);
-  glcRenderStyle(GLC_TEXTURE);
+  glcRenderStyle(RENDER_STYLE);
+#if (RENDER_STYLE == GLC_TEXTURE)
+  printf("Render style : GLC_TEXTURE");
+#elif (RENDER_STYLE == GLC_TRIANGLE)
+  printf("Render style : GLC_TRIANGLE");
+#elif (RENDER_STYLE == GLC_LINE)
+  printf("Render style : GLC_LINE");
+#endif
+
+#ifdef WITH_GL_OBJECTS
+  printf("\t with GL objects\n");
+#else
+  glcDisable(GLC_GL_OBJECTS);
+  printf("\t without GL objects\n");
+#endif
 
   glutMainLoop();
   return 0;
