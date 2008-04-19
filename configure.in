@@ -6,7 +6,7 @@ AC_PREREQ(2.57)
 # Init autoconf.
 # --------------
 
-AC_INIT([QuesoGLC], [0.6.9],
+AC_INIT([QuesoGLC], [0.7.9],
         [quesoglc-general@lists.sourceforge.net],
         [quesoglc])
 
@@ -27,6 +27,12 @@ AC_ARG_WITH([glew],
   AC_HELP_STRING([--with-glew],
    [use the GLEW system library @<:@default=yes@:>@]),
    [], [with_glew=yes]
+)
+AC_ARG_ENABLE([glew-multiple-contexts],
+  AC_HELP_STRING([--enable-glew-multiple-contexts],
+   [enable GLEW thread-safe support for multiple rendering contexts \
+    @<:@default=no@:>@]),
+   [], [enable_glew_multiple_contexts=no]
 )
 AC_ARG_ENABLE([executables],
   AC_HELP_STRING([--enable-executables],
@@ -112,7 +118,8 @@ if (test "x$no_ft2" = "xyes"); then
 fi
 
 AC_CHECK_LIB(freetype, FTC_Manager_New,
-             AC_DEFINE([HAVE_FT_CACHE], [1], [Define if FreeType supports the caching routines]))
+             AC_DEFINE([HAVE_FT_CACHE], [1],
+                       [Define if FreeType supports the caching routines]))
 
 AX_CHECK_FONTCONFIG
 
@@ -165,8 +172,11 @@ else
   no_glew="yes"
 fi
 
-if (test "x$no_glew" = "xyes"); then
+if (test "x$enable_glew_multiple_contexts" = "xyes"); then
   GLEW_CFLAGS="-DGLEW_MX"
+fi
+
+if (test "x$no_glew" = "xyes"); then
   GLEW_OBJ="libGLC_la-glew.lo"
 fi
 
@@ -199,13 +209,16 @@ if (test "x$enable_executables" = "xyes"); then
     case $target_alias in
     mingw*)
       TESTS_WITH_GLUT="test1 test5 test6 test7 test8 test9.1 test9.2 test9.3 \
-                       test9.4 test9.5 test9.6 test9.7 test9.8 test10 \
+                       test9.4 test9.5 test9.6 test9.7 test9.8 test10 test11.1 \
+                       test11.2 test11.3 test11.4 test11.5 test11.6 test11.7 \
                        testcontex testfont testmaster testrender"
       ;;
     *)
       TESTS_WITH_GLUT="test1 test2 test3 test5 test6 test7 test8 test9.1 \
                        test9.2 test9.3 test9.4 test9.5 test9.6 test9.7 test9.8 \
-                       test10 testcontex testfont testmaster testrender"
+                       test10 test11.1 test11.2 test11.3 test11.4 test11.5 \
+                       test11.6 test11.7 testcontex testfont testmaster \
+                       testrender"
       ;;
     esac
 
@@ -227,3 +240,46 @@ AC_SUBST(FRIBIDI_OBJ)
 AC_SUBST(GLEW_OBJ)
 AC_SUBST(GLEW_CFLAGS)
 AC_OUTPUT
+
+
+echo ""
+echo "Configure Summary"
+echo "================="
+
+echo "Prefix: $prefix"
+echo "CFLAGS: $CFLAGS"
+echo ""
+
+if (test "x$no_fribidi" = "xyes"); then
+  echo "FriBiDi: Embedded"
+else
+  echo "FriBiDi: Use system library"
+fi
+
+if (test "x$no_glew" = "xyes"); then
+  if (test "x$enable_glew_multiple_contexts" = "xyes"); then
+    echo "GLEW: Embedded with support for multiple rendering contexts"
+  else
+    echo "GLEW: Embedded with support for a single rendering context"
+  fi
+else
+  if (test "x$enable_glew_multiple_contexts" = "xyes"); then
+    echo "GLEW: Use system library with support for multiple rendering contexts"
+  else
+    echo "GLEW: Use system library with support for a single rendering context"
+  fi
+fi
+
+if (test "x$enable_tls" = "xyes"); then
+    echo "Support for ELF TLS: Enabled"
+else
+    echo "Support for ELF TLS: Disabled"
+fi
+
+if (test "x$enable_executables" = "xyes"); then
+    echo "Build examples and tests: Yes"
+else
+    echo "Build examples and tests: No"
+fi
+
+echo ""

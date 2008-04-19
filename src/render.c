@@ -135,12 +135,15 @@ static void __glcRenderCharBitmap(__GLCfont* inFont, __GLCcontext* inContext,
 	     advance[1] * transform[2] - advance[0] * transform[0],
 	     advance[1] * transform[3] - advance[0] * transform[1],
 	     NULL);
-    glBitmap(pixWidth, pixHeight, -boundingBox[0] >> 6,
-	     -boundingBox[1] >> 6, 0., 0., pixBuffer);
+    glBitmap(pixWidth, pixHeight,
+	     (GLC_TEXTURE_PADDING >> 1) - (boundingBox[0] >> 6),
+	     (GLC_TEXTURE_PADDING >> 1) - (boundingBox[1] >> 6), 0., 0.,
+	     pixBuffer);
   }
   else
-    glBitmap(pixWidth, pixHeight, -boundingBox[0] >> 6,
-	     -boundingBox[1] >> 6,
+    glBitmap(pixWidth, pixHeight,
+	     (GLC_TEXTURE_PADDING >> 1) - (boundingBox[0] >> 6),
+	     (GLC_TEXTURE_PADDING >> 1) - (boundingBox[1] >> 6),
 	     advance[0] * transform[0] + advance[1] * transform[2],
 	     advance[0] * transform[1] + advance[1] * transform[3],
 	     pixBuffer);
@@ -278,7 +281,7 @@ static void* __glcRenderChar(GLint inCode, GLint inPrevCode, GLboolean inIsRTL,
     if (!inContext->enableState.glObjects)
       glScalef(sx64, sy64, 1.);
     if (!inIsRTL)
-      glTranslatef(advance[0], advance[1], 0.);
+      glTranslatef(advance[0], advance[1], 0.f);
   }
 #ifndef GLC_FT_CACHE
   __glcFontClose(inFont);
@@ -326,8 +329,9 @@ static void __glcRenderCountedString(__GLCcontext* inContext, GLCchar* inString,
   __glcSaveGLState(&GLState, inContext, GL_FALSE);
 
   if (inContext->renderState.renderStyle == GLC_LINE ||
-      inContext->renderState.renderStyle == GLC_TRIANGLE) {
-    glPushClientAttrib(GL_CLIENT_VERTEX_ARRAY_BIT);
+      (inContext->renderState.renderStyle == GLC_TRIANGLE
+       && !(inContext->enableState.glObjects
+	    && inContext->enableState.extrude))) {
     glEnableClientState(GL_VERTEX_ARRAY);
     glDisableClientState(GL_TEXTURE_COORD_ARRAY);
     glDisableClientState(GL_COLOR_ARRAY);
@@ -335,6 +339,10 @@ static void __glcRenderCountedString(__GLCcontext* inContext, GLCchar* inString,
     glDisableClientState(GL_NORMAL_ARRAY);
     glDisableClientState(GL_EDGE_FLAG_ARRAY);
   }
+
+  if (inContext->renderState.renderStyle == GLC_TRIANGLE
+      && inContext->enableState.glObjects && inContext->enableState.extrude)
+    glEnable(GL_NORMALIZE);
 
   /* Set the texture environment if the render style is GLC_TEXTURE */
   if (inContext->renderState.renderStyle == GLC_TEXTURE) {
@@ -346,7 +354,6 @@ static void __glcRenderCountedString(__GLCcontext* inContext, GLCchar* inString,
       if (inContext->atlas.id)
 	glBindTexture(GL_TEXTURE_2D, inContext->atlas.id);
       if (GLEW_ARB_vertex_buffer_object) {
-	glPushClientAttrib(GL_CLIENT_VERTEX_ARRAY_BIT);
 	if (inContext->atlas.bufferObjectID) {
 	  glBindBufferARB(GL_ARRAY_BUFFER_ARB, inContext->atlas.bufferObjectID);
 	  glInterleavedArrays(GL_T2F_V3F, 0, NULL);
@@ -376,10 +383,23 @@ static void __glcRenderCountedString(__GLCcontext* inContext, GLCchar* inString,
     int j = 0;
     GLuint GLObjectIndex = inContext->renderState.renderStyle - 0x101;
     FT_ListNode node = NULL;
+    float resolution = inContext->renderState.resolution / 72.;
+    GLfloat orientation = 1.f;
 
     if (inContext->renderState.renderStyle == GLC_TRIANGLE
-	&& inContext->enableState.extrude)
+	&& inContext->enableState.extrude) {
+      GLfloat transformMatrix[16];
+      GLfloat scale_x = GLC_POINT_SIZE;
+      GLfloat scale_y = GLC_POINT_SIZE;
+
+      __glcGetScale(inContext, transformMatrix, &scale_x, &scale_y);
+
+      if ((scale_x == 0.f) || (scale_y == 0.f))
+	return;
+
+      orientation = -transformMatrix[11];
       GLObjectIndex++;
+    }
 
     for (i = 0; i < inCount; i++) {
       if (*ptr >= 32) {
@@ -434,6 +454,8 @@ static void __glcRenderCountedString(__GLCcontext* inContext, GLCchar* inString,
       }
 
       if(!node || (i == inCount-1)) {
+	glScalef(resolution, resolution, 1.f);
+
 	for (j = 0; j < length; j++) {
 	  if (inIsRightToLeft)
 	    glTranslatef(-chars[j].advance[0], chars[j].advance[1], 0.);
@@ -442,18 +464,20 @@ static void __glcRenderCountedString(__GLCcontext* inContext, GLCchar* inString,
 
 	    switch(inContext->renderState.renderStyle) {
 	    case GLC_TEXTURE:
-	      if (GLEW_ARB_vertex_buffer_object)
+	      if (GLEW_ARB_vertex_buffer_object) {
+		glNormal3f(0.f, 0.f, 1.f / resolution);
 		glDrawArrays(GL_QUADS, glyph->textureObject->position * 4, 4);
+	      }
 	      else
 		glCallList(glyph->glObject[1]);
 	      break;
 	    case GLC_LINE:
-	      if (GLEW_ARB_vertex_buffer_object && glyph->glObject[0]) {
+	      if (GLEW_ARB_vertex_buffer_object) {
 		int k = 0;
 
 		glBindBufferARB(GL_ARRAY_BUFFER_ARB, glyph->glObject[0]);
 		glVertexPointer(2, GL_FLOAT, 0, NULL);
-		glNormal3f(0.f, 0.f, 1.f);
+		glNormal3f(0.f, 0.f, 1.f / resolution);
 		for (k = 0; k < glyph->nContour; k++)
 		  glDrawArrays(GL_LINE_LOOP, glyph->contours[k],
 			       glyph->contours[k+1] - glyph->contours[k]);
@@ -462,6 +486,53 @@ static void __glcRenderCountedString(__GLCcontext* inContext, GLCchar* inString,
 	      glCallList(glyph->glObject[0]);
 	      break;
 	    case GLC_TRIANGLE:
+	      if (GLEW_ARB_vertex_buffer_object) {
+		int k = 0;
+		GLboolean extrude = GL_FALSE;
+
+		glBindBufferARB(GL_ARRAY_BUFFER_ARB, glyph->glObject[0]);
+		glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB,
+				glyph->glObject[2]);
+		glVertexPointer(2, GL_FLOAT, 0, NULL);
+		glNormal3f(0.f, 0.f, 1.f / resolution);
+
+		do {
+		  GLuint* vertexIndices = NULL;
+
+		  if (orientation > 0.f) {
+		    for (k = 0; k < glyph->nGeomBatch; k++) {
+		      glDrawRangeElements(glyph->geomBatches[k].mode,
+					  glyph->geomBatches[k].start,
+					  glyph->geomBatches[k].end,
+					  glyph->geomBatches[k].length,
+					  GL_UNSIGNED_INT, vertexIndices);
+		      vertexIndices += glyph->geomBatches[k].length;
+		    }
+		  }
+
+		  if (inContext->enableState.extrude) {
+		    if (extrude) {
+		      glTranslatef(0.f, 0.f, 1.f);
+		      glBindBufferARB(GL_ARRAY_BUFFER_ARB,
+				      glyph->glObject[3]);
+		      glInterleavedArrays(GL_N3F_V3F, 0, NULL);
+
+		      for (k = 0; k < glyph->nContour; k++)
+			glDrawArrays(GL_TRIANGLE_STRIP, glyph->contours[k] * 2,
+				     (glyph->contours[k+1] - glyph->contours[k]
+				      + 1) * 2);
+		    }
+		    else {
+		      glNormal3f(0.f, 0.f, -1.f / resolution);
+		      glTranslatef(0.f, 0.f, -1.f);
+		      orientation = -orientation;
+		    }
+		    extrude = (!extrude);
+		  }
+		} while(extrude);
+
+		break;
+	      }
 	      glCallList(glyph->glObject[GLObjectIndex]);
 	      break;
 	    }
@@ -473,6 +544,8 @@ static void __glcRenderCountedString(__GLCcontext* inContext, GLCchar* inString,
 	if (!node)
 	  __glcProcessChar(inContext, *ptr, &prevCode, inIsRightToLeft,
 			   __glcRenderChar, NULL);
+
+	glScalef(1./resolution, 1./resolution, 1.f);
 	length = 0;
       }
 
@@ -491,14 +564,9 @@ static void __glcRenderCountedString(__GLCcontext* inContext, GLCchar* inString,
   /* Restore the values of the GL state if needed */
   __glcRestoreGLState(&GLState, inContext, GL_FALSE);
 
-  if (inContext->renderState.renderStyle != GLC_BITMAP) {
-    if (inContext->enableState.glObjects)
+  if ((inContext->renderState.renderStyle != GLC_BITMAP)
+      && inContext->enableState.glObjects)
       __glcFree(chars);
-    if (inContext->renderState.renderStyle != GLC_TEXTURE)
-      glPopClientAttrib();
-    else if (inContext->enableState.glObjects && GLEW_ARB_vertex_buffer_object)
-      glPopClientAttrib();
-  }
 
   if (listIndex)
     inContext->enableState.glObjects = saveGLObjects;
@@ -732,13 +800,19 @@ void APIENTRY glcReplacementCode(GLint inCode)
  *  The resolution is given in \e dpi (dots per inch). If \e inVal is zero, the
  *  resolution defaults to 72 dpi.
  *  \param inVal A floating point number to be used as resolution.
- *  \sa glcGeti() with argument GLC_RESOLUTION
+ *  \sa glcGetf() with argument GLC_RESOLUTION
  */
 void APIENTRY glcResolution(GLfloat inVal)
 {
   __GLCcontext *ctx = NULL;
 
   GLC_INIT_THREAD();
+
+  /* Negative resolutions are illegal */
+  if (inVal < 0) {
+    __glcRaiseError(GLC_PARAMETER_ERROR);
+    return;
+  }
 
   /* Check if the current thread owns a current state */
   ctx = GLC_GET_CURRENT_CONTEXT();
@@ -748,7 +822,7 @@ void APIENTRY glcResolution(GLfloat inVal)
   }
 
   /* Stores the resolution */
-  ctx->renderState.resolution = inVal;
+  ctx->renderState.resolution = (inVal < GLC_EPSILON) ? 72. : inVal;
 
   return;
 }

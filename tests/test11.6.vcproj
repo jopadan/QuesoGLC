@@ -2,8 +2,8 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8,00"
-	Name="test6"
-	ProjectGUID="{5E777AB4-A1E8-40E4-A392-E25D4E13F076}"
+	Name="test11.6"
+	ProjectGUID="{E72B1489-3986-4D51-A748-2F315C8258AA}"
 	>
 	<Platforms>
 		<Platform
@@ -38,7 +38,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="&quot;..\include&quot;"
-				PreprocessorDefinitions="QUESOGLC_VERSION=\&quot;0.7.9\&quot;;GLEW_MX"
+				PreprocessorDefinitions="RENDER_STYLE=GLC_LINE;WITH_GL_OBJECTS"
 				ExceptionHandling="0"
 				DebugInformationFormat="1"
 				CompileAs="1"
@@ -107,7 +107,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalIncludeDirectories="&quot;..\include&quot;"
-				PreprocessorDefinitions="QUESOGLC_VERSION=\&quot;0.7.9\&quot;;GLEW_MX"
+				PreprocessorDefinitions="RENDER_STYLE=GLC_LINE;WITH_GL_OBJECTS"
 				ExceptionHandling="0"
 				CompileAs="1"
 			/>
@@ -160,8 +160,26 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath="test6.c"
+				RelativePath="test11.c"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)\$(InputName).6.obj"
+						XMLDocumentationFileName="$(IntDir)\$(InputName).6.xdc"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)\$(InputName).6.obj"
+						XMLDocumentationFileName="$(IntDir)\$(InputName).6.xdc"
+					/>
+				</FileConfiguration>
 			</File>
 		</Filter>
 		<Filter

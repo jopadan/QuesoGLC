@@ -369,6 +369,8 @@ GLboolean __glcFaceDescPrepareGlyph(__GLCfaceDescriptor* This,
   FTC_ScalerRec scaler;
 # endif
   FT_Size size = NULL;
+#else
+  FT_Error error;
 #endif
 
   /* If GLC_HINTING_QSO is enabled then perform hinting on the glyph while
@@ -383,12 +385,17 @@ GLboolean __glcFaceDescPrepareGlyph(__GLCfaceDescriptor* This,
      && (FREETYPE_MINOR < 1 \
          || (FREETYPE_MINOR == 1 && FREETYPE_PATCH < 8))
   font.face_id = (FTC_FaceID)This;
-  font.pix_width = (FT_UShort) (inScaleX *
-      (inContext->renderState.resolution < GLC_EPSILON ?
-       72. : inContext->renderState.resolution) / 72.);
-  font.pix_height = (FT_UShort) (inScaleY *
-      (inContext->renderState.resolution < GLC_EPSILON ?
-       72. : inContext->renderState.resolution) / 72.);
+
+  if (inContext->enableState.glObjects) {
+    font.pix_width = (FT_UShort) inScaleX;
+    font.pix_height = (FT_UShort) inScaleY;
+  }
+  else {
+    font.pix_width = (FT_UShort) (inScaleX * inContext->renderState.resolution
+				  / 72.);
+    font.pix_height = (FT_UShort) (inScaleY * inContext->renderState.resolution
+				   / 72.);
+  }
 
   if (FTC_Manager_Lookup_Size(inContext->cache, &font, &This->face, &size)) {
     __glcRaiseError(GLC_RESOURCE_ERROR);
@@ -399,10 +406,15 @@ GLboolean __glcFaceDescPrepareGlyph(__GLCfaceDescriptor* This,
   scaler.width = (FT_UInt)(inScaleX * 64.);
   scaler.height = (FT_UInt)(inScaleY * 64.);
   scaler.pixel = (FT_Int)0;
-  scaler.x_res = (FT_UInt)(inContext->renderState.resolution < GLC_EPSILON ?
-			   72 : inContext->renderState.resolution);
-  scaler.y_res = (FT_UInt)(inContext->renderState.resolution < GLC_EPSILON ?
-			   72 : inContext->renderState.resolution);
+
+  if (inContext->enableState.glObjects) {
+    scaler.x_res = 72;
+    scaler.y_res = 72;
+  }
+  else {
+    scaler.x_res = (FT_UInt)inContext->renderState.resolution;
+    scaler.y_res = (FT_UInt)inContext->renderState.resolution;
+  }
 
   if (FTC_Manager_LookupSize(inContext->cache, &scaler, &size)) {
     __glcRaiseError(GLC_RESOURCE_ERROR);
@@ -416,10 +428,17 @@ GLboolean __glcFaceDescPrepareGlyph(__GLCfaceDescriptor* This,
     return GL_FALSE;
 
   /* Select the size of the glyph */
-  if (FT_Set_Char_Size(This->face, (FT_F26Dot6)(inScaleX * 64.),
-		       (FT_F26Dot6)(inScaleY * 64.),
-		       (FT_UInt)inContext->renderState.resolution,
-		       (FT_UInt)inContext->renderState.resolution)) {
+  if (inContext->enableState.glObjects) {
+    error = FT_Set_Char_Size(This->face, (FT_F26Dot6)(inScaleX * 64.),
+			     (FT_F26Dot6)(inScaleY * 64.), 0, 0);
+  }
+  else {
+    error = FT_Set_Char_Size(This->face, (FT_F26Dot6)(inScaleX * 64.),
+			     (FT_F26Dot6)(inScaleY * 64.),
+			     (FT_UInt)inContext->renderState.resolution,
+			     (FT_UInt)inContext->renderState.resolution);
+  }
+  if (error) {
     __glcFaceDescClose(This);
     __glcRaiseError(GLC_RESOURCE_ERROR);
     return GL_FALSE;
@@ -688,9 +707,7 @@ GLfloat* __glcFaceDescGetMaxMetric(__GLCfaceDescriptor* This, GLfloat* outVec,
 				   __GLCcontext* inContext)
 {
   FT_Face face = NULL;
-  /* If the resolution of the context is zero then use the default 72 dpi */
-  GLfloat scale = (inContext->renderState.resolution < GLC_EPSILON ?
-		   72. : inContext->renderState.resolution) / 72.;
+  GLfloat scale = inContext->renderState.resolution / 72.;
 
   assert(outVec);
 
@@ -997,23 +1014,27 @@ GLboolean __glcFaceDescGetBitmapSize(__GLCfaceDescriptor* This, GLint* outWidth,
     boundingBox.yMax = (boundingBox.yMax + 63) & -64;	/* ceiling(yMax) */
 
     /* Calculate pitch to upper 8 byte boundary for 1 bit/pixel, i.e. ceil() */
-    pitch = (boundingBox.xMax - boundingBox.xMin + 511) >> 9;
+    pitch = (boundingBox.xMax - boundingBox.xMin + (GLC_TEXTURE_PADDING << 6)
+	     + 511) >> 9;
     *outWidth = pitch << 3;
-    *outHeight = (boundingBox.yMax - boundingBox.yMin) >> 6;
+    *outHeight = ((boundingBox.yMax - boundingBox.yMin) >> 6)
+      + GLC_TEXTURE_PADDING;
   }
   else {
     matrix.xy = 0;
     matrix.yx = 0;
 
     if (inContext->enableState.glObjects) {
-      matrix.xx = (FT_Fixed)((GLC_TEXTURE_SIZE << 16) / inScaleX);
-      matrix.yy = (FT_Fixed)((GLC_TEXTURE_SIZE << 16) / inScaleY);
+      matrix.xx = (FT_Fixed)(((GLC_TEXTURE_SIZE - GLC_TEXTURE_PADDING) << 16)
+			     / inScaleX);
+      matrix.yy = (FT_Fixed)(((GLC_TEXTURE_SIZE - GLC_TEXTURE_PADDING) << 16)
+			     / inScaleY);
 
       FT_Outline_Transform(&outline, &matrix);
       FT_Outline_Get_CBox(&outline, &boundingBox);
 
-      *outWidth = GLC_TEXTURE_SIZE;
-      *outHeight = GLC_TEXTURE_SIZE;
+      *outWidth = GLC_TEXTURE_SIZE - GLC_TEXTURE_PADDING;
+      *outHeight = GLC_TEXTURE_SIZE - GLC_TEXTURE_PADDING;
 
       outline.flags |= FT_OUTLINE_HIGH_PRECISION;
     }
@@ -1025,9 +1046,11 @@ GLboolean __glcFaceDescGetBitmapSize(__GLCfaceDescriptor* This, GLint* outWidth,
       FT_Outline_Get_CBox(&outline, &boundingBox);
 
       *outWidth = __glcNextPowerOf2(
-              (boundingBox.xMax - boundingBox.xMin + 63) >> 6); /* ceil() */
+	      ((boundingBox.xMax - boundingBox.xMin + 63) >> 6) /* ceil() */
+	      + GLC_TEXTURE_PADDING);
       *outHeight = __glcNextPowerOf2(
-              (boundingBox.yMax - boundingBox.yMin + 63) >> 6); /* ceil() */
+	      ((boundingBox.yMax - boundingBox.yMin + 63) >> 6) /* ceil() */
+	      + GLC_TEXTURE_PADDING);
 
       /* If the texture size is too small then give up */
       if ((*outWidth < 4) || (*outHeight < 4))
@@ -1087,7 +1110,8 @@ GLboolean __glcFaceDescGetBitmap(__GLCfaceDescriptor* This, GLint inWidth,
   /* translate the outline to match (0,0) with the glyph's lower left
    * corner
    */
-  FT_Outline_Translate(&outline, -boundingBox.xMin, -boundingBox.yMin);
+  FT_Outline_Translate(&outline, (GLC_TEXTURE_PADDING << 5) - boundingBox.xMin,
+		       (GLC_TEXTURE_PADDING << 5) - boundingBox.yMin);
 
   /* render the glyph */
   if (FT_Outline_Get_Bitmap(inContext->library, &outline, &pixmap)) {

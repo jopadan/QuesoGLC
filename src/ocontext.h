@@ -87,9 +87,25 @@ struct __GLCglStateRec {
   GLint textureID;
   GLint textureEnvMode;
   GLint bufferObjectID;
+  GLint elementBufferObjectID;
   GLboolean blend;
   GLint blendSrc;
   GLint blendDst;
+  GLboolean normalize;
+  GLboolean vertexArray;
+  GLboolean normalArray;
+  GLboolean colorArray;
+  GLboolean indexArray;
+  GLboolean texCoordArray;
+  GLboolean edgeFlagArray;
+  GLint vertexArraySize;
+  GLint vertexArrayType;
+  GLint vertexArrayStride;
+  GLvoid* vertexArrayPointer;
+  GLint texCoordArraySize;
+  GLint texCoordArrayType;
+  GLint texCoordArrayStride;
+  GLvoid* texCoordArrayPointer;
 };
 
 struct __GLCattribStackLevelRec {
@@ -135,7 +151,9 @@ struct __GLCcontextRec {
   __GLCarray* vertexIndices;	/* Array of vertex indices */
   __GLCarray* geomBatches;	/* Array of geometric batches */
 
+#ifdef GLEW_MX
   GLEWContext glewContext;	/* GLEW context for OpenGL extensions */
+#endif
   __GLCtexture texture;		/* Texture for immediate mode rendering */
 
   __GLCtexture atlas;

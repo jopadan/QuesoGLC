@@ -1,5 +1,29 @@
+Changes made from the "0.7.0" release to the "0.8.0" release:
+-------------------------------------------------------------
+
+* Bertrand Coconnier:
+
+- Added backface culling to the extruded rendering mode
+- Extrusion and GLC_TRIANGLE mode now uses VBOs whenever the gfx card supports
+  them.
+- Negative values passed to glcResolution() now raise GLC_PARAMETER_ERROR
+- Simplified a bit the internal management of the resolution
+- Added padding for GLC_TEXTURE rendering mode so that the antialiasing is not
+  jeopardized when a glyph touches the border of the texture.
+- Fixed bug #1935557 (Fonts are not rendered correctly when the resolution is
+  changed using glcResolution).
+- The configure script now exports a summary of the parameters values
+- Replaced glPush/PopClientAttrib() for vertex arrays and VBOs by explicit
+  save/restore management in order to improve speed.
+- GLEW thread-safe support for multiple rendering contexts is now an option of
+  the build process. It is disabled by default in order to use the standard
+  system library (and eventually to improve speed).
+- Fixed the bugs #1852883 and #1890660 (VBOs had an erratic behaviour on some
+  Mac OS X platforms and Intel X3100 gfx cards under Linux).
+- Removed the workaround for bug #1852883
+
 Changes made from the "0.6.5" release to the "0.7.0" release:
------------------------------------------------------------
+-------------------------------------------------------------
 
 * Bertrand Coconnier:
 
@@ -82,7 +106,7 @@ Changes made from the "0.6" release to the "0.6.5" release:
   each newly rendered glyph.
 
 Changes made from the "0.5" release to the "0.6" release:
------------------------------------------------------------
+---------------------------------------------------------
 
 * Bertrand Coconnier:
 
@@ -208,7 +232,7 @@ Changes made from the "0.5" release to the "0.6" release:
   calculation.
 
 Changes made from the "0.4" release to the "0.5" release:
------------------------------------------------------------
+---------------------------------------------------------
 
 - Fixed the #include so that QuesoGLC can be built with MSVC++
 - Added an attribute stack to save and restore the GLC state variables.
@@ -236,7 +260,7 @@ Changes made from the "0.4" release to the "0.5" release:
 - Thomas Zimmermann greatly improved the building scripts.
 
 Changes made from the "0.3" release to the "0.4" release:
------------------------------------------------------------
+---------------------------------------------------------
 
 - Modified the GLC_PATH parser code in order to use semicolon-separated lists
   for Win32 and colon-separated for POSIX platforms.
@@ -351,7 +375,7 @@ Changes made from the "0.3" release to the "0.4" release:
 - Charmaps now use arrays of variable size (__glcArray)
 
 Changes made from the "0.2" release to the "0.3" release:
------------------------------------------------------------
+---------------------------------------------------------
 
 - Fixed a bug in glcRenderChar(), glcRenderString() and glcRenderCountedString()
   that prevented the replacement code or the character sequence '\<hexcode>' to
@@ -426,7 +450,7 @@ Changes made from the "0.2" release to the "0.3" release:
 - Pablo Barbáchano fixed the install process of QuesoGLC
 
 Changes made from the "0.1" release to the "0.2" release:
------------------------------------------------------------
+---------------------------------------------------------
 
 - Textures in GLC_TEXTURE mode are now of variable size instead of fixed size
   (previously 64x64).It both optimizes the texture memory and removes the
