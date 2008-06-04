@@ -6,7 +6,7 @@ AC_PREREQ(2.57)
 # Init autoconf.
 # --------------
 
-AC_INIT([QuesoGLC], [0.7.1],
+AC_INIT([QuesoGLC], [0.7.2],
         [quesoglc-general@lists.sourceforge.net],
         [quesoglc])
 
@@ -136,6 +136,8 @@ fi
 if (test "x$no_fribidi" = "xyes"); then
   FRIBIDI_OBJ="libGLC_la-fribidi.lo libGLC_la-fribidi_char_type.lo \
                libGLC_la-fribidi_mirroring.lo libGLC_la-fribidi_types.lo"
+else
+  PKGCONFIG_REQUIREMENTS="fribidi"
 fi
 
 # Checks for OpenGL and related libraries.
@@ -153,6 +155,9 @@ if (test "x$no_glu" = "xyes"); then
   AC_MSG_ERROR([GLU library not found])
 fi
 
+PKGCONFIG_LIBS_PRIVATE="$PHREAD_LIBS $GLU_LIBS"
+PKGCONFIG_INCLUDE="$GLU_CFLAGS"
+
 # Checks for GLEW library.
 # ------------------------
 
@@ -168,6 +173,8 @@ fi
 if (test "x$no_glew" = "xyes"); then
   GLEW_CFLAGS="-DGLEW_MX"
   GLEW_OBJ="libGLC_la-glew.lo"
+else
+  PKGCONFIG_LIBS_PRIVATE="-lGLEW $PKGCONFIG_LIBS_PRIVATE"
 fi
 
 # Special flags for MinGW32 build.
@@ -222,11 +229,15 @@ AC_CONFIG_FILES([Makefile
                  build/Makefile
                  include/Makefile
                  tests/Makefile
-                 examples/Makefile])
+                 examples/Makefile
+                 quesoglc.pc])
 
 AC_SUBST(EXECUTABLES)
 AC_SUBST(TESTS_WITH_GLUT)
 AC_SUBST(FRIBIDI_OBJ)
 AC_SUBST(GLEW_OBJ)
 AC_SUBST(GLEW_CFLAGS)
+AC_SUBST(PKGCONFIG_REQUIREMENTS)
+AC_SUBST(PKGCONFIG_LIBS_PRIVATE)
+AC_SUBST(PKGCONFIG_INCLUDE)
 AC_OUTPUT
