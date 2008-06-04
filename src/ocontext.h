@@ -94,18 +94,17 @@ struct __GLCglStateRec {
 
 struct __GLCattribStackLevelRec {
   GLbitfield attribBits;
-  __GLCenableState enableState;
   __GLCrenderState renderState;
   __GLCstringState stringState;
   __GLCglState glState;
+  __GLCenableState enableState;
 };
 
 struct __GLCcontextRec {
   FT_ListNodeRec node;
 
-  GLboolean isCurrent;
   GLCchar *buffer;
-  GLint bufferSize;
+  size_t bufferSize;
 
   FT_Library library;
 #ifdef GLC_FT_CACHE
@@ -126,7 +125,6 @@ struct __GLCcontextRec {
   __GLCarray* catalogList;	/* GLC_CATALOG_LIST */
   __GLCarray* measurementBuffer;
   GLfloat measurementStringBuffer[12];
-  GLboolean isInCallbackFunc;	/* Is a callback function executing ? */
   __GLCarray* vertexArray;	/* Array of vertices */
   __GLCarray* controlPoints;	/* Array of control points */
   __GLCarray* endContour;	/* Array of contour limits */
@@ -148,6 +146,9 @@ struct __GLCcontextRec {
 
   __GLCattribStackLevel attribStack[GLC_MAX_ATTRIB_STACK_DEPTH];
   GLint attribStackDepth;
+
+  GLboolean isCurrent;
+  GLboolean isInCallbackFunc;	/* Is a callback function executing ? */
 };
 
 struct __GLCthreadAreaRec {
@@ -197,7 +198,7 @@ extern __GLCthreadArea* __glcThreadArea;
 __GLCcontext* __glcContextCreate(GLint inContext);
 void __glcContextDestroy(__GLCcontext *This);
 __GLCfont* __glcContextGetFont(__GLCcontext *This, GLint code);
-GLCchar* __glcContextQueryBuffer(__GLCcontext *This, int inSize);
+GLCchar* __glcContextQueryBuffer(__GLCcontext *This, size_t inSize);
 void __glcContextAppendCatalog(__GLCcontext* This, const GLCchar* inCatalog);
 void __glcContextPrependCatalog(__GLCcontext* This, const GLCchar* inCatalog);
 void __glcContextRemoveCatalog(__GLCcontext* This, GLint inIndex);

@@ -91,6 +91,7 @@
 #else
 #include <GL/glu.h>
 #endif
+#include <math.h>
 
 #include "texture.h"
 
@@ -104,7 +105,7 @@ static void __glcRenderCharBitmap(__GLCfont* inFont, __GLCcontext* inContext,
 {
   GLfloat *transform = inContext->bitmapMatrix;
   GLint pixWidth = 0, pixHeight = 0;
-  void* pixBuffer = NULL;
+  GLubyte* pixBuffer = NULL;
   GLint boundingBox[4] = {0, 0, 0, 0};
 
   __glcFontGetBitmapSize(inFont, &pixWidth, &pixHeight, boundingBox, scale_x,
@@ -171,7 +172,7 @@ static void* __glcRenderChar(GLint inCode, GLint inPrevCode, GLboolean inIsRTL,
 
   __glcGetScale(inContext, transformMatrix, &scale_x, &scale_y);
 
-  if ((scale_x == 0.f) || (scale_y == 0.f))
+  if ((fabs(scale_x) < GLC_EPSILON) || (fabs(scale_y) < GLC_EPSILON))
     return NULL;
 
 #ifndef GLC_FT_CACHE
@@ -231,7 +232,7 @@ static void* __glcRenderChar(GLint inCode, GLint inPrevCode, GLboolean inIsRTL,
     /* If the outline contains no point then the glyph represents a space
      * character and there is no need to continue the process of rendering.
      */
-    if (!__glcFontOutlineEmpty(inFont, inContext)) {
+    if (!__glcFontOutlineEmpty(inFont)) {
       /* Update the advance and return */
       if (!inIsRTL)
         glTranslatef(advance[0], advance[1], 0.f);
@@ -292,7 +293,8 @@ static void* __glcRenderChar(GLint inCode, GLint inPrevCode, GLboolean inIsRTL,
  * glcRenderCountedString(). The string 'inString' must be sorted in visual
  * order and stored using UCS4 format.
  */
-static void __glcRenderCountedString(__GLCcontext* inContext, GLCchar* inString,
+static void __glcRenderCountedString(__GLCcontext* inContext,
+				     GLCchar32* inString,
 				     GLboolean inIsRightToLeft,GLint inCount)
 {
   GLint listIndex = 0;
@@ -405,8 +407,8 @@ static void __glcRenderCountedString(__GLCcontext* inContext, GLCchar* inString,
  	    if (inContext->enableState.kerning) {
  	      if (prevCode.code && prevCode.font == font) {
  		GLfloat kerning[2];
- 		GLint leftCode = inIsRightToLeft ? *ptr : prevCode.code;
- 		GLint rightCode = inIsRightToLeft ? prevCode.code : *ptr;
+		GLint leftCode = inIsRightToLeft ? *ptr : prevCode.code;
+		GLint rightCode = inIsRightToLeft ? prevCode.code : *ptr;
 
  		if (__glcFontGetKerning(font, leftCode, rightCode, kerning,
  					inContext, GLC_POINT_SIZE,
@@ -442,7 +444,7 @@ static void __glcRenderCountedString(__GLCcontext* inContext, GLCchar* inString,
 	  if (inIsRightToLeft)
 	    glTranslatef(-chars[j].advance[0], chars[j].advance[1], 0.);
 	  if (chars[j].code != 32) {
-	    __GLCglyph* glyph = chars[j].glyph;
+	    glyph = chars[j].glyph;
 
 	    switch(inContext->renderState.renderStyle) {
 	    case GLC_TEXTURE:
@@ -542,7 +544,7 @@ void APIENTRY glcRenderChar(GLint inCode)
   if (code < 32)
     return; /* Skip control characters and unknown characters */
 
-  __glcRenderCountedString(ctx, (GLCchar*)&code, GL_FALSE, 1);
+  __glcRenderCountedString(ctx, (GLCchar32*)&code, GL_FALSE, 1);
 }
 
 

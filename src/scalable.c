@@ -490,7 +490,7 @@ void __glcRenderCharScalable(__GLCfont* inFont, __GLCcontext* inContext,
 				       1., 0., 0., 0., 0., 1.};
   GLfloat sx64 = 64. * scale_x;
   GLfloat sy64 = 64. * scale_y;
-  int index = 0;
+  int objectIndex = 0;
 
   rendererData.vertexArray = inContext->vertexArray;
   rendererData.controlPoints = inContext->controlPoints;
@@ -548,10 +548,10 @@ void __glcRenderCharScalable(__GLCfont* inFont, __GLCcontext* inContext,
 
   switch(inContext->renderState.renderStyle) {
   case GLC_LINE:
-    index = 0;
+    objectIndex = 0;
     break;
   case GLC_TRIANGLE:
-    index = inContext->enableState.extrude ? 3 : 2;
+    objectIndex = inContext->enableState.extrude ? 3 : 2;
     break;
   }
 
@@ -567,13 +567,13 @@ void __glcRenderCharScalable(__GLCfont* inFont, __GLCcontext* inContext,
       glBindBufferARB(GL_ARRAY_BUFFER_ARB, inGlyph->glObject[0]);
     }
     else {
-      inGlyph->glObject[index] = glGenLists(1);
-      if (!inGlyph->glObject[index]) {
+      inGlyph->glObject[objectIndex] = glGenLists(1);
+      if (!inGlyph->glObject[objectIndex]) {
 	__glcRaiseError(GLC_RESOURCE_ERROR);
 	goto reset;
       }
 
-      glNewList(inGlyph->glObject[index], GL_COMPILE);
+      glNewList(inGlyph->glObject[objectIndex], GL_COMPILE);
       glScalef(1./sx64, 1./sy64, 1.);
     }
   }
@@ -597,13 +597,15 @@ void __glcRenderCharScalable(__GLCfont* inFont, __GLCcontext* inContext,
     gluTessProperty(tess, GLU_TESS_BOUNDARY_ONLY, GL_FALSE);
 
     gluTessCallback(tess, GLU_TESS_ERROR,
-			(void (CALLBACK *) ())__glcCallbackError);
+			(void (CALLBACK *) (GLenum))__glcCallbackError);
     gluTessCallback(tess, GLU_TESS_VERTEX_DATA,
-		    (void (CALLBACK *) ())__glcVertexCallback);
+		    (void (CALLBACK *) (void*, void*))__glcVertexCallback);
     gluTessCallback(tess, GLU_TESS_COMBINE_DATA,
-		    (void (CALLBACK *) ())__glcCombineCallback);
+		    (void (CALLBACK *) (GLdouble[3], void*[4],
+					GLfloat[4], void**, void*))
+		    __glcCombineCallback);
     gluTessCallback(tess, GLU_TESS_BEGIN_DATA,
-		    (void (CALLBACK *) ())__glcBeginCallback);
+		    (void (CALLBACK *) (GLenum, void*))__glcBeginCallback);
 
     gluTessNormal(tess, 0., 0., 1.);
 
@@ -717,7 +719,8 @@ void __glcRenderCharScalable(__GLCfont* inFont, __GLCcontext* inContext,
 	(GLfloat(*)[2])GLC_ARRAY_DATA(rendererData.vertexArray);
 
       inGlyph->nContour = GLC_ARRAY_LENGTH(rendererData.endContour) - 1;
-      inGlyph->contours = __glcMalloc(GLC_ARRAY_SIZE(rendererData.endContour));
+      inGlyph->contours =
+	(GLint*)__glcMalloc(GLC_ARRAY_SIZE(rendererData.endContour));
       if (!inGlyph->contours) {
 	__glcRaiseError(GLC_RESOURCE_ERROR);
 	goto reset;
@@ -748,7 +751,7 @@ void __glcRenderCharScalable(__GLCfont* inFont, __GLCcontext* inContext,
 	|| (inContext->renderState.renderStyle != GLC_LINE)) {
       glScalef(sx64, sy64, 1.);
       glEndList();
-      glCallList(inGlyph->glObject[index]);
+      glCallList(inGlyph->glObject[objectIndex]);
     }
   }
 
