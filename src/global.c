@@ -166,7 +166,7 @@ void _fini(void)
   }
 
 #if FC_MINOR > 2
-  /*FcFini();*/
+  FcFini();
 #endif
 
   __glcUnlock();

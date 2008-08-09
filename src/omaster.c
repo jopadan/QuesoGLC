@@ -353,14 +353,15 @@ const GLCchar8* __glcMasterGetInfo(__GLCmaster* This, __GLCcontext* inContext,
   case GLC_MASTER_FORMAT:
     faceDesc = __glcFaceDescCreate(This, NULL, inContext, 0);
 
-#ifdef GLC_FT_CACHE
-    if (!faceDesc) {
-#else
-    if (!faceDesc || !__glcFaceDescOpen(faceDesc, inContext)) {
-#endif
+    if (!faceDesc)
+      return NULL;
+
+#ifndef GLC_FT_CACHE
+    if (!__glcFaceDescOpen(faceDesc, inContext)) {
       __glcFaceDescDestroy(faceDesc, inContext);
       return NULL;
     }
+#endif
 
     info = __glcFaceDescGetFontFormat(faceDesc, inContext, inAttrib);
     if (info) {
