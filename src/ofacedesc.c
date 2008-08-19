@@ -1000,28 +1000,12 @@ GLboolean __glcFaceDescGetBitmapSize(__GLCfaceDescriptor* This, GLint* outWidth,
 
   if (inContext->renderState.renderStyle == GLC_BITMAP) {
     GLfloat *transform = inContext->bitmapMatrix;
-    FT_Pos pitch = 0;
 
     /* compute glyph dimensions */
     matrix.xx = (FT_Fixed)(transform[0] * 65536. / inScaleX);
     matrix.xy = (FT_Fixed)(transform[2] * 65536. / inScaleY);
     matrix.yx = (FT_Fixed)(transform[1] * 65536. / inScaleX);
     matrix.yy = (FT_Fixed)(transform[3] * 65536. / inScaleY);
-
-    /* Get the bounding box of the glyph */
-    FT_Outline_Transform(&outline, &matrix);
-    FT_Outline_Get_CBox(&outline, &boundingBox);
-
-    /* Compute the sizes of the pixmap where the glyph will be drawn */
-    boundingBox.xMin = boundingBox.xMin & -64;	/* floor(xMin) */
-    boundingBox.yMin = boundingBox.yMin & -64;	/* floor(yMin) */
-    boundingBox.xMax = (boundingBox.xMax + 63) & -64;	/* ceiling(xMax) */
-    boundingBox.yMax = (boundingBox.yMax + 63) & -64;	/* ceiling(yMax) */
-
-    /* Calculate pitch to upper 8 byte boundary for 1 bit/pixel, i.e. ceil() */
-    pitch = (boundingBox.xMax - boundingBox.xMin + 511) >> 9;
-    *outWidth = pitch << 3;
-    *outHeight = (boundingBox.yMax - boundingBox.yMin) >> 6;
   }
   else {
     matrix.xy = 0;
@@ -1030,26 +1014,42 @@ GLboolean __glcFaceDescGetBitmapSize(__GLCfaceDescriptor* This, GLint* outWidth,
     if (inContext->enableState.glObjects) {
       matrix.xx = (FT_Fixed)((GLC_TEXTURE_SIZE << 16) / inScaleX);
       matrix.yy = (FT_Fixed)((GLC_TEXTURE_SIZE << 16) / inScaleY);
+    }
+    else {
+      matrix.xx = 65536 >> inFactor;
+      matrix.yy = 65536 >> inFactor;
+    }
+  }
 
-      FT_Outline_Transform(&outline, &matrix);
-      FT_Outline_Get_CBox(&outline, &boundingBox);
+  FT_Outline_Transform(&outline, &matrix);
+  FT_Outline_Get_CBox(&outline, &boundingBox);
 
+  if (inContext->renderState.renderStyle == GLC_BITMAP) {
+    FT_Pos pitch = 0;
+
+    boundingBox.xMin = GLC_FLOOR_26_6(boundingBox.xMin);
+    boundingBox.yMin = GLC_FLOOR_26_6(boundingBox.yMin);
+    boundingBox.xMax = GLC_CEIL_26_6(boundingBox.xMax);
+    boundingBox.yMax = GLC_CEIL_26_6(boundingBox.yMax);
+
+    /* Calculate pitch to upper 8 byte boundary for 1 bit/pixel, i.e. ceil() */
+    pitch = (boundingBox.xMax - boundingBox.xMin + 511) >> 9;
+
+    *outWidth = pitch << 3;
+    *outHeight = (boundingBox.yMax - boundingBox.yMin) >> 6;
+  }
+  else {
+    if (inContext->enableState.glObjects) {
       *outWidth = GLC_TEXTURE_SIZE;
       *outHeight = GLC_TEXTURE_SIZE;
 
       outline.flags |= FT_OUTLINE_HIGH_PRECISION;
     }
     else {
-      matrix.xx = 65536 >> inFactor;
-      matrix.yy = 65536 >> inFactor;
-
-      FT_Outline_Transform(&outline, &matrix);
-      FT_Outline_Get_CBox(&outline, &boundingBox);
-
-      *outWidth = __glcNextPowerOf2(
-              (boundingBox.xMax - boundingBox.xMin + 63) >> 6); /* ceil() */
-      *outHeight = __glcNextPowerOf2(
-              (boundingBox.yMax - boundingBox.yMin + 63) >> 6); /* ceil() */
+      *outWidth = __glcNextPowerOf2((GLC_CEIL_26_6(boundingBox.xMax)
+				     - GLC_FLOOR_26_6(boundingBox.xMin)) >> 6);
+      *outHeight = __glcNextPowerOf2((GLC_CEIL_26_6(boundingBox.yMax)
+				      - GLC_FLOOR_26_6(boundingBox.yMin)) >> 6);
 
       /* If the texture size is too small then give up */
       if ((*outWidth < 4) || (*outHeight < 4))
@@ -1076,6 +1076,7 @@ GLboolean __glcFaceDescGetBitmap(__GLCfaceDescriptor* This, GLint inWidth,
   FT_BBox boundingBox;
   FT_Bitmap pixmap;
   FT_Matrix matrix;
+  GLint dx = 0, dy = 0;
   FT_Face face = This->face;
 
   assert(face);
@@ -1083,6 +1084,16 @@ GLboolean __glcFaceDescGetBitmap(__GLCfaceDescriptor* This, GLint inWidth,
   outline = face->glyph->outline;
   FT_Outline_Get_CBox(&outline, &boundingBox);
 
+  if ((inContext->renderState.renderStyle != GLC_TEXTURE)
+      || (!inContext->enableState.glObjects)) {
+    dx = GLC_FLOOR_26_6(boundingBox.xMin);
+    dy = GLC_FLOOR_26_6(boundingBox.yMin);
+  }
+  else {
+    dx = boundingBox.xMin;
+    dy = boundingBox.yMin;
+  }
+  
   pixmap.width = inWidth;
   pixmap.rows = inHeight;
   pixmap.buffer = (unsigned char*)inBuffer;
@@ -1109,7 +1120,7 @@ GLboolean __glcFaceDescGetBitmap(__GLCfaceDescriptor* This, GLint inWidth,
   /* translate the outline to match (0,0) with the glyph's lower left
    * corner
    */
-  FT_Outline_Translate(&outline, -boundingBox.xMin, -boundingBox.yMin);
+  FT_Outline_Translate(&outline, -dx, -dy);
 
   /* render the glyph */
   if (FT_Outline_Get_Bitmap(inContext->library, &outline, &pixmap)) {
@@ -1121,7 +1132,7 @@ GLboolean __glcFaceDescGetBitmap(__GLCfaceDescriptor* This, GLint inWidth,
     /* Prepare the outline for the next mipmap level :
      * a. Restore the outline initial position
      */
-    FT_Outline_Translate(&outline, boundingBox.xMin, boundingBox.yMin);
+    FT_Outline_Translate(&outline, dx, dy);
 
     /* b. Divide the character size by 2. */
     matrix.xx = 32768; /* 0.5 in FT_Fixed type */

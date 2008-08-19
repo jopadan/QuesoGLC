@@ -285,6 +285,7 @@ void __glcRenderCharTexture(__GLCfont* inFont, __GLCcontext* inContext,
   GLfloat width = 0, heigth = 0;
   GLint level = 0;
   GLint posX = 0, posY = 0;
+  GLfloat dX = 0.f, dY = 0.;
   GLint pixWidth = 0, pixHeight = 0;
   void* pixBuffer = NULL;
   GLint boundingBox[4] = {0, 0, 0, 0};
@@ -423,6 +424,12 @@ void __glcRenderCharTexture(__GLCfont* inFont, __GLCcontext* inContext,
   width = (GLfloat)((boundingBox[2] - boundingBox[0]) / 64.);
   heigth = (GLfloat)((boundingBox[3] - boundingBox[1]) / 64.);
 
+  if ((inContext->renderState.renderStyle != GLC_TEXTURE)
+      || (!inContext->enableState.glObjects)) {
+    dX = (boundingBox[0] - GLC_FLOOR_26_6(boundingBox[0])) / 64.;
+    dY = (boundingBox[1] - GLC_FLOOR_26_6(boundingBox[1])) / 64.;
+  }
+
   if (pixBuffer)
     __glcFree(pixBuffer);
 
@@ -468,18 +475,18 @@ void __glcRenderCharTexture(__GLCfont* inFont, __GLCcontext* inContext,
 
       data = buffer + atlasNode->position * 20;
 
-      data[0] = posX / texWidth;
-      data[1] = posY / texHeigth;
+      data[0] = (posX + dX) / texWidth;
+      data[1] = (posY + dY) / texHeigth;
       data[2] = boundingBox[0] / 64. / GLC_TEXTURE_SIZE;
       data[3] = boundingBox[1] / 64. / GLC_TEXTURE_SIZE;
       data[4] = 0.f;
-      data[5] = (posX + width) / texWidth;
+      data[5] = (posX + dX + width) / texWidth;
       data[6] = data[1];
       data[7] = boundingBox[2] / 64. / GLC_TEXTURE_SIZE;
       data[8] = data[3];
       data[9] = 0.f;
       data[10] = data[5];
-      data[11] = (posY + heigth) / texHeigth;
+      data[11] = (posY + dY + heigth) / texHeigth;
       data[12] = data[7];
       data[13] = boundingBox[3] / 64. / GLC_TEXTURE_SIZE;
       data[14] = 0.f;
@@ -528,13 +535,14 @@ void __glcRenderCharTexture(__GLCfont* inFont, __GLCcontext* inContext,
   /* Do the actual GL rendering */
   glBegin(GL_QUADS);
   glNormal3f(0.f, 0.f, 1.f);
-  glTexCoord2f(posX / texWidth, posY / texHeigth);
+  glTexCoord2f((posX + dX) / texWidth, (posY + dY) / texHeigth);
   glVertex2i(boundingBox[0], boundingBox[1]);
-  glTexCoord2f((posX + width) / texWidth, posY / texHeigth);
+  glTexCoord2f((posX + dX + width) / texWidth, (posY + dY) / texHeigth);
   glVertex2i(boundingBox[2], boundingBox[1]);
-  glTexCoord2f((posX + width) / texWidth, (posY + heigth) / texHeigth);
+  glTexCoord2f((posX + dX + width) / texWidth,
+	       (posY + dY + heigth) / texHeigth);
   glVertex2i(boundingBox[2], boundingBox[3]);
-  glTexCoord2f(posX / texWidth, (posY + heigth) / texHeigth);
+  glTexCoord2f((posX + dX) / texWidth, (posY + dY + heigth) / texHeigth);
   glVertex2i(boundingBox[0], boundingBox[3]);
   glEnd();
 
