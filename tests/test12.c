@@ -36,6 +36,7 @@
 #endif
 #include <stdlib.h>
 #include <stdio.h>
+#include <math.h>
 
 GLuint id = 0;
 
@@ -114,9 +115,9 @@ void display(void)
   glVertex2f(bbox[2] - 5.f, bbox[1] - 35.f);
   glEnd();
   glLoadIdentity();
-  glRasterPos2f(floor((bbox[2] - bbox[0]
-		       - (bbox2[2] - bbox2[0])) * 50.f) / 100.f + 50.f,
-		floor((bbox[1] + 23.f) * 100.f) / 100.f);
+  glRasterPos2f(floorf((bbox[2] - bbox[0]
+			- (bbox2[2] - bbox2[0])) * 50.f) / 100.f + 50.f,
+		floorf((bbox[1] + 23.f) * 100.f) / 100.f);
   glcRenderString(string);
   glcDisable(GLC_HINTING_QSO);
 
@@ -172,9 +173,9 @@ void display(void)
   /* When hinting is enabled, characters must be rendered at integer positions
    * otherwise hinting is compromised and characters look fuzzy.
    */
-  glTranslatef(floor((bbox[2] - bbox[0]
-		      - (bbox2[2] - bbox2[0]) * 0.15f) * 50.f) / 100.f,
-	       floor((bbox[1] - 0.27f) * 100.f) / 100.f, 0.f);
+  glTranslatef(floorf((bbox[2] - bbox[0]
+		       - (bbox2[2] - bbox2[0]) * 0.15f) * 50.f) / 100.f,
+	       floorf((bbox[1] - 0.27f) * 100.f) / 100.f, 0.f);
   glScalef(0.15f, 0.15f, 1.f);
   glcRenderString(string);
   glcDisable(GLC_HINTING_QSO);
@@ -222,15 +223,16 @@ void display(void)
   glVertex2f(bbox[6] + 5.f, bbox[7] + 35.f);
   glEnd();
   glLoadIdentity();
-  glRasterPos2f(floor((bbox[4] - bbox[6]
-		       - (bbox2[4] - bbox2[6])) * 50.f) / 100.f + 50.f,
+  glRasterPos2f(floorf((bbox[4] - bbox[6]
+			- (bbox2[4] - bbox2[6])) * 50.f) / 100.f + 50.f,
 		bbox[7] + 183.f);
   glcRenderString(string);
   glcScale(2.f, 2.f);
   glcMeasureString(GL_FALSE, "GL_BITMAP");
   glcGetStringMetric(GLC_BOUNDS, bbox2);
-  glRasterPos2f(floor((bbox[2] - bbox[0]
-		       - (bbox2[2] - bbox2[0])) * 50.f) / 100.f + 50.f,	300.f);
+  glRasterPos2f(floorf((bbox[2] - bbox[0]
+			- (bbox2[2] - bbox2[0])) * 50.f) / 100.f + 50.f,
+		300.f);
   glcRenderString("GL_BITMAP");
   glcDisable(GLC_HINTING_QSO);
 
@@ -281,16 +283,16 @@ void display(void)
   glVertex2f(bbox[4] - 0.05f, bbox[5] + 0.35f);
   glEnd();
   glPushMatrix();
-  glTranslatef(floor((bbox[4] - bbox[6]
-		      - (bbox2[4] - bbox2[6]) * 0.15f) *50.f) / 100.f,
-	       floor((bbox[5] + 0.33f) * 100.f) / 100.f, 0.f);
+  glTranslatef(floorf((bbox[4] - bbox[6]
+		       - (bbox2[4] - bbox2[6]) * 0.15f) *50.f) / 100.f,
+	       floorf((bbox[5] + 0.33f) * 100.f) / 100.f, 0.f);
   glScalef(0.15f, 0.15f, 1.f);
   glcRenderString(string);
   glPopMatrix();
   glcMeasureString(GL_FALSE, "GL_TEXTURE");
   glcGetStringMetric(GLC_BOUNDS, bbox2);
-  glTranslatef(floor((bbox[2] - bbox[0]
-		      - (bbox2[2] - bbox2[0]) * 0.3f) * 50.f)  / 100.f,
+  glTranslatef(floorf((bbox[2] - bbox[0]
+		       - (bbox2[2] - bbox2[0]) * 0.3f) * 50.f)  / 100.f,
 	       1.5f, 0.f);
   glScalef(0.3f, 0.3f, 1.f);
   glcRenderString("GL_TEXTURE");
