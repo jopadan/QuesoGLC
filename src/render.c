@@ -109,7 +109,7 @@ static void __glcRenderCharBitmap(__GLCfont* inFont, __GLCcontext* inContext,
   GLint boundingBox[4] = {0, 0, 0, 0};
 
   __glcFontGetBitmapSize(inFont, &pixWidth, &pixHeight, boundingBox, scale_x,
-			 scale_y, 0, inContext);
+			 scale_y, 0, boundingBox, inContext);
 
   pixBuffer = (GLubyte *)__glcMalloc(pixWidth * pixHeight);
   if (!pixBuffer) {

@@ -82,9 +82,10 @@ GLboolean __glcFaceDescOutlineDecompose(__GLCfaceDescriptor* This,
                                         __GLCrendererData* inData,
                                         __GLCcontext* inContext);
 GLboolean __glcFaceDescGetBitmapSize(__GLCfaceDescriptor* This, GLint* outWidth,
-                                     GLint *outHeight, GLint* outBoundingBox,
+                                     GLint *outHeight, GLint* outTexBoundingBox,
                                      GLfloat inScaleX, GLfloat inScaleY,
-                                     int inFactor, __GLCcontext* inContext);
+				     GLint* outPixBoundingBox, int inFactor,
+				     __GLCcontext* inContext);
 GLboolean __glcFaceDescGetBitmap(__GLCfaceDescriptor* This, GLint inWidth,
                                  GLint inHeight, void* inBuffer,
                                  __GLCcontext* inContext);

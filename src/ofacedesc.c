@@ -985,9 +985,10 @@ static int __glcNextPowerOf2(int value)
 
 /* Get the size of the bitmap in which the glyph will be rendered */
 GLboolean __glcFaceDescGetBitmapSize(__GLCfaceDescriptor* This, GLint* outWidth,
-                                     GLint *outHeight, GLint* outBoundingBox,
+                                     GLint *outHeight, GLint* outTexBoundingBox,
                                      GLfloat inScaleX, GLfloat inScaleY,
-                                     int inFactor, __GLCcontext* inContext)
+				     GLint* outPixBoundingBox, int inFactor,
+				     __GLCcontext* inContext)
 {
   FT_Outline outline;
   FT_Matrix matrix;
@@ -1040,10 +1041,37 @@ GLboolean __glcFaceDescGetBitmapSize(__GLCfaceDescriptor* This, GLint* outWidth,
   }
   else {
     if (inContext->enableState.glObjects) {
+      GLfloat ratioX = (GLC_CEIL_26_6(boundingBox.xMax)
+			- GLC_FLOOR_26_6(boundingBox.xMin))
+	/ (GLC_TEXTURE_SIZE * 64.);
+      GLfloat ratioY = (GLC_CEIL_26_6(boundingBox.yMax)
+			- GLC_FLOOR_26_6(boundingBox.yMin))
+	/ (GLC_TEXTURE_SIZE * 64.);
+
       *outWidth = GLC_TEXTURE_SIZE;
       *outHeight = GLC_TEXTURE_SIZE;
 
       outline.flags |= FT_OUTLINE_HIGH_PRECISION;
+
+      if ((ratioX > 1.) || (ratioY > 1.)) {
+	matrix.xx = (FT_Fixed)(65536. / ((ratioX > ratioY) ? ratioX : ratioY));
+	matrix.yy = matrix.xx;
+
+	outPixBoundingBox[0] = boundingBox.xMin;
+	outPixBoundingBox[1] = boundingBox.yMin;
+	outPixBoundingBox[2] = boundingBox.xMax;
+	outPixBoundingBox[3] = boundingBox.yMax;
+
+	FT_Outline_Transform(&outline, &matrix);
+	FT_Outline_Get_CBox(&outline, &boundingBox);
+
+	outTexBoundingBox[0] = boundingBox.xMin;
+	outTexBoundingBox[1] = boundingBox.yMin;
+	outTexBoundingBox[2] = boundingBox.xMax;
+	outTexBoundingBox[3] = boundingBox.yMax;
+
+	return GL_TRUE;
+      }
     }
     else {
       *outWidth = __glcNextPowerOf2((GLC_CEIL_26_6(boundingBox.xMax)
@@ -1057,10 +1085,15 @@ GLboolean __glcFaceDescGetBitmapSize(__GLCfaceDescriptor* This, GLint* outWidth,
     }
   }
 
-  outBoundingBox[0] = boundingBox.xMin;
-  outBoundingBox[1] = boundingBox.yMin;
-  outBoundingBox[2] = boundingBox.xMax;
-  outBoundingBox[3] = boundingBox.yMax;
+  outPixBoundingBox[0] = boundingBox.xMin;
+  outPixBoundingBox[1] = boundingBox.yMin;
+  outPixBoundingBox[2] = boundingBox.xMax;
+  outPixBoundingBox[3] = boundingBox.yMax;
+
+  outTexBoundingBox[0] = boundingBox.xMin;
+  outTexBoundingBox[1] = boundingBox.yMin;
+  outTexBoundingBox[2] = boundingBox.xMax;
+  outTexBoundingBox[3] = boundingBox.yMax;
 
   return GL_TRUE;
 }
