@@ -61,6 +61,7 @@ static GLboolean __glcTextureAtlasGetPosition(__GLCcontext* inContext,
     int i = 0;
     GLint format = 0;
     GLint level = 0;
+    void * buffer = NULL;
 
     /* Not all gfx card are able to use 1024x1024 textures (especially old ones
      * like 3dfx's). Moreover, the texture memory may be scarce when our texture
@@ -87,6 +88,13 @@ static GLboolean __glcTextureAtlasGetPosition(__GLCcontext* inContext,
       return GL_FALSE;
     }
 
+    buffer = __glcMalloc(size * size);
+    if (!buffer) {
+      __glcRaiseError(GLC_RESOURCE_ERROR);
+      return GL_FALSE;
+    }
+    memset(buffer, 0, size * size);
+
     /* Create the texture atlas structure. The texture is divided in small
      * square areas of GLC_TEXTURE_SIZE x GLC_TEXTURE_SIZE, each of which will
      * contain a different glyph.
@@ -101,7 +109,7 @@ static GLboolean __glcTextureAtlasGetPosition(__GLCcontext* inContext,
     inContext->atlasCount = 0;
     glBindTexture(GL_TEXTURE_2D, inContext->atlas.id);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA8, size,
-		 size, 0, GL_ALPHA, GL_UNSIGNED_BYTE, NULL);
+		 size, 0, GL_ALPHA, GL_UNSIGNED_BYTE, buffer);
 
     /* Create the mipmap structure of the texture atlas, no matter if GLC_MIPMAP
      * is enabled or not.
@@ -110,7 +118,7 @@ static GLboolean __glcTextureAtlasGetPosition(__GLCcontext* inContext,
       size >>= 1;
       level++;
       glTexImage2D(GL_TEXTURE_2D, level, GL_ALPHA8, size,
-		   size, 0, GL_ALPHA, GL_UNSIGNED_BYTE, NULL);
+		   size, 0, GL_ALPHA, GL_UNSIGNED_BYTE, buffer);
     }
 
     /* Use trilinear filtering if GLC_MIPMAP is enabled.
@@ -282,13 +290,10 @@ void __glcRenderCharTexture(__GLCfont* inFont, __GLCcontext* inContext,
 			    GLfloat scale_x, GLfloat scale_y,
 			    __GLCglyph* inGlyph)
 {
-  GLfloat width = 0, height = 0;
   GLint level = 0;
   GLint texX = 0, texY = 0;
-  GLfloat dX = 0.f, dY = 0.;
   GLint pixWidth = 0, pixHeight = 0;
   void* pixBuffer = NULL;
-  GLint texBoundingBox[4] = {0, 0, 0, 0};
   GLint pixBoundingBox[4] = {0, 0, 0, 0};
   int minSize = (GLEW_VERSION_1_2 || GLEW_SGIS_texture_lod) ? 2 : 1;
   GLfloat texWidth = 0, texHeight = 0;
@@ -302,9 +307,8 @@ void __glcRenderCharTexture(__GLCfont* inFont, __GLCcontext* inContext,
     /* Compute the size of the pixmap where the glyph will be rendered */
     atlasNode = inGlyph->textureObject;
 
-    __glcFaceDescGetBitmapSize(inFont->faceDesc, &pixWidth, &pixHeight,
-                               texBoundingBox, scale_x, scale_y,
-			       pixBoundingBox, 0, inContext);
+    __glcFaceDescGetBitmapSize(inFont->faceDesc, &pixWidth, &pixHeight, scale_x,
+			       scale_y, pixBoundingBox, 0, inContext);
 
     texWidth = inContext->atlas.width;
     texHeight = inContext->atlas.heigth;
@@ -318,8 +322,8 @@ void __glcRenderCharTexture(__GLCfont* inFont, __GLCcontext* inContext,
     /* Try several texture size until we are able to create one */
     do {
       if (!__glcFaceDescGetBitmapSize(inFont->faceDesc, &pixWidth, &pixHeight,
-                                      texBoundingBox, scale_x, scale_y,
-				      pixBoundingBox, factor, inContext))
+                                      scale_x, scale_y, pixBoundingBox, factor,
+				      inContext))
 	return;
 
       factor = 1;
@@ -422,16 +426,6 @@ void __glcRenderCharTexture(__GLCfont* inFont, __GLCcontext* inContext,
 
   glPopClientAttrib();
 
-  /* Compute the size of the glyph */
-  width = (GLfloat)((texBoundingBox[2] - texBoundingBox[0]) / 64.);
-  height = (GLfloat)((texBoundingBox[3] - texBoundingBox[1]) / 64.);
-
-  if ((inContext->renderState.renderStyle != GLC_TEXTURE)
-      || (!inContext->enableState.glObjects)) {
-    dX = (texBoundingBox[0] - GLC_FLOOR_26_6(texBoundingBox[0])) / 64.;
-    dY = (texBoundingBox[1] - GLC_FLOOR_26_6(texBoundingBox[1])) / 64.;
-  }
-
   if (pixBuffer)
     __glcFree(pixBuffer);
 
@@ -477,18 +471,18 @@ void __glcRenderCharTexture(__GLCfont* inFont, __GLCcontext* inContext,
 
       data = buffer + atlasNode->position * 20;
 
-      data[0] = (texX + dX) / texWidth;
-      data[1] = (texY + dY) / texHeight;
+      data[0] = texX / texWidth;
+      data[1] = texY / texHeight;
       data[2] = pixBoundingBox[0] / 64. / GLC_TEXTURE_SIZE;
       data[3] = pixBoundingBox[1] / 64. / GLC_TEXTURE_SIZE;
       data[4] = 0.f;
-      data[5] = (texX + dX + width) / texWidth;
+      data[5] = (texX + GLC_TEXTURE_SIZE) / texWidth;
       data[6] = data[1];
       data[7] = pixBoundingBox[2] / 64. / GLC_TEXTURE_SIZE;
       data[8] = data[3];
       data[9] = 0.f;
       data[10] = data[5];
-      data[11] = (texY + dY + height) / texHeight;
+      data[11] = (texY + GLC_TEXTURE_SIZE) / texHeight;
       data[12] = data[7];
       data[13] = pixBoundingBox[3] / 64. / GLC_TEXTURE_SIZE;
       data[14] = 0.f;
@@ -537,14 +531,13 @@ void __glcRenderCharTexture(__GLCfont* inFont, __GLCcontext* inContext,
   /* Do the actual GL rendering */
   glBegin(GL_QUADS);
   glNormal3f(0.f, 0.f, 1.f);
-  glTexCoord2f((texX + dX) / texWidth, (texY + dY) / texHeight);
+  glTexCoord2f(texX / texWidth, texY / texHeight);
   glVertex2i(pixBoundingBox[0], pixBoundingBox[1]);
-  glTexCoord2f((texX + dX + width) / texWidth, (texY + dY) / texHeight);
+  glTexCoord2f((texX + pixWidth) / texWidth, texY / texHeight);
   glVertex2i(pixBoundingBox[2], pixBoundingBox[1]);
-  glTexCoord2f((texX + dX + width) / texWidth,
-	       (texY + dY + height) / texHeight);
+  glTexCoord2f((texX + pixWidth) / texWidth, (texY + pixHeight) / texHeight);
   glVertex2i(pixBoundingBox[2], pixBoundingBox[3]);
-  glTexCoord2f((texX + dX) / texWidth, (texY + dY + height) / texHeight);
+  glTexCoord2f(texX / texWidth, (texY + pixHeight) / texHeight);
   glVertex2i(pixBoundingBox[0], pixBoundingBox[3]);
   glEnd();
 
