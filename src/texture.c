@@ -121,6 +121,8 @@ static GLboolean __glcTextureAtlasGetPosition(__GLCcontext* inContext,
 		   size, 0, GL_ALPHA, GL_UNSIGNED_BYTE, buffer);
     }
 
+    __glcFree(buffer);
+
     /* Use trilinear filtering if GLC_MIPMAP is enabled.
      * Otherwise use bilinear filtering.
      */
@@ -296,7 +298,7 @@ void __glcRenderCharTexture(__GLCfont* inFont, __GLCcontext* inContext,
   void* pixBuffer = NULL;
   GLint pixBoundingBox[4] = {0, 0, 0, 0};
   int minSize = (GLEW_VERSION_1_2 || GLEW_SGIS_texture_lod) ? 2 : 1;
-  GLfloat texWidth = 0, texHeight = 0;
+  GLfloat texWidth = 0.f, texHeight = 0.f;
 
   if (inContext->enableState.glObjects) {
     __GLCatlasElement* atlasNode = NULL;
@@ -518,13 +520,16 @@ void __glcRenderCharTexture(__GLCfont* inFont, __GLCcontext* inContext,
 
       /* Create the display list */
       glNewList(inGlyph->glObject[1], GL_COMPILE);
-      glScalef(1. / 64. / scale_x, 1. / 64. / scale_y , 1.);
+      glScalef(1. / (64. * scale_x), 1. / (64. * scale_y) , 1.);
 
       /* Modify the bouding box dimensions to compensate the glScalef() */
       pixBoundingBox[0] *= scale_x / GLC_TEXTURE_SIZE;
       pixBoundingBox[1] *= scale_y / GLC_TEXTURE_SIZE;
       pixBoundingBox[2] *= scale_x / GLC_TEXTURE_SIZE;
       pixBoundingBox[3] *= scale_y / GLC_TEXTURE_SIZE;
+
+      pixWidth = GLC_TEXTURE_SIZE;
+      pixHeight = GLC_TEXTURE_SIZE;
     }
   }
 
@@ -532,11 +537,11 @@ void __glcRenderCharTexture(__GLCfont* inFont, __GLCcontext* inContext,
   glBegin(GL_QUADS);
   glNormal3f(0.f, 0.f, 1.f);
   glTexCoord2f(texX / texWidth, texY / texHeight);
-  glVertex2i(pixBoundingBox[0], pixBoundingBox[1]);
+  glVertex2iv(pixBoundingBox);
   glTexCoord2f((texX + pixWidth) / texWidth, texY / texHeight);
   glVertex2i(pixBoundingBox[2], pixBoundingBox[1]);
   glTexCoord2f((texX + pixWidth) / texWidth, (texY + pixHeight) / texHeight);
-  glVertex2i(pixBoundingBox[2], pixBoundingBox[3]);
+  glVertex2iv(pixBoundingBox + 2);
   glTexCoord2f(texX / texWidth, (texY + pixHeight) / texHeight);
   glVertex2i(pixBoundingBox[0], pixBoundingBox[3]);
   glEnd();
