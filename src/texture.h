@@ -34,7 +34,7 @@ struct __GLCatlasElementRec {
   __GLCglyph* glyph;
 };
 
-void __glcDeleteAtlasElement(__GLCatlasElement* This, __GLCcontext* inContext);
+void __glcReleaseAtlasElement(__GLCatlasElement* This, __GLCcontext* inContext);
 void __glcRenderCharTexture(__GLCfont* inFont, __GLCcontext* inContext,
 			    GLfloat scale_x, GLfloat scale_y,
 			    __GLCglyph* inGlyph);
