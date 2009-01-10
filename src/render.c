@@ -783,13 +783,12 @@ void APIENTRY glcResolution(GLfloat inVal)
     __GLCfaceDescriptor* faceDesc = font->faceDesc;
     FT_ListNode glyphNode = NULL;
 
-    for (glyphNode = faceDesc->glyphList.head; node; node = node->next) {
+    for (glyphNode = faceDesc->glyphList.head; glyphNode;
+	 glyphNode = glyphNode->next) {
       __GLCglyph* glyph = (__GLCglyph*)glyphNode->data;
 
       glyph->advanceCached = GL_FALSE;
       glyph->boundingBoxCached = GL_FALSE;
     }
   }
-
-  return;
 }
