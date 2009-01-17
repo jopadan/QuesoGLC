@@ -16,11 +16,10 @@
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-/* $Id: test10.c 712 2008-01-26 19:46:49Z bcoconni $ */
+/* $Id$ */
 
 /** \file
- * Regression test for a bug which did not include trailing spaces in
- * calculation of the bounding boxes.
+ * Test for the function glcGetMaxCharMetric()
  */
 
 #include "GL/glc.h"
@@ -33,6 +32,7 @@
 #include <stdio.h>
 
 GLuint id = 0;
+GLint myFont = 0;
 
 
 void reshape(int width, int height)
@@ -61,35 +61,57 @@ void display(void)
 {
   GLfloat bbox[8];
   int i = 0;
+  GLint c = 0;
+  GLfloat bboxMax[8] = {10000.f, 10000.f, -10000.f, 10000.f, -10000.f, -10000.f,
+			10000.f, -10000.f};
 
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+  glcGetMaxCharMetric(GLC_BOUNDS, bbox);
   glLoadIdentity();
-  glScalef(100.f, 100.f, 1.f);
-  glTranslatef(0.5f, 0.5f, 0.f);
-  glColor4f(1.f, 0.f, 0.f, 1.f);
-  glcRenderCountedString(4, "ABCDE");
-  glLoadIdentity();
-  glScalef(100.f, 100.f, 1.f);
-  glTranslatef(0.5f, 1.5f, 0.f);
-
-  glcMeasureString(GL_FALSE, " ABCDE ");
-  glcGetStringMetric(GLC_BOUNDS, bbox);
+  glScalef(120.f, 120.f, 1.f);
+  glTranslatef(0.5f, 1.f, 0.f);
   glColor3f(0.f, 1.f, 1.f);
   glBegin(GL_LINE_LOOP);
   for (i = 0; i < 4; i++)
     glVertex2fv(&bbox[2*i]);
   glEnd();
 
-  glcGetStringMetric(GLC_BASELINE, bbox);
-  glColor3f(1.f, 1.f, 0.f);
-  glBegin(GL_LINE);
-  for (i = 0; i < 2; i++)
-    glVertex2fv(&bbox[2*i]);
-  glEnd();
-
+  glLoadIdentity();
+  glScalef(120.f, 120.f, 1.f);
   glColor3f(1.f, 0.f, 0.f);
-  glcRenderString(" ABCDE ");
+  glTranslatef(0.5f, 1.f, 0.f);
+  for (c = 32; c < 0x110000; c++) {
+    if (!glcGetFontMap(myFont, c))
+      continue;
+    glPushMatrix();
+    glcRenderChar(c);
+    glPopMatrix();
+    glcGetCharMetric(c, GLC_BOUNDS, bbox);
+
+    if (bbox[0] < bboxMax[0]) {
+      bboxMax[0] = bbox[0];
+      bboxMax[6] = bbox[6];
+    }
+    if (bbox[1] < bboxMax[1]) {
+      bboxMax[1] = bbox[1];
+      bboxMax[3] = bbox[3];
+    }
+    if (bbox[2] > bboxMax[2]) {
+      bboxMax[2] = bbox[2];
+      bboxMax[4] = bbox[4];
+    }
+    if (bbox[5] > bboxMax[5]) {
+      bboxMax[5] = bbox[5];
+      bboxMax[7] = bbox[7];
+    }
+  }
+
+  glColor3f(0.f, 1.f, 0.f);
+  glBegin(GL_LINE_LOOP);
+  for (i = 0; i < 4; i++)
+    glVertex2fv(&bboxMax[2*i]);
+  glEnd();
 
   glFlush();
 }
@@ -97,12 +119,13 @@ void display(void)
 int main(int argc, char **argv)
 {
   GLint ctx = 0;
-  GLint myFont = 0;
+  GLint masterCount = 0;
+  GLint master = 0;
 
   glutInit(&argc, argv);
   glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
   glutInitWindowSize(640, 300);
-  glutCreateWindow("Test15");
+  glutCreateWindow("Test16");
   glutDisplayFunc(display);
   glutReshapeFunc(reshape);
   glutKeyboardFunc(keyboard);
@@ -113,16 +136,26 @@ int main(int argc, char **argv)
   ctx = glcGenContext();
   glcContext(ctx);
 
-  /* Create a font "Palatino Bold" */
+  masterCount = glcGeti(GLC_MASTER_COUNT);
+  for (master = 0; master < masterCount; master++) {
+    GLint letter = 0;
+
+    for (letter = 'A'; letter < 'F'; letter++) {
+      if (!glcGetMasterMap(master, letter))
+	break;
+    }
+
+    if (letter == 'F')
+      break;
+  }
+
   myFont = glcGenFontID();
-#ifdef __WIN32__
-  glcNewFontFromFamily(myFont, "Palatino Linotype");
-#else
-  glcNewFontFromFamily(myFont, "Palatino");
-#endif
-  glcFontFace(myFont, "Bold");
+  glcNewFontFromMaster(myFont, master);
   glcFont(myFont);
+  glcStringType(GLC_UCS4);
   glcRenderStyle(GLC_TEXTURE);
+  glcDisable(GLC_GL_OBJECTS);
+  glcDisable(GLC_AUTO_FONT);
 
   glutMainLoop();
   return 0;
