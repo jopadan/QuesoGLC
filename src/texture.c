@@ -1,6 +1,6 @@
 /* QuesoGLC
  * A free implementation of the OpenGL Character Renderer (GLC)
- * Copyright (c) 2002, 2004-2008, Bertrand Coconnier
+ * Copyright (c) 2002, 2004-2009, Bertrand Coconnier
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -490,13 +490,13 @@ void __glcRenderCharTexture(__GLCfont* inFont, __GLCcontext* inContext,
       data[2] = pixBoundingBox[0] / 64. / GLC_TEXTURE_SIZE;
       data[3] = pixBoundingBox[1] / 64. / GLC_TEXTURE_SIZE;
       data[4] = 0.f;
-      data[5] = (texX + GLC_TEXTURE_SIZE) / texWidth;
+      data[5] = (texX + GLC_TEXTURE_SIZE - 1) / texWidth;
       data[6] = data[1];
       data[7] = pixBoundingBox[2] / 64. / GLC_TEXTURE_SIZE;
       data[8] = data[3];
       data[9] = 0.f;
       data[10] = data[5];
-      data[11] = (texY + GLC_TEXTURE_SIZE) / texHeight;
+      data[11] = (texY + GLC_TEXTURE_SIZE - 1) / texHeight;
       data[12] = data[7];
       data[13] = pixBoundingBox[3] / 64. / GLC_TEXTURE_SIZE;
       data[14] = 0.f;
@@ -550,11 +550,12 @@ void __glcRenderCharTexture(__GLCfont* inFont, __GLCcontext* inContext,
   glNormal3f(0.f, 0.f, 1.f);
   glTexCoord2f(texX / texWidth, texY / texHeight);
   glVertex2iv(pixBoundingBox);
-  glTexCoord2f((texX + pixWidth) / texWidth, texY / texHeight);
+  glTexCoord2f((texX + pixWidth - 1) / texWidth, texY / texHeight);
   glVertex2i(pixBoundingBox[2], pixBoundingBox[1]);
-  glTexCoord2f((texX + pixWidth) / texWidth, (texY + pixHeight) / texHeight);
+  glTexCoord2f((texX + pixWidth - 1) / texWidth,
+	       (texY + pixHeight - 1) / texHeight);
   glVertex2iv(pixBoundingBox + 2);
-  glTexCoord2f(texX / texWidth, (texY + pixHeight) / texHeight);
+  glTexCoord2f(texX / texWidth, (texY + pixHeight - 1) / texHeight);
   glVertex2i(pixBoundingBox[0], pixBoundingBox[3]);
   glEnd();
 
