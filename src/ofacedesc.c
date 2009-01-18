@@ -1,6 +1,6 @@
 /* QuesoGLC
  * A free implementation of the OpenGL Character Renderer (GLC)
- * Copyright (c) 2002, 2004-2008, Bertrand Coconnier
+ * Copyright (c) 2002, 2004-2009, Bertrand Coconnier
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -1083,8 +1083,8 @@ GLboolean __glcFaceDescGetBitmapSize(__GLCfaceDescriptor* This, GLint* outWidth,
 	  - ((GLC_TEXTURE_SIZE << 5) - (width >> 1));
 	outPixBoundingBox[1] = boundingBox.yMin
 	  - ((GLC_TEXTURE_SIZE << 5) - (height >> 1));
-	outPixBoundingBox[2] = outPixBoundingBox[0] + (GLC_TEXTURE_SIZE << 6);
-	outPixBoundingBox[3] = outPixBoundingBox[1] + (GLC_TEXTURE_SIZE << 6);
+	outPixBoundingBox[2] = outPixBoundingBox[0] + ((GLC_TEXTURE_SIZE - 1) << 6);
+	outPixBoundingBox[3] = outPixBoundingBox[1] + ((GLC_TEXTURE_SIZE - 1) << 6);
       }
     }
     else {
@@ -1112,8 +1112,8 @@ GLboolean __glcFaceDescGetBitmapSize(__GLCfaceDescriptor* This, GLint* outWidth,
 	- (((*outWidth - width) >> 1 ) << 6);
       outPixBoundingBox[1] = GLC_FLOOR_26_6(boundingBox.yMin)
 	- (((*outHeight - height) >> 1) << 6);
-      outPixBoundingBox[2] = outPixBoundingBox[0] + (*outWidth << 6);
-      outPixBoundingBox[3] = outPixBoundingBox[1] + (*outHeight << 6);
+      outPixBoundingBox[2] = outPixBoundingBox[0] + ((*outWidth - 1) << 6);
+      outPixBoundingBox[3] = outPixBoundingBox[1] + ((*outHeight - 1) << 6);
     }
   }
 
