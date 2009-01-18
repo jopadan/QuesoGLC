@@ -32,3 +32,6 @@ unicode_SOURCES = unicode.c
 glcdemo_SOURCES = glcdemo.c
 
 demo_SOURCES = demo.c trackball.c trackball.h
+
+clean-generic:
+	rm -f *.gcno *.gcda *.gcov

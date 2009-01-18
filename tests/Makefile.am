@@ -2,6 +2,7 @@
 ## Process this file with automake to produce Makefile.in.
 
 noinst_PROGRAMS = test4 \
+                  @DEBUG_TESTS@ \
                   @TESTS_WITH_GLUT@
 
 EXTRA_PROGRAMS = test1 \
@@ -32,6 +33,7 @@ EXTRA_PROGRAMS = test1 \
                  test14 \
                  test15 \
                  test16 \
+                 test17 \
                  testcontex \
                  testfont \
                  testmaster \
@@ -144,3 +146,6 @@ test11_7_LDADD = @GLUT_LIBS@ $(LDADD)
 testrender_SOURCES = testrender.c
 testrender_CFLAGS = $(CFLAGS) @GLUT_CFLAGS@
 testrender_LDADD = @GLUT_LIBS@ $(LDADD)
+
+clean-generic:
+	rm -f *.gcno *.gcda *.gcov
