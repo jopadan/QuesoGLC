@@ -1,6 +1,6 @@
 /* QuesoGLC
  * A free implementation of the OpenGL Character Renderer (GLC)
- * Copyright (c) 2002, 2004-2008, Bertrand Coconnier
+ * Copyright (c) 2002, 2004-2009, Bertrand Coconnier
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -40,7 +40,7 @@ __thread __GLCthreadArea __glcTlsThreadArea;
 __GLCthreadArea* __glcThreadArea = NULL;
 #endif
 
-static void __glcContextUpdateHashTable(__GLCcontext *This);
+static GLboolean __glcContextUpdateHashTable(__GLCcontext *This);
 
 
 
@@ -115,7 +115,18 @@ __GLCcontext* __glcContextCreate(GLint inContext)
     __glcFree(This);
     return NULL;
   }
-  __glcContextUpdateHashTable(This);
+
+  if (!__glcContextUpdateHashTable(This)) {
+    __glcArrayDestroy(This->masterHashTable);
+    __glcArrayDestroy(This->catalogList);
+#ifdef GLC_FT_CACHE
+    FTC_Manager_Done(This->cache);
+#endif
+    FT_Done_Library(This->library);
+    FcConfigDestroy(This->config);
+    __glcFree(This);
+    return NULL;
+  }
 
   This->currentFontList.head = NULL;
   This->currentFontList.tail = NULL;
@@ -329,12 +340,18 @@ __GLCcontext* __glcContextCreate(GLint inContext)
 	    __glcRaiseError(GLC_RESOURCE_ERROR);
             free(duplicated);
           }
+	  else if (!__glcContextUpdateHashTable(This)) {
+	    /* For some reason the update of the master hash table has failed :
+	     * the new catalog must then be removed from GLC_CATALOG_LIST.
+	     */
+	    __glcContextRemoveCatalog(This,
+				      GLC_ARRAY_LENGTH(This->catalogList));
+	  }
         }
 
         begin = sepPos;
       } while (*sepPos);
       free(path);
-      __glcContextUpdateHashTable(This);
     }
     else {
       /* strdup has failed to allocate memory to duplicate GLC_PATH => ERROR */
@@ -604,32 +621,39 @@ GLCchar* __glcContextQueryBuffer(__GLCcontext *This, size_t inSize)
 /* Update the hash table that allows to convert master IDs into FontConfig
  * patterns.
  */
-static void __glcContextUpdateHashTable(__GLCcontext *This)
+static GLboolean __glcContextUpdateHashTable(__GLCcontext *This)
 {
   FcPattern* pattern = NULL;
   FcObjectSet* objectSet = NULL;
   FcFontSet *fontSet = NULL;
   int i = 0;
+  __GLCarray *updatedHashTable = NULL;
 
   /* Use Fontconfig to get the default font files */
   pattern = FcPatternCreate();
   if (!pattern) {
     __glcRaiseError(GLC_RESOURCE_ERROR);
-    return;
+    return GL_FALSE;
   }
   objectSet = FcObjectSetBuild(FC_FAMILY, FC_FOUNDRY, FC_OUTLINE, FC_SPACING,
 			       NULL);
   if (!objectSet) {
     __glcRaiseError(GLC_RESOURCE_ERROR);
     FcPatternDestroy(pattern);
-    return;
+    return GL_FALSE;
   }
   fontSet = FcFontList(This->config, pattern, objectSet);
   FcPatternDestroy(pattern);
   FcObjectSetDestroy(objectSet);
   if (!fontSet) {
     __glcRaiseError(GLC_RESOURCE_ERROR);
-    return;
+    return GL_FALSE;
+  }
+
+  updatedHashTable = __glcArrayDuplicate(This->masterHashTable);
+  if (!updatedHashTable) {
+    FcFontSetDestroy(fontSet);
+    return GL_FALSE;
   }
 
   /* Parse the font set looking for fonts that are not already registered in the
@@ -638,8 +662,8 @@ static void __glcContextUpdateHashTable(__GLCcontext *This)
   for (i = 0; i < fontSet->nfont; i++) {
     GLCchar32 hashValue = 0;
     int j = 0;
-    int length = GLC_ARRAY_LENGTH(This->masterHashTable);
-    GLCchar32* hashTable = (GLCchar32*)GLC_ARRAY_DATA(This->masterHashTable);
+    int length = GLC_ARRAY_LENGTH(updatedHashTable);
+    GLCchar32* hashTable = (GLCchar32*)GLC_ARRAY_DATA(updatedHashTable);
     FcBool outline = FcFalse;
     FcChar8* family = NULL;
     int fixed = 0;
@@ -670,7 +694,8 @@ static void __glcContextUpdateHashTable(__GLCcontext *This)
     if (!pattern) {
       __glcRaiseError(GLC_RESOURCE_ERROR);
       FcFontSetDestroy(fontSet);
-      return;
+      __glcArrayDestroy(updatedHashTable);
+      return GL_FALSE;
     }
 
     /* Check if the font is already registered in the hash table */
@@ -686,13 +711,18 @@ static void __glcContextUpdateHashTable(__GLCcontext *This)
       continue;
 
     /* Register the font (i.e. append its hash value to the hash table) */
-    if (!__glcArrayAppend(This->masterHashTable, &hashValue)) {
+    if (!__glcArrayAppend(updatedHashTable, &hashValue)) {
       FcFontSetDestroy(fontSet);
-      return;
+      __glcArrayDestroy(updatedHashTable);
+      return GL_FALSE;
     }
   }
 
   FcFontSetDestroy(fontSet);
+  __glcArrayDestroy(This->masterHashTable);
+  This->masterHashTable = updatedHashTable;
+
+  return GL_TRUE;
 }
 
 
@@ -722,7 +752,14 @@ void __glcContextAppendCatalog(__GLCcontext* This, const GLCchar* inCatalog)
     free(duplicated);
     return;
   }
-  __glcContextUpdateHashTable(This);
+
+  if (!__glcContextUpdateHashTable(This)) {
+    /* For some reason the update of the master hash table has failed : the
+     * new catalog must then be removed from GLC_CATALOG_LIST.
+     */
+    __glcContextRemoveCatalog(This, GLC_ARRAY_LENGTH(This->catalogList));
+    return;
+  }
 }
 
 
@@ -752,7 +789,14 @@ void __glcContextPrependCatalog(__GLCcontext* This, const GLCchar* inCatalog)
     free(duplicated);
     return;
   }
-  __glcContextUpdateHashTable(This);
+
+  if (!__glcContextUpdateHashTable(This)) {
+    /* For some reason the update of the master hash table has failed : the
+     * new catalog must then be removed from GLC_CATALOG_LIST.
+     */
+    __glcContextRemoveCatalog(This, 0);
+    return;
+  }
 }
 
 
@@ -804,7 +848,8 @@ void __glcContextRemoveCatalog(__GLCcontext* This, GLint inIndex)
   __glcContextUpdateHashTable(This);
 
   /* Remove from GLC_FONT_LIST the fonts that were defined in the catalog that
-   * has been removed.
+   * has been removed. This task has to be done even if the call to
+   * __glcContextUpdateHashTable() has failed !!!
    */
   for (node = This->fontList.head; node; node = node->next) {
     __GLCfont* font = (__GLCfont*)(node->data);
