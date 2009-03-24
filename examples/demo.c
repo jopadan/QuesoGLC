@@ -482,12 +482,18 @@ my_menu_polygon(int value)
    switch(value) {
    case 201:
       polygonMode = GL_POINT;
+      clearMode = GL_COLOR_BUFFER_BIT;
+      glDisable(GL_DEPTH_TEST);
       break;
    case 202:
       polygonMode = GL_LINE;
+      clearMode = GL_COLOR_BUFFER_BIT;
+      glDisable(GL_DEPTH_TEST);
       break;
    case 203:
       polygonMode = GL_FILL;
+      clearMode = GL_COLOR_BUFFER_BIT;
+      glDisable(GL_DEPTH_TEST);
       break;
    case 204:
       polygonMode = GL_FILL;
@@ -513,14 +519,26 @@ my_menu_render(int value)
       renderStyle = GLC_TEXTURE;
       polygonMode = GL_FILL;
       glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+      clearMode = GL_COLOR_BUFFER_BIT;
+      glDisable(GL_DEPTH_TEST);
       break;
    case 302:
       renderStyle = GLC_LINE;
       polygonMode = GL_FILL;
       glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+      clearMode = GL_COLOR_BUFFER_BIT;
+      glDisable(GL_DEPTH_TEST);
       break;
    case 303:
       renderStyle = GLC_TRIANGLE;
+      if (glcIsEnabled(GLC_EXTRUDE_QSO)) {
+	clearMode = GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT;
+	glEnable(GL_DEPTH_TEST);
+      }
+      else {
+	clearMode = GL_COLOR_BUFFER_BIT;
+	glDisable(GL_DEPTH_TEST);
+      }
       break;
    }
    glutDestroyMenu(menu);
