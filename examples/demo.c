@@ -68,14 +68,14 @@ draw_letters(void)
 
    char* letters = "OpenGL";
 
-   GLfloat colors[6][3] = {
+   GLfloat colors[6][4] = {
       /* R, G, B */
-      { 1.0, 0.0, 0.0 },
-      { 0.0, 1.0, 0.0 },
-      { 0.0, 0.0, 1.0 },
-      { 1.0, 0.0, 0.0 },
-      { 1.0, 1.0, 0.0 },
-      { 1.0, 0.0, 1.0 }
+      { 1.0, 0.0, 0.0, 1.0 },
+      { 0.0, 1.0, 0.0, 1.0 },
+      { 0.0, 0.0, 1.0, 1.0 },
+      { 1.0, 0.0, 0.0, 1.0 },
+      { 1.0, 1.0, 0.0, 1.0 },
+      { 1.0, 0.0, 1.0, 1.0 }
    };
 
    GLfloat origin[3] = { -50.0, -15.0, 0.0 };
@@ -100,7 +100,7 @@ draw_letters(void)
          glRotatef(pos[i][4], 0.0, 1.0, 0.0);
          glRotatef(pos[i][5], 0.0, 0.0, 1.0);
 
-         glColor3fv(colors[i]);
+         glColor4fv(colors[i]);
          glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, colors[i]);
 
          /* This is a "reasonable" font scaling - big enough to */
