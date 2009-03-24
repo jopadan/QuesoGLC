@@ -44,7 +44,11 @@ const GLCchar8* __glcNameFromCode(GLint code)
       return NULL;
     }
 
+#ifdef _MSC_VER
+    sprintf_s(buffer, 20, "Character 0x%x", code);
+#else
     snprintf(buffer, 20, "Character 0x%x", code);
+#endif
     return (const GLCchar8*)buffer; 
   }
 
