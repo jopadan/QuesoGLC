@@ -1,6 +1,10 @@
 Changes made from the "0.7.2" release to the "0.7.3" release:
 -----------------------------------------------------------
 
+* Bertrand Coconnier
+- Fixed a bug in the measurement commands where the functions would return
+  an undefined result if they failed to find a glyph.
+
 * Edward Cullen:
 
 - Provided an RPM spec file for QuesoGLC
