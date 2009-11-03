@@ -330,18 +330,18 @@ __GLCglyph* __glcFaceDescGetGlyph(__GLCfaceDescriptor* This, GLint inCode,
   /* Create a new glyph */
 #ifdef GLC_FT_CACHE
   index = FT_Get_Char_Index(face, inCode);
+#else
+  index = FcFreeTypeCharIndex(face, inCode);
+#endif
   if (!index)
     return NULL;
   glyph = __glcGlyphCreate(index, inCode);
-  if (!glyph)
-    return NULL;
-#else
-  glyph = __glcGlyphCreate(FcFreeTypeCharIndex(face, inCode), inCode);
   if (!glyph) {
+#ifndef GLC_FT_CACHE
     __glcFaceDescClose(This);
+#endif
     return NULL;
   }
-#endif
   /* Append the new glyph to the list of the glyphes of the face and close the
    * face.
    */
