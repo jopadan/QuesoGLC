@@ -16,7 +16,7 @@ dnl @license AllPermissive
 
 AC_DEFUN([AX_CHECK_GLU],
 [AC_REQUIRE([AX_CHECK_GL])dnl
-AC_REQUIRE([AC_PROG_CXX])dnl
+
 GLU_CFLAGS="${GL_CFLAGS}"
 if test "X${with_apple_opengl_framework}" != "Xyes"; then
   AC_CACHE_CHECK([for OpenGL Utility library], [ax_cv_check_glu_libglu],
