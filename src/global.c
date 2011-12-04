@@ -165,10 +165,6 @@ void _fini(void)
     node = next;
   }
 
-#if FC_MINOR > 2
-  FcFini();
-#endif
-
   __glcUnlock();
 #ifdef __WIN32__
   DeleteCriticalSection(&__glcCommonArea.section);
