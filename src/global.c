@@ -167,10 +167,6 @@ void _fini(void)
     node = next;
   }
 
-#if FC_MINOR > 2
-  FcFini();
-#endif
-
   sqlite3_close(__glcCommonArea.db);
 
   __glcUnlock();
