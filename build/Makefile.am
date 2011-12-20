@@ -2,6 +2,7 @@ lib_LTLIBRARIES = libGLC.la
 
 libGLC_la_SOURCES = $(top_builddir)/src/context.c \
                     $(top_builddir)/src/font.c \
+                    $(top_builddir)/src/internal.h \
                     $(top_builddir)/src/global.c \
                     $(top_builddir)/src/master.c \
                     $(top_builddir)/src/measure.c \
