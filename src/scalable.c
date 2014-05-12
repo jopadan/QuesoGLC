@@ -644,16 +644,10 @@ void __glcRenderCharScalable(const __GLCfont* inFont,
     gluTessProperty(tess, GLU_TESS_WINDING_RULE, GLU_TESS_WINDING_ODD);
     gluTessProperty(tess, GLU_TESS_BOUNDARY_ONLY, GL_FALSE);
 
-    gluTessCallback(tess, GLU_TESS_ERROR,
-			(void (CALLBACK *) (GLenum))__glcCallbackError);
-    gluTessCallback(tess, GLU_TESS_VERTEX_DATA,
-		    (void (CALLBACK *) (void*, void*))__glcVertexCallback);
-    gluTessCallback(tess, GLU_TESS_COMBINE_DATA,
-		    (void (CALLBACK *) (GLdouble[3], void*[4],
-					GLfloat[4], void**, void*))
-		    __glcCombineCallback);
-    gluTessCallback(tess, GLU_TESS_BEGIN_DATA,
-		    (void (CALLBACK *) (GLenum, void*))__glcBeginCallback);
+    gluTessCallback(tess, GLU_TESS_ERROR, GLU_TESS_CALLBACK(__glcCallbackError));
+    gluTessCallback(tess, GLU_TESS_VERTEX_DATA, GLU_TESS_CALLBACK(__glcVertexCallback));
+    gluTessCallback(tess, GLU_TESS_COMBINE_DATA, GLU_TESS_CALLBACK(__glcCombineCallback));
+    gluTessCallback(tess, GLU_TESS_BEGIN_DATA, GLU_TESS_CALLBACK(__glcBeginCallback));
 
     gluTessNormal(tess, 0., 0., 1.);
 

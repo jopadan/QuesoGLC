@@ -48,6 +48,12 @@
 #endif
 #endif
 
+#if defined(HAVE_VARARGS_GLU_TESSCB)
+# define GLU_TESS_CALLBACK(callback) (GLvoid(*)(...))callback
+#else
+# define GLU_TESS_CALLBACK(callback) (_GLUfuncptr)callback
+#endif
+
 #define GLCchar8  FcChar8
 #define GLCchar16 FcChar16
 #define GLCchar32 FcChar32
