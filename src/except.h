@@ -27,7 +27,7 @@
 
 #include <setjmp.h>
 
-#ifdef __cpluplus
+#ifdef __cplusplus
 extern "C" {
 #endif
 
