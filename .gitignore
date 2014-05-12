@@ -1,9 +1,12 @@
 *.m4
 *.o
 *.pc
+*.lo
+*.la
 autom4te.cache
 Makefile
 Makefile.in
+.libs
 .deps
 qglc_config.h*
 compile
@@ -18,4 +21,4 @@ missing
 configure
 stamp-h1
 libtool
-
+test-driver
