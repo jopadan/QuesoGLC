@@ -21,7 +21,7 @@
 /** \file
  * defines the functions needed for cleanup stack exception handling  (CSEH)
  * which concept is described in details at
- * http://www.freetype.org/david/reliable-c.html
+ * https://wayback.archive.org/web/http://www.freetype.org/david/reliable-c.html
  */
 
 #include "internal.h"

@@ -52,7 +52,7 @@ web site (http://quesoglc.sourceforge.net).
 
 * Mark Kilgard's GLUT (www.opengl.org/resources/libraries/glut.html)
 	It provides platform independant support for OpenGL. The DLL, lib and
-	headers can be downloaded at http://www.xmission.com/~nate/glut.html.
+	headers can be downloaded at https://user.xmission.com/~nate/glut.html.
 	Do not forget to read cautiously the instruction about GLUT at the MinGW
 	site (http://www.mingw.org/MinGWiki/index.php/Glut).
 * Doxygen (www.stack.nl/~dimitri/doxygen)
