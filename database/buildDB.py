@@ -42,8 +42,8 @@ for s in lignes:
     if name == '<control>':
         continue
     db.execute('''insert into unicode (code,name) values (?,?)''',(code,name))
-    connection.commit()
 
+connection.commit()
 db.close()
 
 print "Success !!!"
