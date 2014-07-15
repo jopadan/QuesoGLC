@@ -72,5 +72,5 @@ libGLC_la_DATA = $(top_builddir)/database/quesoglc.db
 $(top_builddir)/database/quesoglc.db: $(top_builddir)/database/buildDB.py
 	cd $(top_builddir)/database && python buildDB.py && cd $(top_builddir)/src
 
-clean-generic:
+clean-local:
 	rm -f *.gcno *.gcda *.gcov

@@ -20,5 +20,5 @@ LDADD = $(top_builddir)/build/libGLC.la \
 
 demo_SOURCES = demo.c trackball.c trackball.h
 
-clean-generic:
+clean-local:
 	rm -f *.gcno *.gcda *.gcov

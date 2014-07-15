@@ -109,5 +109,5 @@ test11_7_CFLAGS = $(CFLAGS) -DRENDER_STYLE=GLC_BITMAP
 test11_8_SOURCES = test11.c
 test11_8_CFLAGS = $(CFLAGS) -DRENDER_STYLE=GLC_PIXMAP_QSO
 
-clean-generic:
+clean-local:
 	rm -f *.gcno *.gcda *.gcov
