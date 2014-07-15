@@ -56,6 +56,11 @@ AC_ARG_ENABLE([debug],
 
 AM_INIT_AUTOMAKE([foreign dist-bzip2])
 
+# Init libtool
+# ------------
+
+LT_INIT([disable-static])
+
 
 # Checks for programs.
 # --------------------
