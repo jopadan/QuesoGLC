@@ -2,7 +2,7 @@ SUBDIRS = include build @EXECUTABLES@
 
 ACLOCAL_AMFLAGS = -I build/m4
 
-EXTRA_DIST = ChangeLog \
+EXTRA_DIST = NEWS \
              INSTALL \
              INSTALL.win \
              COPYING \

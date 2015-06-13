@@ -77,7 +77,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-,root,root)
-%doc README THANKS INSTALL COPYING AUTHORS ChangeLog 
+%doc README THANKS INSTALL COPYING AUTHORS NEWS
 %{_libdir}/libGLC.so.*
 
 %files devel
