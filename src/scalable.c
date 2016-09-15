@@ -36,7 +36,7 @@
 
 
 /* Transform the object coordinates in the array 'inCoord' in screen
- * coordinates. The function updates 'inCoord' according to :
+ * coordinates. The function updates 'inCoord' according to:
  * inCoord[0..1] contains the 2D glyph coordinates in the object space
  * inCoord[2..4] contains the 2D homogeneous coordinates in observer space
  */
@@ -70,7 +70,7 @@ static void __glcComputePixelCoordinates(GLfloat* inCoord,
 
 
 
-/* __glcdeCasteljauConic :
+/* __glcdeCasteljauConic:
  *   renders conic Bezier curves using the de Casteljau subdivision algorithm
  *
  * This function creates a piecewise linear curve which is close enough
@@ -199,7 +199,7 @@ int __glcdeCasteljauConic(void *inUserData)
       pm[3] = 0.5*(p1[3]+p2[3]);
       pm[4] = 0.5*(p1[4]+p2[4]);
 
-      /* The point in pm[] is a point located on the Bezier curve : it must be
+      /* The point in pm[] is a point located on the Bezier curve: it must be
        * added to the vertex array
        */
       if (!__glcArrayInsert(data->vertexArray, rank+1, pm)) {
@@ -221,7 +221,7 @@ int __glcdeCasteljauConic(void *inUserData)
 
 
 
-/* __glcdeCasteljauCubic :
+/* __glcdeCasteljauCubic:
  *   renders cubic Bezier curves using the de Casteljau subdivision algorithm
  *
  * See also remarks about __glcdeCasteljauConic.
@@ -368,7 +368,7 @@ int __glcdeCasteljauCubic(void *inUserData)
       pm[3] = 0.5*(p1[3]+p2[3]);
       pm[4] = 0.5*(p1[4]+p2[4]);
 
-      /* The point in pm[] is a point located on the Bezier curve : it must be
+      /* The point in pm[] is a point located on the Bezier curve: it must be
        * added to the vertex array
        */
       if (!__glcArrayInsert(data->vertexArray, rank+1, pm)) {
@@ -744,7 +744,7 @@ void __glcRenderCharScalable(const __GLCfont* inFont,
     } while (extrude);
   }
 
-  /* For extruded glyphes : close the contours */
+  /* For extruded glyphes: close the contours */
   if ((inContext->renderState.renderStyle == GLC_TRIANGLE
        && inContext->enableState.extrude)
       || (inContext->enableState.glObjects && GLEW_ARB_vertex_buffer_object)) {

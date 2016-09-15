@@ -62,7 +62,7 @@ int main(void)
   TRY
     catched = 0;
   CATCH(exc)
-    printf("Unexpected catch in the first try/catch block\nException : %d\n", exc);
+    printf("Unexpected catch in the first try/catch block\nException: %d\n", exc);
     return -1;
   END_CATCH
 

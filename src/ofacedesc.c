@@ -50,7 +50,7 @@
 
 
 
-/* Constructor of the object : it allocates memory and initializes the member
+/* Constructor of the object: it allocates memory and initializes the member
  * of the new object.
  * The user must give the name of the face, the character map, if it is a fixed
  * font or not, the file name and the index of the font in its file.
@@ -595,7 +595,7 @@ GLfloat* __glcFaceDescGetAdvance(__GLCfaceDescriptor* This,
 
 
 
-/* Use FreeType to determine in which format the face is stored in its file :
+/* Use FreeType to determine in which format the face is stored in its file:
  * Type1, TrueType, OpenType, ...
  */
 const GLCchar8* __glcFaceDescGetFontFormat(__GLCfaceDescriptor* This,
@@ -723,7 +723,7 @@ const GLCchar8* __glcFaceDescGetFontFormat(__GLCfaceDescriptor* This,
       break;
     }
 
-    /* TODO : decode the SFNT name tables in order to get full name
+    /* TODO: decode the SFNT name tables in order to get full name
      * of the TrueType/OpenType fonts and their version
      */
 #if 0
@@ -1255,7 +1255,7 @@ GLboolean __glcFaceDescGetBitmap(const __GLCfaceDescriptor* This,
 
   if ((inContext->renderState.renderStyle != GLC_BITMAP)
       && (inContext->renderState.renderStyle != GLC_PIXMAP_QSO)) {
-    /* Prepare the outline for the next mipmap level :
+    /* Prepare the outline for the next mipmap level:
      * a. Restore the outline initial position
      */
     FT_Outline_Translate(&outline, dx, dy);

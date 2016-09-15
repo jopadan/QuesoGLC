@@ -35,7 +35,7 @@
 
 
 
-/* Constructor of the object : it allocates memory and initializes the member
+/* Constructor of the object: it allocates memory and initializes the member
  * of the new object.
  * The user must give the size of an element of the array.
  */

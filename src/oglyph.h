@@ -20,7 +20,7 @@
 
 /** \file
  * header of the object __GLCglyph which caches all the data needed for a given
- * glyph : display list, texture, bounding box, advance, index in the font
+ * glyph: display list, texture, bounding box, advance, index in the font
  * file, etc.
  */
 

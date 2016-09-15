@@ -194,7 +194,7 @@ void keyboard(unsigned char key, int x, int y)
        * because glcGetFontc and glcGetFontFace return their result in the
        * same buffer (according to GLC specs).
        */
-      printf("Font #%d : %s", font,
+      printf("Font #%d: %s", font,
 	     (const char*) glcGetFontc(font, GLC_FAMILY));
       printf(" %s\n", (const char*) glcGetFontFace(font));
     }

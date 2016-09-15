@@ -28,7 +28,7 @@
  *  thread.
  *
  * GLC refers to the current context state whenever it executes a command.
- * Most of its state is directly available to the user : in order to control
+ * Most of its state is directly available to the user: in order to control
  * the result of the GLC commands, the user may want to get or modify the
  * state of the current context. This is precisely the purpose of the context
  * state commands.
@@ -194,7 +194,7 @@ void APIENTRY glcDeleteGLObjects(void)
 
 
 /* This internal function is used by both glcEnable/glcDisable which basically
- * do the same job : put a value into a member of the __GLCcontext struct. The
+ * do the same job: put a value into a member of the __GLCcontext struct. The
  * only difference is the value that they put (true or false).
  */
 static void __glcChangeState(const GLCenum inAttrib, const GLboolean value)
@@ -314,23 +314,23 @@ void APIENTRY glcDisable(GLCenum inAttrib)
  *  This command assigns the value \b GL_TRUE to the boolean variable
  *  identified by \e inAttrib which must be chosen in the table above.
  *
- *  - \b GLC_AUTO_FONT : if enabled, GLC tries to automatically find a font
+ *  - \b GLC_AUTO_FONT: if enabled, GLC tries to automatically find a font
  *    among the masters to map the character code to be rendered (see also
  *    glcRenderChar()).
- *  - \b GLC_GL_OBJECTS : if enabled, GLC stores characters rendering commands
+ *  - \b GLC_GL_OBJECTS: if enabled, GLC stores characters rendering commands
  *    in GL display lists and textures in GL texture objects.
- *  - \b GLC_MIPMAP : if enabled, texture objects used by GLC are mipmapped
- *  - \b GLC_HINTING_QSO : if enabled, GLC uses the hinting procedures that are
+ *  - \b GLC_MIPMAP: if enabled, texture objects used by GLC are mipmapped
+ *  - \b GLC_HINTING_QSO: if enabled, GLC uses the hinting procedures that are
  *    available for most scalable fonts. It gives better results for characters
  *    that are rendered at small sizes. This attribute is ignored when
  *    \b GLC_GL_OBJECTS is enabled. Hinting may generate visual artifacts such
  *    as "shaking outlines" if the character is animated. This attribute should
  *    be disabled in such cases.
- *  - \b GLC_EXTRUDE_QSO : if enabled and \b GLC_RENDER_STYLE is
+ *  - \b GLC_EXTRUDE_QSO: if enabled and \b GLC_RENDER_STYLE is
  *    \b GLC_TRIANGLE then GLC renders extruded characters with a thickness
  *    equal to 1.0. A call to glScale3f(1., 1., \e thickness ) can be added
  *    before the rendering commands in order to obtain the desired thickness.
- *  - \b GLC_KERNING_QSO : if enabled, GLC uses kerning information when
+ *  - \b GLC_KERNING_QSO: if enabled, GLC uses kerning information when
  *    rendering or measuring a string. Not all fonts have kerning informations.
  *
  *  \param inAttrib A symbolic constant indicating a GLC attribute.
@@ -382,7 +382,7 @@ GLCfunc APIENTRY glcGetCallbackFunc(GLCenum inOpcode)
 /** \ingroup context
  *  This command returns the string at offset \e inIndex from the first element
  *  in the string list identified by \e inAttrib which must be chosen in the
- *  table below :
+ *  table below:
  *
  *  <center>
  *  <table>
@@ -425,7 +425,7 @@ const GLCchar* APIENTRY glcGetListc(GLCenum inAttrib, GLint inIndex)
     return GLC_NONE;
   }
 
-  /* NOTE : at this stage we can not verify if inIndex is greater than or equal
+  /* NOTE: at this stage we can not verify if inIndex is greater than or equal
    * to the last element index. In order to perform such a verification we
    * would need to have the current context state but GLC specs tells that we
    * should first check the parameters _then_ the current context (section 2.2
@@ -447,7 +447,7 @@ const GLCchar* APIENTRY glcGetListc(GLCenum inAttrib, GLint inIndex)
   if (!catalog)
     return GLC_NONE;
 
-  /* Three remarks have to be made concerning the following code :
+  /* Three remarks have to be made concerning the following code:
    * 1. We do not return a pointer that points to the actual location of the
    *    string in order to prevent the user to modify it. Instead QuesoGLC
    *    returns a pointer that points to a copy of the requested data.
@@ -479,7 +479,7 @@ const GLCchar* APIENTRY glcGetListc(GLCenum inAttrib, GLint inIndex)
  *  element in the integer list identified by \e inAttrib.
  *
  *  You can choose from the following integer lists, listed below with their
- *  element count variables :
+ *  element count variables:
  *  <center>
  *  <table>
  *  <caption>Integer lists</caption>
@@ -559,7 +559,7 @@ GLint APIENTRY glcGetListi(GLCenum inAttrib, GLint inIndex)
     return 0;
   }
 
-  /* NOTE : at this stage we can not verify if inIndex is greater than or equal
+  /* NOTE: at this stage we can not verify if inIndex is greater than or equal
    * to the last element index. In order to perform such a verification we
    * would need to have the current context states but GLC specs says that we
    * should first check the parameters _then_ the current context (section 2.2
@@ -620,9 +620,9 @@ GLint APIENTRY glcGetListi(GLCenum inAttrib, GLint inIndex)
     break;
   case GLC_TEXTURE_OBJECT_LIST:
     switch(inIndex) {
-      /* QuesoGLC uses at most 2 textures : one for immediate mode rendering and
+      /* QuesoGLC uses at most 2 textures: one for immediate mode rendering and
        * another one for the texture atlas. That's all. They are virtually
-       * stored in the following order : texture for immediate mode first, then
+       * stored in the following order: texture for immediate mode first, then
        * texture atlas.
        */
       case 0:
@@ -647,16 +647,16 @@ GLint APIENTRY glcGetListi(GLCenum inAttrib, GLint inIndex)
     break;
   case GLC_BUFFER_OBJECT_LIST_QSO: /* QuesoGLC extension */
     switch(inIndex) {
-      /* QuesoGLC uses the following buffer objects :
+      /* QuesoGLC uses the following buffer objects:
        * - one PBO for immediate texture mode rendering
        * - one VBO for the texture atlas.
-       * - for each glyph (for GLC_LINE and GLC_TRIANGLE rendering modes) :
+       * - for each glyph (for GLC_LINE and GLC_TRIANGLE rendering modes):
        *       -> one VBO to store the nodes
        *       -> one VBO to store the triangles
-       * Virtually, the buffer objects are numbered as indicated below :
-       *  0 : PBO for immediate texture mode rendering
-       *  1 : VBO for the texture atlas
-       *  2 and on : VBOs for GLC_LINE and GLC_TRIANGLE rendering modes
+       * Virtually, the buffer objects are numbered as indicated below:
+       *  0: PBO for immediate texture mode rendering
+       *  1: VBO for the texture atlas
+       *  2 and on: VBOs for GLC_LINE and GLC_TRIANGLE rendering modes
        * If one of the first 2 PBO/VBO is not existing then the numbering is
        * shifted down by 1 (or 2 if both are not existing).
        */
@@ -761,7 +761,7 @@ GLvoid* APIENTRY glcGetPointer(GLCenum inAttrib)
 
 /** \ingroup context
  *  This command returns the value of the string constant identified by
- *  \e inAttrib. String constants must be chosen in the table below :
+ *  \e inAttrib. String constants must be chosen in the table below:
  *  <center>
  *  <table>
  *  <caption>String constants</caption>
@@ -1234,7 +1234,7 @@ GLboolean APIENTRY glcIsEnabled(GLCenum inAttrib)
 /** \ingroup context
  *  This command assigns the value \e inStringType to the variable
  *  \b GLC_STRING_TYPE. The string types are listed in the table
- *  below :
+ *  below:
  *  <center>
  *  <table>
  *  <caption>String types</caption>

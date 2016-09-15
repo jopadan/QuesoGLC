@@ -57,10 +57,10 @@ CFLAGS=-O2 -fomit-frame-pointer -ffast-math
 endif
 CPPFLAGS=-Iinclude -Isrc -I$(MINGW_INCLUDE) -I$(FREETYPE_INCLUDE)
 
-.PHONY : all
+.PHONY: all
 all: $(TESTS_OBJECTS) $(EXAMPLES_OBJECTS)
 
-.PHONY : clean
+.PHONY: clean
 clean:
 	del build\*.o
 	del build\*.a
@@ -68,22 +68,22 @@ clean:
 	del examples\*.exe
 	del tests\*.exe
 
-tests/%.exe : tests/%.c build/$(LIBRARY)
+tests/%.exe: tests/%.c build/$(LIBRARY)
 	$(CC) $(CFLAGS) $(GLUT_FLAGS) -DGLEW_MX -DQUESOGLC_VERSION=\"$(QUESOGLC_VERSION)\" $< -o $@ $(LIBS) $(GLUT_LIBS)
 
-build/trackball.o : examples/trackball.c
+build/trackball.o: examples/trackball.c
 	$(CC) -c $(CFLAGS) $< -o $@
 
-examples/demo.exe : examples/demo.c build/trackball.o
+examples/demo.exe: examples/demo.c build/trackball.o
 	$(CC) $(CFLAGS) $(GLUT_FLAGS) -o $@ $^ $(LIBS) $(GLUT_LIBS)
 
-examples/%.exe : examples/%.c build/$(LIBRARY)
+examples/%.exe: examples/%.c build/$(LIBRARY)
 	$(CC) $(CFLAGS) $(GLUT_FLAGS) $< -o $@ $(LIBS) $(GLUT_LIBS)
 
-build/%.o : src/fribidi/%.c
+build/%.o: src/fribidi/%.c
 	$(CC) -c $(CFLAGS) $(CPPFLAGS) -Isrc/fribidi $< -o $@
 
-build/%.o : src/%.c
+build/%.o: src/%.c
 	$(CC) -c $(CFLAGS) -DGLEW_MX -DGLEW_BUILD $(CPPFLAGS) -DQUESOGLC_VERSION=\"$(QUESOGLC_VERSION)\" $< -o $@
 
 build/$(LIBRARY): $(LIB_OBJECTS)

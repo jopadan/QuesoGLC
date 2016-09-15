@@ -42,7 +42,7 @@ static LPTSTR __glcAddCatalog(const GLCchar* inCatalog);
 
 
 
-/* Constructor of the object : it allocates memory and initializes the member
+/* Constructor of the object: it allocates memory and initializes the member
  * of the new object.
  */
 __GLCcontext* __glcContextCreate(GLint inContext)
@@ -331,7 +331,7 @@ static void __glcFontDestructor(FT_Memory GLC_UNUSED_ARG(inMemory),
 
 
 
-/* Destructor of the object : it first destroys all the GLC objects that have
+/* Destructor of the object: it first destroys all the GLC objects that have
  * been created during the life of the context. Then it releases the memory
  * occupied by the GLC state struct.
  * It does not destroy GL objects associated with the GLC context since we can

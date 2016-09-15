@@ -61,7 +61,7 @@
 
 
 
-/* Most master commands need to check that :
+/* Most master commands need to check that:
  *   1. The current thread owns a context state
  *   2. The master identifier 'inMaster' is legal
  * This internal function does both checks and returns the pointer to the
@@ -138,7 +138,7 @@ const GLCchar* APIENTRY glcGetMasterListc(GLint inMaster, GLCenum inAttrib,
   GLC_INIT_THREAD();
 
   /* Check some parameters.
-   * NOTE : the verification of some parameters needs to get the current
+   * NOTE: the verification of some parameters needs to get the current
    *        context state but since we are supposed to check parameters
    *        _before_ the context state, we are done !
    */

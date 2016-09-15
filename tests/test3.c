@@ -46,7 +46,7 @@ void* da_thread(void *arg)
   glcContext(ctx);
   err = glcGetError();
   if (err != GLC_STATE_ERROR) {
-    printf("Thread 2 : Unexpected error : 0x%X\n", (int)err);
+    printf("Thread 2: Unexpected error: 0x%X\n", (int)err);
     return &magic;
   }
 
@@ -54,12 +54,12 @@ void* da_thread(void *arg)
   glcDeleteContext(ctx);
   err = glcGetError();
   if (err) {
-    printf("Thread 2 : Unexpected error : 0x%X\n", (int)err);
+    printf("Thread 2: Unexpected error: 0x%X\n", (int)err);
     return &magic;
   }
   /* Check that the context has not been deleted yet. */
   if (!glcIsContext(ctx)) {
-    printf("Thread 2 : Unexpected deletion of context %d\n", (int)ctx);
+    printf("Thread 2: Unexpected deletion of context %d\n", (int)ctx);
     return &magic;
   }
 
@@ -83,22 +83,22 @@ int main(int argc, char **argv)
   glcContext(ctx);
   err = glcGetError();
   if (err) {
-    printf("Main Thread : Unexpected error : 0x%X\n", (int)err);
+    printf("Main Thread: Unexpected error: 0x%X\n", (int)err);
     return -1;
   }
 
   if (pthread_create(&thread, NULL, da_thread, NULL)) {
-    printf("Main Thread : Failed to create pthread\n");
+    printf("Main Thread: Failed to create pthread\n");
     return -1;
   }
 
   if (pthread_join(thread, &return_value)) {
-    printf("Main Thread : Failed to join Thread 2\n");
+    printf("Main Thread: Failed to join Thread 2\n");
     return -1;
   }
 
   if (return_value) {
-    printf("Main Thread : An error occured in Thread 2\n");
+    printf("Main Thread: An error occured in Thread 2\n");
     return -1;
   }
 
@@ -106,7 +106,7 @@ int main(int argc, char **argv)
    * the context 'ctx' still exists.
    */
   if (!glcIsContext(ctx)) {
-    printf("Main Thread : Unexpected deletion of context 'ctx'\n");
+    printf("Main Thread: Unexpected deletion of context 'ctx'\n");
     return -1;
   }
 
@@ -116,11 +116,11 @@ int main(int argc, char **argv)
   glcContext(ctx2);
   /* Verify that the context has been deleted */
   if (glcIsContext(ctx)) {
-    printf("Main Thread : Pending deletion of context 'ctx' has not been executed\n");
+    printf("Main Thread: Pending deletion of context 'ctx' has not been executed\n");
     return -1;
   }
 
-  /* Same as above (pending deletion of a context) but a little different :
+  /* Same as above (pending deletion of a context) but a little different:
    * - The deletion is now requested in the thread that owns the context
    * - glcContext(0) is called which means that the current context will be
    *   released and no other context will be made current (hence a different
@@ -129,7 +129,7 @@ int main(int argc, char **argv)
   glcDeleteContext(ctx2);
   err = glcGetError();
   if (err) {
-    printf("Main Thread : Unexpected GLC error 0x%x\n", (int)err);
+    printf("Main Thread: Unexpected GLC error 0x%x\n", (int)err);
     return -1;
   }
 
@@ -137,7 +137,7 @@ int main(int argc, char **argv)
   glcContext(0);
   /* Check that 'ctx2' has been deleted */
   if (glcIsContext(ctx2)) {
-    printf("Main Thread : Pending deletion of context 'ctx2' has not been executed\n");
+    printf("Main Thread: Pending deletion of context 'ctx2' has not been executed\n");
     return -1;
   }
 

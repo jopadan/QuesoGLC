@@ -140,7 +140,7 @@ static GLboolean __glcCheckHashValue(FcFontSet* GLC_UNUSED_ARG(inFontSet),
 
 
 
-/* Constructor of the object : it allocates memory and initializes the member
+/* Constructor of the object: it allocates memory and initializes the member
  * of the new object.
  */
 __GLCmaster* __glcMasterCreate(const GLint inMaster,

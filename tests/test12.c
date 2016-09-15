@@ -19,7 +19,7 @@
 /* $Id$ */
 
 /** \file
- * Regression test for bug #1987563 (reported by GenPFault) :
+ * Regression test for bug #1987563 (reported by GenPFault):
  *
  * glcEnable(GLC_KERNING_QSO) does not enable kerning.
  * Microsoft Word 2003 and the official Freetype tutorial kerning algorithm

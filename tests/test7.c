@@ -38,7 +38,7 @@ static char* string = "Hello";
 #define CheckError() \
   err = glcGetError(); \
   if (err) { \
-    printf("Unexpected error : 0x%X\n", err); \
+    printf("Unexpected error: 0x%X\n", err); \
     return -1; \
   }
 
@@ -191,8 +191,8 @@ int main(int argc, char **argv) {
       printf("%f %f %f %f\n", baseline1[0], baseline1[1], baseline1[2],
 	     baseline1[3]);
       font = glcGetListi(GLC_FONT_LIST, 0);
-      printf("Family : %s\n", (char*)glcGetFontc(font, GLC_FAMILY));
-      printf("Face : %s\n", (char*)glcGetFontFace(font));
+      printf("Family: %s\n", (char*)glcGetFontc(font, GLC_FAMILY));
+      printf("Face: %s\n", (char*)glcGetFontFace(font));
       return -1;
     }
   }
@@ -235,15 +235,15 @@ int main(int argc, char **argv) {
     CheckError();
 
     if (!glcGetFontMap(font, ' ')) {
-      printf("INFO : Family %s %s has no space character\n",
+      printf("INFO: Family %s %s has no space character\n",
 	     (char*)glcGetFontc(font, GLC_FAMILY), (char*)glcGetFontFace(font));
       continue;
     }
 
     if (!glcGetCharMetric(' ', GLC_BOUNDS, boundingBox1)) {
       printf("Failed to get the bounding box of the space character\n");
-      printf("Family : %s\n", (char*)glcGetFontc(font, GLC_FAMILY));
-      printf("Face : %s\n", (char*)glcGetFontFace(font));
+      printf("Family: %s\n", (char*)glcGetFontc(font, GLC_FAMILY));
+      printf("Face: %s\n", (char*)glcGetFontFace(font));
       return -1;
     }
 
@@ -251,8 +251,8 @@ int main(int argc, char **argv) {
 
     if (!glcGetCharMetric(' ', GLC_BASELINE, baseline1)) {
       printf("Failed to get the baseline of the space character\n");
-      printf("Family : %s\n", (char*)glcGetFontc(font, GLC_FAMILY));
-      printf("Face : %s\n", (char*)glcGetFontFace(font));
+      printf("Family: %s\n", (char*)glcGetFontc(font, GLC_FAMILY));
+      printf("Face: %s\n", (char*)glcGetFontFace(font));
       return -1;
     }
 
@@ -270,8 +270,8 @@ int main(int argc, char **argv) {
         printf("Right and left side of the baseline are swapped\n");
         printf("%f %f %f %f\n", baseline1[0], baseline1[1], baseline1[2],
                baseline1[3]);
-	printf("Family : %s\n", (char*)glcGetFontc(font, GLC_FAMILY));
-	printf("Face : %s\n", (char*)glcGetFontFace(font));
+	printf("Family: %s\n", (char*)glcGetFontc(font, GLC_FAMILY));
+	printf("Face: %s\n", (char*)glcGetFontFace(font));
         return -1;
       }
     }

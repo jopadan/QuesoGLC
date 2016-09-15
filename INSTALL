@@ -1,10 +1,10 @@
 These are the instructions to build QuesoGLC on POSIX platforms. If you want to
 build QuesoGLC on Windows, see INSTALL.win
 
-1. What do you need in order to build QuesoGLC :
+1. What do you need in order to build QuesoGLC:
 ================================================
 
-1.1 Tools/headers/libraries that are mandatory :
+1.1 Tools/headers/libraries that are mandatory:
 ------------------------------------------------
 
 QuesoGLC depends on tools and libraries that are now widely used in the
@@ -29,11 +29,11 @@ platform. If not, you can get them on Internet and build them on your system.
 	QuesoGLC's build process heavily rely on this tool. You must install it
 	first.
 
-1.2 Tools/headers/libraries that are optional :
+1.2 Tools/headers/libraries that are optional:
 -----------------------------------------------
 
 QuesoGLC can be safely built and used without GLUT. However, some test programs
-need GLUT in order to display OpenGL graphics : if GLUT is not installed on your
+need GLUT in order to display OpenGL graphics: if GLUT is not installed on your
 system, the examples will not build.
 Doxygen is a tool to generate the docs, you need it if you want to generate the
 documentation yourself; otherwise you can get the reference manual of QuesoGLC
@@ -51,7 +51,7 @@ web site (http://quesoglc.sourceforge.net).
 What shall I do now ?
 ==============================================================
 
-2.1. Build the library and the examples :
+2.1. Build the library and the examples:
 -----------------------------------------
 
 Simply type
@@ -62,21 +62,21 @@ Simply type
 
 on the command line to configure, build and install QuesoGLC on your
 system. Note that the default installation path is "/usr/local". If you want to
-install QuesoGLC to another location, use the --prefix option of configure :
+install QuesoGLC to another location, use the --prefix option of configure:
 
   ./configure --prefix=/another/location
 
 By default, both the static and the dynamic library are built, but if you only
 want the static library you can use the --disable-shared option of the
-configure script :
+configure script:
 
   ./configure --disable-shared
 
-For more informations about the options of the configure script, just type :
+For more informations about the options of the configure script, just type:
 
   ./configure --help
 
-2.2 Build the docs (optional) :
+2.2 Build the docs (optional):
 -------------------------------
 
 You may also want to build the documentation; QuesoGLC uses Doxygen that does
@@ -106,7 +106,7 @@ or
 
 setenv GLC_PATH /usr/lib/X11/fonts/Type1:/path/to/another/font/directory
 
-Note : the path /usr/lib/X11/fonts/Type1 usually leads to Type1 fonts on almost
+Note: the path /usr/lib/X11/fonts/Type1 usually leads to Type1 fonts on almost
 all X-window flavor.
 
 4. Is that really all ?

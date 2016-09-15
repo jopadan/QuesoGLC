@@ -22,7 +22,7 @@
 
 /** \file
  * defines the object __GLCglyph which caches all the data needed for a given
- * glyph : display list, texture, bounding box, advance, index in the font
+ * glyph: display list, texture, bounding box, advance, index in the font
  * file, etc.
  */
 
@@ -31,7 +31,7 @@
 
 
 
-/* Constructor of the object : it allocates memory and initializes the member
+/* Constructor of the object: it allocates memory and initializes the member
  * of the new object.
  * The user must give the index of the glyph in the font file and its Unicode
  * codepoint.

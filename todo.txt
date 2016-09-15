@@ -11,7 +11,7 @@ really needed.
    2.1. The so-called "bidi" algorithm have to be included in order to handle
         strings that are coded in multiple languages
    2.2. (?) QuesoGLC should support the BOM (Byte Order Mask) at the beginning
-        of a string (0xFEFF : legal character, 0xFFFE :  illegal character)
+        of a string (0xFEFF: legal character, 0xFFFE:  illegal character)
    2.3. (?) QuesoGLC should support the combining characters (see technical note
 	UAX #15 "Unicode Normalization" on the Unicode web site).
    2.4. QuesoGLC should be conformant with Unicode standard and should pass the
@@ -25,7 +25,7 @@ really needed.
    3.4. Use a cache to store the pictures used when drawing glyphs with
 	GLC_BITMAP
 4. (?) Use setjmp/longjmp to manage memory-related errors.
-5. Try to optimize texture memory : draw several glyphs on each texture in
+5. Try to optimize texture memory: draw several glyphs on each texture in
    order to minimize unused texture space.
 6. Try to make Fontconfig optional, QuesoGLC should use the X font server (xfs)
    and 'fonts.dir' files to locate files if Fontconfig is not available.

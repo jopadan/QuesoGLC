@@ -19,7 +19,7 @@
 /* $Id$ */
 
 /** \file mainpage.dox
- * General documentation : this file contains documentation used to introduce
+ * General documentation: this file contains documentation used to introduce
  * the source documentation. It also serves for the web site.
  */
 
@@ -33,7 +33,7 @@ interface (API).
 \image latex screenshot.eps "The glclogo example by Gerard Lanois rendered with QuesoGLC" width=10cm
 
 The character rendering services provided by GLC has some significant
-advantages over platform specific interface such as GLX or WGL :
+advantages over platform specific interface such as GLX or WGL:
 -# The GLC API is platform independent. Since most nontrivial GL applications
    render characters, GLC is an important step toward the goal of truly
    portable GL applications.
@@ -86,7 +86,7 @@ So far, Fontconfig is mandatory in order to build and run the QuesoGLC library.
 However, it is expected that the Fontconfig dependency will be removed in the
 future for Windows and Mac OSX platforms.
 \section qusers QuesoGLC users
-QuesoGLC users are :
+QuesoGLC users are:
 
 -# <a href="http://chromium-bsu.sourceforge.net">Chromium B.S.U.</a> is a fast
    paced, arcade-style, top-scrolling space shooter.
@@ -145,7 +145,7 @@ to create, manage and bind a context to the current thread are the same for
 every platform that supports GLC.
 
 The first step to use GLC is to create a context which is simply done by the
-code below :
+code below:
 
 \code
 GLint ctx;
@@ -163,7 +163,7 @@ You can create just as many contexts as you want, but one and only one context
 can be used at a given time. Therefore, you must tell GLC which context you
 plan to use, even if you have created only one context. This operation is said
 to "make a context current" or to "bind a context to the current thread". This
-is achieved by calling glcContext() :
+is achieved by calling glcContext():
 
 \code
 glcContext(ctx);
@@ -189,7 +189,7 @@ QuesoGLC uses the Fontconfig library to automagically find the fonts that are
 available on your system. Moreover, the environment variable \c GLC_PATH can be
 used to set up some more default fonts. You may however want GLC to search for
 fonts in additional directories, especially if your application comes with its
-own fonts. This can be achieved with the command glcAppendCatalog() :
+own fonts. This can be achieved with the command glcAppendCatalog():
 
 \code
 // For many Unixes (included Linux), /usr/lib/X11/fonts/Type1/ is a standard
@@ -204,7 +204,7 @@ to the catalog list of GLC.
 \note
 GLC internally manages a list of catalogs (that is, of directories) where it
 will look for directories that contains the font files. You can inspect this
-list with the command glcGetListc() as in the following code :
+list with the command glcGetListc() as in the following code:
 
 \code
 GLint count, i;
@@ -220,10 +220,10 @@ for (i = 0; i \< count; i++)
 \section choosefont Choosing a font
 
 Now, you may want to choose the font that will be used to render your text.
-In GLC, fonts are managed in a very similar way than contexts are : fonts
+In GLC, fonts are managed in a very similar way than contexts are: fonts
 are identified by a unique integer ID, and they need to be made current to
 the context before they are used. Hence, we need first to get an identifier
-which is not used by another font :
+which is not used by another font:
 
 \code
 GLint myFont;
@@ -239,7 +239,7 @@ state variable that select one of the \e faces (e.g. Regular, Italic, Bold,
 Bold Italic, ...) that the font contains.
 
 In our example, we want to use "Palatino Bold" to render the text. This is
-done with the following code :
+done with the following code:
 
 \code
 glcNewFontFromFamily(myFont, "Palatino"); // Select the family of my font
@@ -248,7 +248,7 @@ glcFontFace(myFont, "Bold"); // Select the face of my font
 
 At this stage, a new font "Palatino Bold" which is identified by \c myFont has
 been created in the current GLC context. We now want GLC to use \c myFont
-to render the text :
+to render the text:
 
 \code
 glcFont(myFont);
@@ -256,14 +256,14 @@ glcFont(myFont);
 
 \section rendertext Rendering the text
 
-We have now reached the final step : we are now able to render some text. First,
+We have now reached the final step: we are now able to render some text. First,
 we need to tell OpenGL (yes, OpenGL not GLC !!!) where the characters will be
 rendered. Indeed, when the glcRenderString() command will be executed, GLC
 will issue some GL commands but nothing will be displayed if we do not tell
 OpenGL where to render the string.
 
 By default, QuesoGLC renders fonts at a size of 1 point. If we want our text
-to be readable, we must scale it :
+to be readable, we must scale it:
 
 \code
 // Render the text at a size of 100 points
@@ -272,7 +272,7 @@ glcScale(100.f, 100.f);
 
 If we decide to render text in bitmap mode (which is the default render style
 of GLC), we need to give the raster position and (why not ?) the color of the
-text to OpenGL :
+text to OpenGL:
 
 \code
 glColor3f(1.f, 0.f, 0.f);
@@ -281,7 +281,7 @@ glRasterPos2f(50.f, 50.f);
 
 Now, our text will be rendered at coordinates (50, 50) in red color.
 
-It is time now to render the famous <em>"Hello world!"</em> string :
+It is time now to render the famous <em>"Hello world!"</em> string:
 
 \code
 glcRenderString("Hello world!");
@@ -294,7 +294,7 @@ OpenGL window.
 \image latex tutorial.eps "'Hello world!' example" width=10cm
 
 \n
-As a reminder, the complete code is given below :
+As a reminder, the complete code is given below:
 
 \code
 GLint ctx, myFont;
@@ -319,7 +319,7 @@ glRasterPos2f(50.f, 50.f);
 glcRenderString("Hello world!");
 \endcode
 
-Most of the code above is executed once in a program : the GLC setup and the
+Most of the code above is executed once in a program: the GLC setup and the
 font creation are done at the beginning of the program, only the rendering
 part of the code (that is 3 lines !) may be located in the main loop of the
 application.
@@ -364,19 +364,19 @@ read the \ref glyph so that you know what a <em>bounding box</em> and a
 <em>baseline</em> are.
 
 Basically, in order to display some text an application have to go through the
-following stages :
--# The <b>text layout</b> determines where and how the text must be layed out :
+following stages:
+-# The <b>text layout</b> determines where and how the text must be layed out:
 this task can be as simple as computing the location of the word
 <em>"Score"</em> so that it appears in the upper left corner of the screen or
 as complex as laying out a complete document with titles, fonts, styles,
 paragraphs and chapters; just like word processors do.
 -# The <b>text rendering</b> draws the text that has been layed out in the
-previous stage : the application determines which glyphs of which fonts it
+previous stage: the application determines which glyphs of which fonts it
 should use in order to obtain the desired result, eventually converts data into
 graphic primitives, and finally sends the required commands to the output
 device which can be either a screen or a printer.
 
-The GLC API only covers the later stage and provides no layout services : it
+The GLC API only covers the later stage and provides no layout services: it
 has no concept of sentence, line break or paragraph. GLC only manipulates
 \e strings that it views as a succession of characters that has to be rendered
 on the screen in a row. So in order to be able to handle complex text layout the
@@ -415,10 +415,10 @@ below.
 \image latex tutorial2.eps "The result of the tutorial" width=10cm
 
 The code presented in the \ref tutorial tutorial is the starting point of the
-current example. Notice however that it has been slightly changed : a call to
+current example. Notice however that it has been slightly changed: a call to
 the function glcRotate() has been added in order to rotate the text of 10
 degrees counterclockwise. The call to glcAppendCatalog() has also been commented
-out : it is not needed if <a href="http://www.fontconfig.org">Fontconfig</a> has
+out: it is not needed if <a href="http://www.fontconfig.org">Fontconfig</a> has
 been carefully installed (which is the case on most of the recent Linux
 distributions).
 
@@ -451,7 +451,7 @@ glcRenderString("Hello world!");
 GLC defines the geometry of a bounding box by the coordinates [ x<sub>lb</sub>
 y<sub>lb</sub> x<sub>rb</sub> y<sub>rb</sub> x<sub>rt</sub> y<sub>rt</sub>
 x<sub>lt</sub> y<sub>lt</sub> ] of its corners. Each point is given in 2D
-coordinates : \e z is always assumed to be \e 0 and \e w to be \e 1. They are
+coordinates: \e z is always assumed to be \e 0 and \e w to be \e 1. They are
 <em>object coordinates</em> which means that they are affected by both the
 \b GL_MODELVIEW and the \b GL_PROJECTION transformations. Moreover if the value
 of the variable \b GLC_RENDER_STYLE is \b GLC_BITMAP then each point is
@@ -468,7 +468,7 @@ GLfloat bbox[8] = {0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f};
 \endcode
 
 The bounding box of the letter \e "H" is stored in the \e bbox array by calling
-glcGetCharMetric() :
+glcGetCharMetric():
 
 \code
 glcGetCharMetric('H', GLC_BOUNDS, bbox);
@@ -476,7 +476,7 @@ glcGetCharMetric('H', GLC_BOUNDS, bbox);
 
 GLC assumes that the origin of the layout is \e (0,0) but in our example the
 string <em>"Hello world!"</em> has been rendered from the coordinates \e (50,50)
-so we need to translate the bounding box before it is rendered :
+so we need to translate the bounding box before it is rendered:
 
 \code
 // Translate the bbox to the origin of the layout
@@ -498,19 +498,19 @@ already been done by GLC. If we were using a \b GLC_RENDER_STYLE that were not
 
 We now want to draw the bounding box of the 4 last letters of the word \e Hello.
 Although this can be achieved by computing the bounding box of the bounding boxes of each character, this would be rather tedious, so GLC provides a
-function that does the work for us : glcMeasureString().
+function that does the work for us: glcMeasureString().
 
 Actually, glcMeasureString() is designed to measure the whole string metrics
 and can also store on demand the metrics of each character of the string.
 Here we only want the \e "ello" string metrics so we set the first parameter
-of glcMeasureString() to \b GL_FALSE :
+of glcMeasureString() to \b GL_FALSE:
 
 \code
 glcMeasureString(GL_FALSE, "ello");
 \endcode
 
 At this stage, the metrics are computed and stored in the GLC state machine so
-we now have to call glcGetStringMetric() to get the bounding box of the string :
+we now have to call glcGetStringMetric() to get the bounding box of the string:
 
 \code
 glcGetStringMetric(GLC_BOUNDS, bbox);
@@ -518,7 +518,7 @@ glcGetStringMetric(GLC_BOUNDS, bbox);
 
 If we would render the bounding box now, it would be drawn at the wrong
 location since we do not have taken the advance of the character \e "H" into
-account :
+account:
 
 \image html tutorial2_wrong.png "Figure 3 - The bounding box of 'ello' is misplaced"
 \image latex tutorial2_wrong.eps "The bounding box of 'ello' is misplaced" width=10cm
@@ -535,14 +535,14 @@ right-to-left order you must use the opposite of the vector defined above</em>.
 
 An array of 4 floating point numbers must be used in order to store the
 coordinates [ x<sub>l</sub> y<sub>l</sub> x<sub>r</sub> y<sub>r</sub> ] of the
-baseline :
+baseline:
 \code
 GLfloat baseline[4] = {0.f, 0.f, 0.f, 0.f};
 \endcode
 
 Then the baseline of \e "H" is obtained by calling glcGetCharMetric() with the
 second parameter set to \b GLC_BASELINE. The advance of the character is then
-computed and added to the \b GL_MODELVIEW matrix :
+computed and added to the \b GL_MODELVIEW matrix:
 
 \code
 // Get the baseline of the character "H"
@@ -551,7 +551,7 @@ glcGetCharMetric('H', GLC_BASELINE, baseline);
 glTranslatef(baseline[2] - baseline[0], baseline[3] - baseline[1], 0.f);
 \endcode
 
-Afterwards the bounding box of \e "ello" is rendered at the right place :
+Afterwards the bounding box of \e "ello" is rendered at the right place:
 
 \code
 // Render the bounding box
@@ -575,7 +575,7 @@ string on the screen.
 
 Finally, a program that display the bounding boxes of a character and a string
 has been elaborated in this tutorial. Its listing is shown hereafter (the
-commands that bind a GL context to the current thread are not included) :
+commands that bind a GL context to the current thread are not included):
 
 \code
 GLint ctx, myFont, i;
@@ -754,7 +754,7 @@ ligatures like "fi" and "fl" which can be represented by a single glyph). The
 relationships between characters and glyphs can be very complex, but won't be
 discussed in this document. Moreover, some formats use more or less awkward
 schemes to store and access glyphs. For the sake of clarity, we only retain the
-following notions when working with QuesoGLC :
+following notions when working with QuesoGLC:
 
 - A font file contains a set of glyphs; each one can be stored as a bitmap, a
 vector representation or any other scheme (most scalable formats use a
@@ -1102,7 +1102,7 @@ The same conventions apply to strings of text. This means that:
 \section datatypes Data types
 
 GLC uses GL data types and defines additional types, which are listed in the
-table below :
+table below:
 
 <center>
 <table>
@@ -1181,7 +1181,7 @@ With the exception of the per-thread GLC error code and context ID variables,
 all of the GLC state variables that are used during execution of a GLC command
 are stored in the issuing thread's current GLC context.
 
-Each GLC command belongs to one of the following categories : Global, Context,
+Each GLC command belongs to one of the following categories: Global, Context,
 Master, Font, Transformation, Rendering and Measurement. Global commands do
 not use GLC context state variables and can therefore be executed successfully
 if the issuing thread has no current GLC context. All other GLC commands raise

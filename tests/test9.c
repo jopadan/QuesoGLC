@@ -19,7 +19,7 @@
 /* $Id$ */
 
 /** \file
- * Regression test for bug #1754660 (reported by Alok Kulkarni) :
+ * Regression test for bug #1754660 (reported by Alok Kulkarni):
  * Since QuesoGLC version 0.6.0, a call to glcRenderString draws only the
  * first character of the given string when the call is executed as part of a
  * user-defined OpenGL display list.
@@ -126,9 +126,9 @@ int main(int argc, char **argv)
   glcFont(myFont);
   glcRenderStyle(RENDER_STYLE);
 #if (RENDER_STYLE == GLC_TEXTURE)
-  printf("Render style : GLC_TEXTURE");
+  printf("Render style: GLC_TEXTURE");
 #elif (RENDER_STYLE == GLC_TRIANGLE)
-  printf("Render style : GLC_TRIANGLE");
+  printf("Render style: GLC_TRIANGLE");
 #endif
 
 #ifdef WITH_GL_OBJECTS

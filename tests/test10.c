@@ -19,7 +19,7 @@
 /* $Id$ */
 
 /** \file
- * Regression test for bug #1820546 (reported by Alok Kulkarni) :
+ * Regression test for bug #1820546 (reported by Alok Kulkarni):
  *
  * The function glcRenderString works incorrectly when passed an empty string.
  * It is observed to render any previously-rendered string without its first

@@ -46,7 +46,7 @@
  *
  * If there are fonts in the list \b GLC_CURRENT_FONT_LIST, but a match for
  * the character code cannot be found in any of those fonts, GLC goes through
- * the following steps :
+ * the following steps:
  * -# If the value of the variable \b GLC_REPLACEMENT_CODE is nonzero,
  * GLC finds a font that maps the replacement code, and renders the character
  * that the replacement code is mapped to.
@@ -94,7 +94,7 @@
 
 
 /* This internal function renders a glyph using the GLC_BITMAP format */
-/* TODO : Render Bitmap fonts */
+/* TODO: Render Bitmap fonts */
 static void __glcRenderCharBitmap(const __GLCfont* inFont,
 				  const __GLCcontext* inContext,
                                   const GLfloat inScaleX,
@@ -207,7 +207,7 @@ static void __glcRenderCharPixmap(const __GLCfont* inFont,
 
 
 
-/* Internal function that is called to do the actual rendering :
+/* Internal function that is called to do the actual rendering:
  * 'inCode' must be given in UCS-4 format
  */
 static void* __glcRenderChar(const GLint inCode, const GLint inPrevCode,
@@ -798,7 +798,7 @@ void APIENTRY glcRenderString(const GLCchar *inString)
 /** \ingroup render
  *  This command assigns the value \e inStyle to the variable
  *  \b GLC_RENDER_STYLE. Legal values for \e inStyle are defined in the table
- *  below :
+ *  below:
  *  <center>
  *  <table>
  *  <caption>Rendering styles</caption>

@@ -10,7 +10,7 @@ Changes made from the "0.7.0" release to the "0.8.0" release:
 - Feature request #2725659 - Added extension GLC_QSO_render_parameter to tweak
   the curve tesselation tolerance.
 - Fixed bug #2019450 (added a workaround for open source drivers of the Intel
-  chipsets : a bug in the drivers prevent a character to be displayed).
+  chipsets: a bug in the drivers prevent a character to be displayed).
 - Fixed a bug which caused some memory leaks when memory allocation failed
   during the update of the masters.
 - Updated the demo in the examples: extrusion and ligthing have been added.
@@ -39,7 +39,7 @@ Changes made from the "0.7.0" release to the "0.8.0" release:
   the EM square.
 - Fixed a bug which prevented letters l and i to be displayed at small scales
   when GLC_HINTING_QSO and GLC_TEXTURE were enabled.
-- Side effect of the above bug fix : the antialiasing is improved for most
+- Side effect of the above bug fix: the antialiasing is improved for most
   characters since they are no longer located against the edges of the texture.
 - Fixed a bug in glcGenFontID() which could return the ID of an existing font.
 - Fixed a race condition in glcGenContext()
@@ -50,7 +50,7 @@ Changes made from the "0.7.0" release to the "0.8.0" release:
 - Fixed bug #2012579 (Mac OSX Leopard compiling bug) - Thanks to Michael Strobel
   and Tim Baumgartner for the bug report and the patch.
 - Fixed bug #1980982 (Checks for MinGW in the configure script are incomplete)
-- Feature request #1947346 : added files for pkg-config (thanks to Giel
+- Feature request #1947346: added files for pkg-config (thanks to Giel
   van Shijndel and Dennis Schridde for providing them)
 - Fixed bug #1947464 (Warnings are generated when compiling with gcc option
   -Wstrict-prototypes)
@@ -92,7 +92,7 @@ Changes made from the "0.6.5" release to the "0.7.0" release:
 
 * Bertrand Coconnier:
 
-- Added a workaround for bug #1852883 : VBOs are disabled on Mac OSX platforms
+- Added a workaround for bug #1852883: VBOs are disabled on Mac OSX platforms
 - Fixed a bug in the measurement routines which caused the advance vector of
   strings to be wrongly computed.
 - Simplified a bit the GL state management (enabling of GL_TEXTURE_2D should now
@@ -121,9 +121,9 @@ Changes made from the "0.6.5" release to the "0.7.0" release:
   glcGetListi(GLC_BUFFER_OBJECT_LIST_QSO, int).
 - GLC_TEXTURE mode now uses Vertex Buffer Objects (VBO) whenever the gfx card
   supports them
-- Fixed bug #1834256 (part II) : The configure script now guesses the correct
+- Fixed bug #1834256 (part II): The configure script now guesses the correct
   flags to use in order to cross-compile QuesoGLC for MinGW32
-- Fixed bug #1834256 (part I) : An option has been added to the build scripts
+- Fixed bug #1834256 (part I): An option has been added to the build scripts
   in order to disable the build of tests and examples
 - Fixed bug #1640256 (RTL scripts were wrongly supported and the fix introduced
   for release 0.6 was actually a partial fix).
@@ -175,7 +175,7 @@ Changes made from the "0.5" release to the "0.6" release:
 
 * Bertrand Coconnier:
 
-- Fixed bug #1640256 : the advance vector now supports RTL strings
+- Fixed bug #1640256: the advance vector now supports RTL strings
 - Fixed a bug by disabling kerning when two successive characters of a string
   are not rendered with the same font.
 - Modified __glcFaceDescGetFontFormat() to use FT_Get_X11_Font_Format(),
@@ -206,7 +206,7 @@ Changes made from the "0.5" release to the "0.6" release:
 - Cleaned up some internal transactions between private functions in order to
   prevent back and forth translation between a font ID and its corresponding
   structure __GLCfont.
-- Code cleanup :
+- Code cleanup:
   * Fixed the signed/unsigned comparisons
   * Removed unused function parameters
   * Renamed the structure __GLC* instead of __glc* for more consistency with
@@ -231,7 +231,7 @@ Changes made from the "0.5" release to the "0.6" release:
 - QuesoGLC now uses GLEW, the OpenGL Extension Wrangler, to manage OpenGL
   extensions.
 - Removed the master object, uses FontConfig API instead. This allows to not
-  load all the masters in memory : masters are now loaded "just in time" which
+  load all the masters in memory: masters are now loaded "just in time" which
   reduces the memory footprint of QuesoGLC. Furthermore, when GLC_AUTO_FONT is
   enabled, QuesoGLC takes into account the user preferences for FontConfig.
 
@@ -337,7 +337,7 @@ Changes made from the "0.3" release to the "0.4" release:
 - Revamped the code in order to better encapsulate FT_Face in
   __glcFaceDescriptor and FcCharSet in _glcCharMap.
 - The thread local storage is now released when QuesoGLC is unloaded
-- Modified the python script that builds the character names database : the
+- Modified the python script that builds the character names database: the
   number of character names can be given as a command-line parameter.
 - The master object (defined in omaster.h) now uses __glcCharMap instead of
   FcCharSet.
@@ -432,9 +432,9 @@ Changes made from the "0.3" release to the "0.4" release:
   of the spline rather than the chordal distance of the midpoint of the spline
   to determine if the curve needs to be broken or not, thus leading to a better
   handling of antisymmetric cubic curves (such as S-shaped curves). This is also
-  a more severe criterion : some spline curves may now be broken into more
+  a more severe criterion: some spline curves may now be broken into more
   segment curves than before.
-- Revamped the implementation of de Casteljau's algorithm : hard-coded limits of
+- Revamped the implementation of de Casteljau's algorithm: hard-coded limits of
   arrays have been removed. Data are now handled by arrays of variable size
   (__glcArray).
 - Charmaps now use arrays of variable size (__glcArray)
@@ -446,7 +446,7 @@ Changes made from the "0.2" release to the "0.3" release:
   that prevented the replacement code or the character sequence '\<hexcode>' to
   be displayed when QuesoGLC failed to find a font that maps a character code.
 - A GLC_PARAMETER_ERROR is raised if the string type is GLC_UTF8_QSO and one of
-  the following functions is called :
+  the following functions is called:
     * glcGeti(GLC_REPLACEMENT_CODE)
     * the callback function defined by glcCallbackFunc()
     * glcFontMap()
@@ -498,10 +498,10 @@ Changes made from the "0.2" release to the "0.3" release:
 - Textures in the GLC_TEXTURE mode are now stored in GL_ALPHA format in order
   to nicely superimpose the glyph on the background instead of rendering it
   over a black box (bug reported by Brandon Casey)
-- Fixed all GLC functions that uses individual character : if the current
+- Fixed all GLC functions that uses individual character: if the current
   string type is GLC_UTF8, the GLint code is now correctly handled
 - Fixed a bug in the detection of the filename extension of font files
-- Fixed the master creation when glcGenContext() is called : no void master
+- Fixed the master creation when glcGenContext() is called: no void master
   should be created anymore
 - Fixed a bug so that display lists created by QuesoGLC are now deleted when
   glcDeleteGLObjects() is called or when a master is destroyed
@@ -537,7 +537,7 @@ Changes made from the "0.1" release to the "0.2" release:
 Changes made from the "Birth" release to the "0.1" release:
 -----------------------------------------------------------
 
-- Get rid of NDBM : Unicode names are now stored in a const array which is
+- Get rid of NDBM: Unicode names are now stored in a const array which is
   automagically built from buildDB.py
 - FreeType lists are now used for the string list object, master lists,
   font lists, current font lists and texture object lists.
@@ -560,7 +560,7 @@ Changes made from the "Birth" release to the "0.1" release:
   X window commands.
 - The GLC_RESOLUTION parameter now provides a way for the user to choose the
   precision of de Casteljau's algorithm.
-- Fixed a bug that occured when a context was deleted : its entry was not
+- Fixed a bug that occured when a context was deleted: its entry was not
   deleted from the 'stateList' array.
 - QuesoGLC now has the ability to use custom memory manager routines
   (see __glcFree, __glcMalloc and __glcRealloc)

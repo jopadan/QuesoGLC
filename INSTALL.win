@@ -3,10 +3,10 @@ QuesoGLC on POSIX platforms, see INSTALL. If you just want the binaries, DLL,
 headers and import files, a precompiled package is available at
 http://sourceforge.net/projects/quesoglc.
 
-1. What do you need in order to build QuesoGLC :
+1. What do you need in order to build QuesoGLC:
 ================================================
 
-1.1 Tools/headers/libraries that are mandatory :
+1.1 Tools/headers/libraries that are mandatory:
 ------------------------------------------------
 
 QuesoGLC depends on tools and libraries that are now widely used in the
@@ -39,11 +39,11 @@ platform. If not, you can get them on Internet or build them on your system.
 	The package name MinGW 5.0.3 or likely contains all you need. Download
 	it and install it.
 
-1.2 Tools/headers/libraries that are optional :
+1.2 Tools/headers/libraries that are optional:
 -----------------------------------------------
 
 QuesoGLC can be safely built and used without GLUT. However, some test programs
-need GLUT in order to display OpenGL graphics : if GLUT is not installed on your
+need GLUT in order to display OpenGL graphics: if GLUT is not installed on your
 system, the examples will not build.
 Doxygen is a tool to generate the docs, you need it if you want to generate the
 documentation yourself; otherwise you can get the reference manual of QuesoGLC
@@ -64,22 +64,22 @@ web site (http://quesoglc.sourceforge.net).
 What shall I do now ?
 ==============================================================
 
-2.1 First make sure that the MinGW binaries are in your PATH :
+2.1 First make sure that the MinGW binaries are in your PATH:
 --------------------------------------------------------------
 
 If you installed MinGW in the directory C:\MinGW then you must check that
-C:\MinGW\bin is in your PATH. Type :
+C:\MinGW\bin is in your PATH. Type:
 
   echo %PATH%
 
-and if C:\MinGW\bin is not listed in the PATH, then you must add it :
+and if C:\MinGW\bin is not listed in the PATH, then you must add it:
 
   set PATH=%PATH%;C:\MinGW\bin
 
 Of course, if you installed MinGW elsewhere then you must change C:\MinGW\bin
 in the command above by the relevant path.
 
-2.2 Edit the makefile in order to make it suit your needs :
+2.2 Edit the makefile in order to make it suit your needs:
 -----------------------------------------------------------
 
 You may need to change some of the parameters depending on your installation of
@@ -87,11 +87,11 @@ the above mentionned tools and libraries. The parameters are prepended by
 comments that are self explanatory, let them guide you. The makefile is named
 'makefile.mgw' (without the quotes as usual).
 
-2.3 Build the library and the examples :
+2.3 Build the library and the examples:
 ----------------------------------------
 
 At least, you have reached the point where you can build the whole stuff.
-Just run the makefile :
+Just run the makefile:
 
   mingw32-make -f makefile.mgw
 
@@ -99,7 +99,7 @@ It should build everything. Before you try to run the tests, make sure that the
 DLLs (including QuesoGLC's) are either in the same directory than your
 executables or in the system directory (C:\Windows\System or similar).
 
-2.4 Build the docs (optional) :
+2.4 Build the docs (optional):
 -------------------------------
 
 You may also want to build the documentation; QuesoGLC uses Doxygen that does
@@ -125,7 +125,7 @@ environment variable. Depending on your shell the command is either
 
 set GLC_PATH=C:\Windows\fonts;C:\whatever\path\to\another\font\directory
 
-Note : the path C:\Windows\fonts usually leads to every fonts installed on your
+Note: the path C:\Windows\fonts usually leads to every fonts installed on your
 system.
 
 4. Is that really all ?

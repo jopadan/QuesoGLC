@@ -120,16 +120,16 @@ void keyboard(unsigned char key, int x, int y)
 
   switch(key) {
   case 27: /* Escape Key */
-    printf("Textures : %d\n", glcGeti(GLC_TEXTURE_OBJECT_COUNT));
+    printf("Textures: %d\n", glcGeti(GLC_TEXTURE_OBJECT_COUNT));
     for (i = 0; i < glcGeti(GLC_TEXTURE_OBJECT_COUNT); i++)
-      printf("Texture #%d : %d\n", i, glcGetListi(GLC_TEXTURE_OBJECT_LIST, i));
-    printf("Display Lists : %d\n", glcGeti(GLC_LIST_OBJECT_COUNT));
+      printf("Texture #%d: %d\n", i, glcGetListi(GLC_TEXTURE_OBJECT_LIST, i));
+    printf("Display Lists: %d\n", glcGeti(GLC_LIST_OBJECT_COUNT));
     for (i = 0; i < glcGeti(GLC_LIST_OBJECT_COUNT); i++)
-      printf("Display List #%d : %d\n", i,
+      printf("Display List #%d: %d\n", i,
 	     glcGetListi(GLC_LIST_OBJECT_LIST, i));
-    printf("Buffer Objects : %d\n", glcGeti(GLC_BUFFER_OBJECT_COUNT_QSO));
+    printf("Buffer Objects: %d\n", glcGeti(GLC_BUFFER_OBJECT_COUNT_QSO));
     for (i = 0; i < glcGeti(GLC_BUFFER_OBJECT_COUNT_QSO); i++)
-      printf("Buffer Object #%d : %d\n", i,
+      printf("Buffer Object #%d: %d\n", i,
 	     glcGetListi(GLC_BUFFER_OBJECT_LIST_QSO, i));
     glcDeleteGLObjects();
     glcDeleteContext(glcGetCurrentContext());

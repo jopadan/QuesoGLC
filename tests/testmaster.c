@@ -19,7 +19,7 @@
 /* $Id$ */
 
 /** \file
- * Test the GLC functions of the master group. It can be used either :
+ * Test the GLC functions of the master group. It can be used either:
  * - by checking the output
  * - by checking that it does not crash
  * - by checking memory leaks with a tool like valgrind
@@ -51,27 +51,27 @@ int main(int argc, char **argv)
   glcContext(ctx);
 
   numCatalogs = glcGeti(GLC_CATALOG_COUNT);
-  printf("Catalogs : %d\n", numCatalogs);
+  printf("Catalogs: %d\n", numCatalogs);
 
   for (i = 0; i < numCatalogs; i++)
-    printf("Catalog #%d : %s\n", i,
+    printf("Catalog #%d: %s\n", i,
 	   (const char *)glcGetListc(GLC_CATALOG_LIST, i));
 
   numMasters = glcGeti(GLC_MASTER_COUNT);
-  printf("Masters : %d\n", numMasters);
+  printf("Masters: %d\n", numMasters);
 
   for (i = 0; i < numMasters; i++) {
     numFaces = glcGetMasteri(i, GLC_FACE_COUNT);
     printf("Master #%d\n", i);
-    printf("- Vendor : %s\n", (char*)glcGetMasterc(i, GLC_VENDOR));
-    printf("- Format : %s\n", (char*)glcGetMasterc(i, GLC_MASTER_FORMAT));
-    printf("- Face count : %d\n", numFaces);
-    printf("- Family : %s\n", (char*)glcGetMasterc(i, GLC_FAMILY));
-    printf("- Version : %s\n", (char*)glcGetMasterc(i, GLC_VERSION));
-    printf("- Is Fixed Pitch : %s\n", glcGetMasteri(i, GLC_IS_FIXED_PITCH) ?
-	   "YES" : "NO");
+    printf("- Vendor: %s\n", (char*)glcGetMasterc(i, GLC_VENDOR));
+    printf("- Format: %s\n", (char*)glcGetMasterc(i, GLC_MASTER_FORMAT));
+    printf("- Face count: %d\n", numFaces);
+    printf("- Family: %s\n", (char*)glcGetMasterc(i, GLC_FAMILY));
+    printf("- Version: %s\n", (char*)glcGetMasterc(i, GLC_VERSION));
+    printf("- Is Fixed Pitch: %s\n", glcGetMasteri(i, GLC_IS_FIXED_PITCH) ?
+	   "YES": "NO");
     for (j = 0; j < numFaces; j++)
-      printf("- Face #%d : %s\n", j,
+      printf("- Face #%d: %s\n", j,
 	     (char *)glcGetMasterListc(i, GLC_FACE_LIST, j));
     printf("- Master #%d maps 0x%X to %s\n", i, 65 + i,
 	   (char *)glcGetMasterMap(i, 65 + i));

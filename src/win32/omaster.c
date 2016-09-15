@@ -40,7 +40,7 @@ struct __GLCdataRec {
 
 
 
-/* Hash function of strings adapted from "Compilers : Principles, Techniques and
+/* Hash function of strings adapted from "Compilers: Principles, Techniques and
  * Tools - Alfred V. Aho, Ravi Sethi and Jeffrey D. Ullman"
  */
 GLCchar32 __glcHashValue(LPLOGFONT inLogFont)
@@ -93,7 +93,7 @@ static int CALLBACK __glcEnumMasterCreate(ENUMLOGFONTEX* inElfe,
 
 
 
-/* Constructor of the object : it allocates memory and initializes the member
+/* Constructor of the object: it allocates memory and initializes the member
  * of the new object.
  */
 __GLCmaster* __glcMasterCreate(GLint inMaster, __GLCcontext* inContext)

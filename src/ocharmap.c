@@ -30,7 +30,7 @@
 
 
 
-/* Constructor of the object : it allocates memory and initializes the member
+/* Constructor of the object: it allocates memory and initializes the member
  * of the new object.
  * The user must give the FcPattern of the font or the master (which may be NULL
  * in which case the character map will be empty).
@@ -286,7 +286,7 @@ void __glcCharMapRemoveChar(__GLCcharMap* This, const GLint inCode)
 
 
 /* Get the Unicode character name of the character which codepoint is inCode.
- * Note : since the character maps of the fonts can be altered, this function
+ * Note: since the character maps of the fonts can be altered, this function
  * can return 'LATIN CAPITAL LETTER B' whereas inCode contained 65 (which is
  * the Unicode code point of 'LATIN CAPITAL LETTER A').
  */
@@ -389,7 +389,7 @@ GLboolean __glcCharMapHasChar(const __GLCcharMap* This, const GLint inCode)
   /* Parse the array by dichotomy to find the requested character. */
   while (start <= end) {
     middle = (start + end) >> 1;
-    /* The character has been found : return GL_TRUE */
+    /* The character has been found: return GL_TRUE */
     if (element[middle].mappedCode == (GLCulong)inCode)
       return GL_TRUE;
     else if (element[middle].mappedCode > (GLCulong)inCode)
@@ -436,7 +436,7 @@ const GLCchar8* __glcCharMapGetCharNameByIndex(const __GLCcharMap* This,
    * to prevent Fontconfig to store heaps of 0's if the character codes are
    * sparsed.
    *
-   * The codepoint of a character located at bit 'j' of page 'i' is :
+   * The codepoint of a character located at bit 'j' of page 'i' is:
    * 'base + (i << 5) + j'.
    */
   GLCchar32 map[FC_CHARSET_MAP_SIZE];

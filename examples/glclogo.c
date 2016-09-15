@@ -11,13 +11,13 @@
    provided without guarantee or warrantee expressed or implied. This
    program is -not- in the public domain.
 
-   Fixes by Bertrand Coconnier for compilation with gcc :
+   Fixes by Bertrand Coconnier for compilation with gcc:
    - Added #include <stdlib.h> in order to declare exit()
    - Changed the type of main() to int (otherwise gcc complains)
    - Added 'return 0;' at the end of main() in order to be compliant with
      its int type.
    - Removed the unused function my_init()
-   Fixes by Brandon Casey :
+   Fixes by Brandon Casey:
    - GLC_GL_OBJECTS is enabled by default, it should be disabled here since
      display lists are created by the program.
 */

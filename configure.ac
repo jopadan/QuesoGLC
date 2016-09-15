@@ -244,7 +244,7 @@ if (test "x$enable_executables" = "xyes"); then
   AX_CHECK_GLUT
 
   if (test "x$no_glut" = "xyes"); then
-    AC_MSG_WARN([The GLUT library could not be found : example programs and \
+    AC_MSG_WARN([The GLUT library could not be found: example programs and \
                  some tests will not be built])
     EXECUTABLES="tests"
   else

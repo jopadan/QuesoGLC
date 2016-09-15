@@ -207,7 +207,7 @@ struct __GLCcommonAreaRec {
   LONG __glcInitThreadOnce;
 #endif
 
-  /* Evil hack : we use the FT_MemoryRec_ structure definition which is
+  /* Evil hack: we use the FT_MemoryRec_ structure definition which is
    * supposed not to be exported by FreeType headers. So this definition may
    * fail if the guys of FreeType decide not to expose FT_MemoryRec_ anymore.
    * However, this has not happened yet so we still rely on FT_MemoryRec_ ...

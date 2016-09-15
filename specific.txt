@@ -59,7 +59,7 @@ Arbitrary choices:
   display lists each time the user tries to render a character for the first
   time. Afterwards, when the user asks QuesoGLC to render those characters,
   QuesoGLC draws the display lists instead of re-processing the character. This
-  feature has however some limitations :
+  feature has however some limitations:
       - QuesoGLC creates display lists "just on time". This means that no
         display lists are stored for a given character until the user asks
 	QuesoGLC to render it.
@@ -74,9 +74,9 @@ Arbitrary choices:
   default fonts like "Times" or "Courier", even if he did not call
   glcAppendCatalog or glcPrependCatalog.
   QuesoGLC is supposed to run on several different platforms. This portability
-  has a drawback : different platforms do not locate the font files to the same
+  has a drawback: different platforms do not locate the font files to the same
   place. So, in order to get rid of this limitation, QuesoGLC uses an
   environment variable called GLC_PATH. This variable defines the path (in the
-  same format than PATH) to the directories which contain font files : each time
+  same format than PATH) to the directories which contain font files: each time
   that glcGenContext is executed, QuesoGLC looks up in the directories listed
   in GLC_PATH to find fonts files.

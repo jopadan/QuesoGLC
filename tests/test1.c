@@ -46,7 +46,7 @@ int main(int argc, char **argv)
   /* 1. Check that no error is pending */
   err = glcGetError();
   if (err) {
-    printf("GLC error pending : 0x%X\n", (int)err);
+    printf("GLC error pending: 0x%X\n", (int)err);
     return -1;
   }
 
@@ -73,7 +73,7 @@ int main(int argc, char **argv)
     glcDeleteContext(i+1);
     err = glcGetError();
     if (err != GLC_PARAMETER_ERROR) {
-      printf("Unexpected GLC Error : 0x%X\n", (int)err);
+      printf("Unexpected GLC Error: 0x%X\n", (int)err);
       return -1;
     }
   }
@@ -82,12 +82,12 @@ int main(int argc, char **argv)
   for (i=0; i<16; i++) {
     ctx = glcGenContext();
     if (!ctx) {
-      printf("GLC error : %d\n", (int)glcGetError());
+      printf("GLC error: %d\n", (int)glcGetError());
       return -1;
     }
     if (ctx != i+1) {
       printf("Creation of context %d failed\n", (int)ctx);
-      printf("GLC error : %d\n", (int)glcGetError());
+      printf("GLC error: %d\n", (int)glcGetError());
       return -1;
     }
   }
@@ -97,7 +97,7 @@ int main(int argc, char **argv)
   i = 0;
   while (list[i]) {
     if (list[i] != i+1) {
-      printf("GLC error : context %d has not been created\n", i);
+      printf("GLC error: context %d has not been created\n", i);
       return -1;
     }
     i++;
@@ -125,7 +125,7 @@ int main(int argc, char **argv)
   i = 0;
   while (list[i]) {
     if (list[i++] == 5) {
-      printf("GLC error : context 5 is not deleted\n");
+      printf("GLC error: context 5 is not deleted\n");
       return -1;
     }
   }
@@ -136,7 +136,7 @@ int main(int argc, char **argv)
 
   ctx = glcGenContext();
   if (!ctx) {
-    printf("GLC Error : 0x%X\n", (int)glcGetError());
+    printf("GLC Error: 0x%X\n", (int)glcGetError());
     return -1;
   }
 
@@ -151,7 +151,7 @@ int main(int argc, char **argv)
   /* Verify that no error is pending */
   err = glcGetError();
   if (err) {
-    printf("An error is pending : %X\n", (int)err);
+    printf("An error is pending: %X\n", (int)err);
     return -1;
   }
   /* Verify that a context ID less than zero generates
@@ -160,13 +160,13 @@ int main(int argc, char **argv)
   glcContext(-1);
   err = glcGetError();
   if (err != GLC_PARAMETER_ERROR) {
-    printf("1.Unexpected error : %X\n", (int)err);
+    printf("1.Unexpected error: %X\n", (int)err);
     return -1;
   }
   /* Verify that no error is pending */
   err = glcGetError();
   if (err) {
-    printf("Another error is pending : %X\n", (int)err);
+    printf("Another error is pending: %X\n", (int)err);
     return -1;
   }
 
@@ -180,14 +180,14 @@ int main(int argc, char **argv)
   glcContext(i);
   err = glcGetError();
   if (err != GLC_PARAMETER_ERROR) {
-    printf("2.Unexpected error : %X\n", (int)err);
+    printf("2.Unexpected error: %X\n", (int)err);
     return -1;
   }
 
   /* Verify that no error is pending */
   err = glcGetError();
   if (err) {
-    printf("An error is pending : %X\n", (int)err);
+    printf("An error is pending: %X\n", (int)err);
     return -1;
   }
   /* Verify that a context ID less than zero generates
@@ -196,13 +196,13 @@ int main(int argc, char **argv)
   glcDeleteContext(-1);
   err = glcGetError();
   if (err != GLC_PARAMETER_ERROR) {
-    printf("3.Unexpected error : %X\n", (int)err);
+    printf("3.Unexpected error: %X\n", (int)err);
     return -1;
   }
   /* Verify that no error is pending */
   err = glcGetError();
   if (err) {
-    printf("Another error is pending : %X\n", (int)err);
+    printf("Another error is pending: %X\n", (int)err);
     return -1;
   }
 
@@ -212,14 +212,14 @@ int main(int argc, char **argv)
   glcDeleteContext(i);
   err = glcGetError();
   if (err != GLC_PARAMETER_ERROR) {
-    printf("4.Unexpected error : %X\n", (int)err);
+    printf("4.Unexpected error: %X\n", (int)err);
     return -1;
   }
 
   glcContext(ctx);
   err = glcGetError();
   if (err) {
-    printf("5.Unexpected error : %X\n", (int)err);
+    printf("5.Unexpected error: %X\n", (int)err);
     return -1;
   }
 

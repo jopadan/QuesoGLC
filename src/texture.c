@@ -70,7 +70,7 @@ static GLboolean __glcTextureAtlasGetPosition(__GLCcontext* inContext,
 
     /* Not all gfx card are able to use 1024x1024 textures (especially old ones
      * like 3dfx's). Moreover, the texture memory may be scarce when our texture
-     * will be created, so we try several texture sizes : first 1024x1024 then
+     * will be created, so we try several texture sizes: first 1024x1024 then
      * if it fails, we try 512x512 then 256x256. All gfx cards support 256x256
      * textures so if it fails with this texture size, that is because we ran
      * out of texture memory. In such a case, there is nothing we can do, so the
@@ -87,7 +87,7 @@ static GLboolean __glcTextureAtlasGetPosition(__GLCcontext* inContext,
       size >>= 1;
     }
 
-    /* Out of texture memory : abortion */
+    /* Out of texture memory: abortion */
     if (i == 3) {
       __glcRaiseError(GLC_RESOURCE_ERROR);
       return GL_FALSE;
@@ -140,7 +140,7 @@ static GLboolean __glcTextureAtlasGetPosition(__GLCcontext* inContext,
      * glTexSubImage2D() completely clears the texture removing by the way the
      * first character stored in the texture...
      * This workaround displays a dummy character in order to deceive the
-     * stupid drivers. Note that I tried to reduce the code to the minimum : it
+     * stupid drivers. Note that I tried to reduce the code to the minimum: it
      * seems that if any line below is removed, the workaround no longer works
      * around the f***ing bug.
      */
@@ -182,7 +182,7 @@ static GLboolean __glcTextureAtlasGetPosition(__GLCcontext* inContext,
   }
 
   /* At this stage, we want to get a free area in the texture atlas in order to
-   * store a new glyph. Two situations may occur : the atlas is full or not
+   * store a new glyph. Two situations may occur: the atlas is full or not
    */
   if (inContext->atlasCount == inContext->atlasWidth * inContext->atlasHeight) {
     /* The texture atlas is full. We must release an area to re-use it.
@@ -297,7 +297,7 @@ static GLboolean __glcTextureGetImmediate(__GLCcontext* inContext,
   glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA8, width, height, 0, GL_ALPHA,
 	       GL_UNSIGNED_BYTE, NULL);
   /* For immediate mode rendering, always use bilinear filtering even if
-   * GLC_MIPMAP is enabled : we have determined the size of the glyph when it
+   * GLC_MIPMAP is enabled: we have determined the size of the glyph when it
    * will be rendered on the screen and the texture size has been defined
    * accordingly. Hence the mipmap levels would not be used, so there is no
    * point in spending time to compute them.
@@ -334,7 +334,7 @@ static GLboolean __glcTextureGetImmediate(__GLCcontext* inContext,
 
 
 
-/* Internal function that renders glyph in textures :
+/* Internal function that renders glyph in textures:
  * 'inCode' must be given in UCS-4 format
  */
 void __glcRenderCharTexture(const __GLCfont* inFont, __GLCcontext* inContext,
@@ -544,7 +544,7 @@ void __glcRenderCharTexture(const __GLCfont* inFont, __GLCcontext* inContext,
 
       /* Size of the buffer data is equal to the number of glyphes than can be
        * stored in the texture times 20 GLfloat (4 vertices made of 3D
-       * coordinates plus 2D texture coordinates : 4 * (3 + 2) = 20)
+       * coordinates plus 2D texture coordinates: 4 * (3 + 2) = 20)
        */
       glBufferDataARB(GL_ARRAY_BUFFER_ARB,
 		      inContext->atlasWidth * inContext->atlasHeight

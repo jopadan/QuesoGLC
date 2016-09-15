@@ -29,7 +29,7 @@
 
 
 
-/* Constructor of the object : it allocates memory and initializes the member
+/* Constructor of the object: it allocates memory and initializes the member
  * of the new object.
  * The user must give the master 'inParent' which the font will instantiate.
  */
@@ -279,7 +279,7 @@ GLboolean __glcFontFace(__GLCfont* This, const GLCchar8* inFace,
   __GLCmaster *master = NULL;
   __GLCcharMap* newCharMap = NULL;
 
-  /* TODO : Verify if the font has already the required face activated */
+  /* TODO: Verify if the font has already the required face activated */
 
   master = __glcMasterCreate(This->parentMasterID, inContext);
   if (!master)

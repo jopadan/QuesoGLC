@@ -29,7 +29,7 @@
  *  transformed during rendering to produce the desired mapping of the glyph
  *  shape into the GL window coordinate system. Moreover, GLC can return some
  *  metrics for a character and string layouts. The table below lists the
- *  metrics that are available :
+ *  metrics that are available:
  *  <center>
  *  <table>
  *  <caption>Metrics for character and string layout</caption>

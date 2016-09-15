@@ -42,14 +42,14 @@
  *  font can be modified by either adding new entries or changing the mapping
  *  of the characters (see glcFontMap()).
  *
- *  GLC maintains two lists of fonts : \b GLC_FONT_LIST and
+ *  GLC maintains two lists of fonts: \b GLC_FONT_LIST and
  *  \b GLC_CURRENT_FONT_LIST. The former contains every font that have been
  *  created with the commands glcNewFontFromFamily() and glcNewFontFromMaster()
  *  and the later contains the fonts that GLC can use when it renders a
  *  character (notice however that if \b GLC_AUTO_FONT is enabled, GLC may
  *  automatically add new fonts from \b GLC_FONT_LIST to the
  *  \b GLC_CURRENT_FONT_LIST ). Finally, it must be stressed that the order in
- *  which the fonts are stored in the \b GLC_CURRENT_FONT_LIST matters : the
+ *  which the fonts are stored in the \b GLC_CURRENT_FONT_LIST matters: the
  *  first font of the list should be considered as the main font with which
  *  strings are rendered, while other fonts of this list should be seen as
  *  fallback fonts (i.e. fonts that are used when the first font of
@@ -65,7 +65,7 @@
 
 
 
-/* Most font commands need to check that :
+/* Most font commands need to check that:
  *   1. The current thread owns a context state
  *   2. The font identifier 'inFont' is legal
  * This internal function does both checks and returns the pointer to the
@@ -679,7 +679,7 @@ const GLCchar* APIENTRY glcGetFontFace(GLint inFont)
  *  count whose value is the number of elements in the list.
  *
  *  Below are the string list attributes associated with each GLC master and
- *  font and their element count attributes :
+ *  font and their element count attributes:
  * <center>
  * <table>
  * <caption>Master/font string list attributes</caption>

@@ -68,7 +68,7 @@ static GLCchar8* __glcFindIndexList(GLCchar8* inString, const GLuint inIndex,
 
 
 
-/* Constructor of the object : it allocates memory and initializes the member
+/* Constructor of the object: it allocates memory and initializes the member
  * of the new object.
  */
 __GLCcontext* __glcContextCreate(const GLint inContext)
@@ -341,7 +341,7 @@ __GLCcontext* __glcContextCreate(const GLint inContext)
             free(duplicated);
           }
 	  else if (!__glcContextUpdateHashTable(This)) {
-	    /* For some reason the update of the master hash table has failed :
+	    /* For some reason the update of the master hash table has failed:
 	     * the new catalog must then be removed from GLC_CATALOG_LIST.
 	     */
 	    __glcContextRemoveCatalog(This,
@@ -396,7 +396,7 @@ static void __glcFontDestructor(FT_Memory GLC_UNUSED_ARG(inMemory),
 
 
 
-/* Destructor of the object : it first destroys all the GLC objects that have
+/* Destructor of the object: it first destroys all the GLC objects that have
  * been created during the life of the context. Then it releases the memory
  * occupied by the GLC state struct.
  * It does not destroy GL objects associated with the GLC context since we can
@@ -765,7 +765,7 @@ void __glcContextAppendCatalog(__GLCcontext* This, const GLCchar* inCatalog)
   }
 
   if (!__glcContextUpdateHashTable(This)) {
-    /* For some reason the update of the master hash table has failed : the
+    /* For some reason the update of the master hash table has failed: the
      * new catalog must then be removed from GLC_CATALOG_LIST.
      */
     __glcContextRemoveCatalog(This, GLC_ARRAY_LENGTH(This->catalogList));
@@ -802,7 +802,7 @@ void __glcContextPrependCatalog(__GLCcontext* This, const GLCchar* inCatalog)
   }
 
   if (!__glcContextUpdateHashTable(This)) {
-    /* For some reason the update of the master hash table has failed : the
+    /* For some reason the update of the master hash table has failed: the
      * new catalog must then be removed from GLC_CATALOG_LIST.
      */
     __glcContextRemoveCatalog(This, 0);

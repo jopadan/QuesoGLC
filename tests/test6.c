@@ -675,7 +675,7 @@ int main(int argc, char **argv)
     return -1;
 
   if (strcmp(glcGetc(GLC_EXTENSIONS), __glcExtensions)) {
-    printf("GLC_EXTENSIONS : %s\n(expected to be %s)\n",
+    printf("GLC_EXTENSIONS: %s\n(expected to be %s)\n",
     	  (char*)glcGetc(GLC_EXTENSIONS), (char*)__glcExtensions);
     return -1;
   }
@@ -684,7 +684,7 @@ int main(int argc, char **argv)
     return -1;
 
   if (strcmp(glcGetc(GLC_RELEASE), __glcRelease)) {
-    printf("GLC_RELEASE : %s (expected to be %s)\n",
+    printf("GLC_RELEASE: %s (expected to be %s)\n",
     	  (char*)glcGetc(GLC_RELEASE), (char*)__glcRelease);
     return -1;
   }
@@ -693,7 +693,7 @@ int main(int argc, char **argv)
     return -1;
 
   if (strcmp(glcGetc(GLC_VENDOR), __glcVendor)) {
-    printf("GLC_VENDOR : %s (expected to be %s)",
+    printf("GLC_VENDOR: %s (expected to be %s)",
     	  (char*)glcGetc(GLC_VENDOR), (char*)__glcVendor);
     return -1;
   }
@@ -771,7 +771,7 @@ int main(int argc, char **argv)
     return -1;
 
   if (strcmp(glcGetc(GLC_EXTENSIONS), __glcExtensions)) {
-    printf("GLC_EXTENSIONS : %s (expected to be %s)",
+    printf("GLC_EXTENSIONS: %s (expected to be %s)",
     	  (char*)glcGetc(GLC_EXTENSIONS), (char*)__glcExtensions);
     return -1;
   }
@@ -780,7 +780,7 @@ int main(int argc, char **argv)
     return -1;
 
   if (strcmp(glcGetc(GLC_RELEASE), __glcRelease)) {
-    printf("GLC_RELEASE : %s (expected to be %s)",
+    printf("GLC_RELEASE: %s (expected to be %s)",
     	  (char*)glcGetc(GLC_RELEASE), (char*)__glcRelease);
     return -1;
   }
@@ -789,7 +789,7 @@ int main(int argc, char **argv)
     return -1;
 
   if (strcmp(glcGetc(GLC_VENDOR), __glcVendor)) {
-    printf("GLC_VENDOR : %s (expected to be %s)",
+    printf("GLC_VENDOR: %s (expected to be %s)",
     	  (char*)glcGetc(GLC_VENDOR), (char*)__glcVendor);
     return -1;
   }

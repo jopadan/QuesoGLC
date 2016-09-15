@@ -76,7 +76,7 @@ void _fini(void);
  * race conditions can occur. This function must also be used whenever we call
  * a function which is not reentrant (it is the case for some Fontconfig
  * entries).
- * __glcLock/__glcUnlock can be nested : they keep track of the number of
+ * __glcLock/__glcUnlock can be nested: they keep track of the number of
  * time they have been called and the mutex will be released as soon as
  * __glcUnlock() will be called as many time as __glcLock() was.
  */
@@ -417,7 +417,7 @@ void APIENTRY glcDeleteContext(GLint inContext)
   }
 
   if (ctx->isCurrent)
-    /* The context is current to a thread : just mark for deletion */
+    /* The context is current to a thread: just mark for deletion */
     ctx->pendingDelete = GL_TRUE;
   else {
     /* Remove the context from the context list then destroy it */
@@ -513,7 +513,7 @@ void APIENTRY glcContext(GLint inContext)
 
       /* If we get there, this means that the context 'inContext'
        * is already current to one thread (whether it is the issuing thread
-       * or not) : there is nothing else to be done.
+       * or not): there is nothing else to be done.
        */
       __glcUnlock();
       return;
@@ -542,7 +542,7 @@ void APIENTRY glcContext(GLint inContext)
   }
 
   /* Execute pending deletion if any. Here, the variable name 'currentContext'
-   * is not appropriate any more : 'currentContext' used to be the current
+   * is not appropriate any more: 'currentContext' used to be the current
    * context but it has either been replaced by another one or it has been
    * released.
    */
@@ -573,7 +573,7 @@ void APIENTRY glcContext(GLint inContext)
    * current thread. Since this behaviour is not required by the GL specs, such
    * calls may just fail or lead to weird results or even crash the app (on
    * Mac OSX). It is the user's responsibility to make sure that it does not
-   * happen since the GLC specs state clearly that :
+   * happen since the GLC specs state clearly that:
    *   1. glGetString() is called by glcContext()
    *   2. the behaviour of GLC is undefined if no GL context is current while
    *      issuing GL commands.
@@ -680,7 +680,7 @@ GLint* APIENTRY glcGetAllContexts(void)
  *  value.
  *  \note In contrast to the GL function \c glGetError, \e glcGetError only
  *  returns one error, not a list of errors.
- *  \return An error code from the table below : \n\n
+ *  \return An error code from the table below: \n\n
  *   <center>
  *   <table>
  *     <caption>Error codes</caption>

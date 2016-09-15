@@ -124,15 +124,15 @@ int main(int argc, char **argv)
   glcFont(myFont);
   glcRenderStyle(RENDER_STYLE);
 #if (RENDER_STYLE == GLC_TEXTURE)
-  printf("Render style : GLC_TEXTURE");
+  printf("Render style: GLC_TEXTURE");
 #elif (RENDER_STYLE == GLC_TRIANGLE)
-  printf("Render style : GLC_TRIANGLE");
+  printf("Render style: GLC_TRIANGLE");
 #elif (RENDER_STYLE == GLC_LINE)
-  printf("Render style : GLC_LINE");
+  printf("Render style: GLC_LINE");
 #elif (RENDER_STYLE == GLC_BITMAP)
-  printf("Render style : GLC_BITMAP");
+  printf("Render style: GLC_BITMAP");
 #elif (RENDER_STYLE == GLC_PIXMAP_QSO)
-  printf("Render style : GLC_PIXMAP_QSO");
+  printf("Render style: GLC_PIXMAP_QSO");
 #endif
 
 #ifdef WITH_GL_OBJECTS

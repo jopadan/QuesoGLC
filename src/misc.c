@@ -81,7 +81,7 @@ void* __glcRealloc(void *ptr, size_t size)
  * info for GLC.
  * If the '__GLCthreadArea' of the current thread does not exist, it is created
  * and initialized.
- * IMPORTANT NOTE : __glcGetThreadArea() must never use __glcMalloc() and
+ * IMPORTANT NOTE: __glcGetThreadArea() must never use __glcMalloc() and
  *    __glcFree() since those functions could use the exceptContextStack
  *    before it is initialized.
  */

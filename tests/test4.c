@@ -30,12 +30,12 @@
 #define TestErrorCode(func) \
     err = glcGetError(); \
     if (err != GLC_STATE_ERROR) { \
-        printf(#func"() Unexpected error : 0x%x\n", (int)err); \
+        printf(#func"() Unexpected error: 0x%x\n", (int)err); \
         return -1; \
     } \
     err = glcGetError(); \
     if (err) { \
-        printf(#func"Error is not GLC_NONE but : 0x%x\n", (int)err); \
+        printf(#func"Error is not GLC_NONE but: 0x%x\n", (int)err); \
         return -1; \
     }
 
@@ -46,7 +46,7 @@ int main(void)
 
     err = glcGetError();
     if (err) {
-        printf("Unexpected error : 0x%x\n", (int)err);
+        printf("Unexpected error: 0x%x\n", (int)err);
         return -1;
     }
 

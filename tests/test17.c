@@ -35,12 +35,12 @@ GLCAPI GLboolean __glcMemAllocFailOnce;
 #define TestErrorCode(func) \
   err = glcGetError();		  \
   if (err != GLC_STATE_ERROR) {				       \
-    printf(#func"() Unexpected error : 0x%x\n", (int)err);     \
+    printf(#func"() Unexpected error: 0x%x\n", (int)err);     \
     return -1;						       \
   }							       \
   err = glcGetError();					       \
   if (err) {							     \
-    printf(#func"Error is not GLC_NONE but : 0x%x\n", (int)err);     \
+    printf(#func"Error is not GLC_NONE but: 0x%x\n", (int)err);     \
     return -1;							     \
   }
 
@@ -67,7 +67,7 @@ static int testedSequence(const char* description)
   }
   err = glcGetError();
   if (err) {
-    printf("iteration #%d\t%s unexpected error : 0x%x\t glcIsContext()"
+    printf("iteration #%d\t%s unexpected error: 0x%x\t glcIsContext()"
 	   " ctx:%d\n", __glcMemAllocTrigger, description, err, ctx);
     return -1;
   }
@@ -78,7 +78,7 @@ static int testedSequence(const char* description)
   }
   err = glcGetError();
   if (err) {
-    printf("iteration #%d\t%s unexpected error : 0x%x\t glcCurrentContext()"
+    printf("iteration #%d\t%s unexpected error: 0x%x\t glcCurrentContext()"
 	   " ctx:%d\n", __glcMemAllocTrigger, description, err, ctx);
     return -1;
   }
@@ -94,7 +94,7 @@ static int testedSequence(const char* description)
   glcDeleteContext(ctx);
   err = glcGetError();
   if (ctx && err) {
-    printf("iteration #%d\t%s unexpected error : 0x%x\t glcDeleteContext()"
+    printf("iteration #%d\t%s unexpected error: 0x%x\t glcDeleteContext()"
 	   " ctx:%d\n", __glcMemAllocTrigger, description, err, ctx);
     return -1;
   }
@@ -282,7 +282,7 @@ int main(void)
 
   err = glcGetError();
   if (err) {
-    printf("Unexpected error : 0x%x\n", (int)err);
+    printf("Unexpected error: 0x%x\n", (int)err);
     return -1;
   }
 
