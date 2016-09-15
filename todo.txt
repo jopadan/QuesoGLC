@@ -11,7 +11,7 @@ really needed.
    2.1. The so-called "bidi" algorithm have to be included in order to handle
         strings that are coded in multiple languages
    2.2. (?) QuesoGLC should support the BOM (Byte Order Mask) at the beginning
-        of a string (0xFEFF: legal character, 0xFFFE:  illegal character)
+        of a string (0xFEFF: legal character, 0xFFFE: illegal character)
    2.3. (?) QuesoGLC should support the combining characters (see technical note
 	UAX #15 "Unicode Normalization" on the Unicode web site).
    2.4. QuesoGLC should be conformant with Unicode standard and should pass the

@@ -100,7 +100,7 @@ QuesoGLC users are:
    interface and also a GL accelerated 3D view.
 -# <a href="http://sourceforge.net/projects/yogur">Yogur</a> an add-on to the
    OpenGL Character renderer. It provides additional GLC measurement metrics,
-   convertion between string encodings and generic selection of font properties.
+   conversion between string encodings and generic selection of font properties.
 -# <a href="http://sourceforge.net/projects/glguia/">GlGuiA</a> a set of
    packages for Ada 2006 that can be used to create Graphical User Interfaces,
    relaying (almost) only on OpenGL. Hence should be rather
@@ -140,7 +140,7 @@ and so on.
 
 \subsection ctxcreation Context creation
 
-Unlike OpenGL, the GLC context commands are machine independant. The commands
+Unlike OpenGL, the GLC context commands are machine independent. The commands
 to create, manage and bind a context to the current thread are the same for
 every platform that supports GLC.
 
@@ -287,7 +287,7 @@ It is time now to render the famous <em>"Hello world!"</em> string:
 glcRenderString("Hello world!");
 \endcode
 
-That's it ! With a few lines of code, GLC allows to render some text in an
+That's it ! With a few lines of code, GLC allows rendering some text in an
 OpenGL window.
 
 \image html tutorial.png
@@ -331,7 +331,7 @@ use \c glTranslate() and \c glScale() instead of \c glRasterPos() and glcScale()
 This is a basic tutorial which has shown you the basic steps to render some text
 with GLC. However, for the sake of clarity, no error has been checked in the
 example above. In GLC some functions returns a value and this value must be
-checked in order to verify that no error has occured. Nevertheless, the prefered
+checked in order to verify that no error has occurred. Nevertheless, the preferred
 way in GLC to check errors is to use glcGetError().
 
 If you want to change the code above in order to fit it to your needs, the
@@ -365,12 +365,12 @@ read the \ref glyph so that you know what a <em>bounding box</em> and a
 
 Basically, in order to display some text an application have to go through the
 following stages:
--# The <b>text layout</b> determines where and how the text must be layed out:
+-# The <b>text layout</b> determines where and how the text must be laid out:
 this task can be as simple as computing the location of the word
 <em>"Score"</em> so that it appears in the upper left corner of the screen or
 as complex as laying out a complete document with titles, fonts, styles,
 paragraphs and chapters; just like word processors do.
--# The <b>text rendering</b> draws the text that has been layed out in the
+-# The <b>text rendering</b> draws the text that has been laid out in the
 previous stage: the application determines which glyphs of which fonts it
 should use in order to obtain the desired result, eventually converts data into
 graphic primitives, and finally sends the required commands to the output
@@ -395,11 +395,11 @@ middle of a word or between a word and a comma for example). This is where
 \ref measure take place.
 
 <em>General layout management is far beyond the scope of this tutorial but you
-can find some more informations at the <a href="http://www.unicode.org">Unicode
+can find some more information at the <a href="http://www.unicode.org">Unicode
 web site</a></em>.
 
 Another application of the bounding boxes is the visibility test. For example,
-one can get the bouding box of a letter or a string, tranform it into the screen
+one can get the bounding box of a letter or a string, transform it into the screen
 coordinates and test the result against the viewport. If the bounding box is
 located out of the viewport then there is no need to render the string. Such a
 test may help to speed up a program.
@@ -699,7 +699,7 @@ It is a \e must-read for all developers who need to understand digital
 typography, especially if you want to use the QuesoGLC library in your projects.
 
 This document is largely inspired of the FreeType documentation which has been
-slightly modified in order to give valuable informations to QuesoGLC users. For
+slightly modified in order to give valuable information to QuesoGLC users. For
 instance, parts dealing with outline and bitmap management has been removed
 since this does not concern the GLC library.
 
@@ -1144,7 +1144,7 @@ GLC error semantics apply only to GLC errors and not to GL errors or system
 errors (e.g. memory access errors) that occur during GLC command execution. If
 GL errors occur during the execution of a GLC command, they are left unchanged
 to the user. GLC errors and GL errors are orthogonal, that is no GLC error
-depends on the occurence of a GL error. Especially, the GL_OUT_OF_MEMORY error
+depends on the occurrence of a GL error. Especially, the GL_OUT_OF_MEMORY error
 may occur during the execution of a GLC command while no GLC_RESOURCE_ERROR may
 be raised.
 
@@ -1190,7 +1190,7 @@ if the issuing thread has no current GLC context. All other GLC commands raise
 This document identifies explicitly the situations in which GLC may issue GL
 commands. In some GL implementations, the execution behavior of a GL command
 is defined only if the GL client has previously created a GL context and made
-it current to the issuing thread. It is the responsability of the GLC client to
+it current to the issuing thread. It is the responsibility of the GLC client to
 set up the underlying GL implementation such that whenever GLC issues a GL
 command, the execution behavior of that command is defined.
 

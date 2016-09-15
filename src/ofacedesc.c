@@ -22,7 +22,7 @@
  * defines the object __GLCfaceDescriptor that contains the description of a
  * face. One of the purpose of this object is to encapsulate the FT_Face
  * structure from FreeType and to add it some more functionalities.
- * It also allows to centralize the character map management for easier
+ * It also allows centralizing the character map management for easier
  * maintenance.
  */
 
@@ -371,7 +371,7 @@ __GLCglyph* __glcFaceDescGetGlyph(__GLCfaceDescriptor* This,
 #endif
     return NULL;
   }
-  /* Append the new glyph to the list of the glyphes of the face and close the
+  /* Append the new glyph to the list of the glyphs of the face and close the
    * face.
    */
   FT_List_Add(&This->glyphList, (FT_ListNode)glyph);
@@ -383,7 +383,7 @@ __GLCglyph* __glcFaceDescGetGlyph(__GLCfaceDescriptor* This,
 
 
 
-/* Prepare a font to obtain data for glyphes. Size is given via the parameters
+/* Prepare a font to obtain data for glyphs. Size is given via the parameters
  * "inScaleX" and "inScaleY".
  */
 static GLboolean __glcFaceDescPrepareFont(__GLCfaceDescriptor* This,
@@ -786,7 +786,7 @@ GLfloat* __glcFaceDescGetMaxMetric(__GLCfaceDescriptor* This, GLfloat* outVec,
 
 
 
-/* Get the kerning information of a pair of glyphes according to the size given
+/* Get the kerning information of a pair of glyphs according to the size given
  * by inScaleX and inScaleY. The result is returned in outVec.
  */
 GLfloat* __glcFaceDescGetKerning(__GLCfaceDescriptor* This,
@@ -1273,7 +1273,7 @@ GLboolean __glcFaceDescGetBitmap(const __GLCfaceDescriptor* This,
 
 
 
-/* Chek if the outline of the glyph is empty (which means it is a spacing
+/* Check if the outline of the glyph is empty (which means it is a spacing
  * character).
  */
 GLboolean __glcFaceDescOutlineEmpty(__GLCfaceDescriptor* This)

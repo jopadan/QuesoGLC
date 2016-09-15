@@ -41,7 +41,7 @@ by either downloading it from SourceForge or browsing it on-line on the QuesoGLC
 web site (http://quesoglc.sourceforge.net).
 
 * Mark Kilgard's GLUT (www.opengl.org/resources/libraries/glut.html)
-	It provides platform independant support for OpenGL.
+	It provides platform independent support for OpenGL.
 * Doxygen (www.stack.nl/~dimitri/doxygen)
 	A documentation system for several language (including C) that
 	generates the on-line documentation (in HTML) and the off-line
@@ -72,7 +72,7 @@ configure script:
 
   ./configure --disable-shared
 
-For more informations about the options of the configure script, just type:
+For more information about the options of the configure script, just type:
 
   ./configure --help
 

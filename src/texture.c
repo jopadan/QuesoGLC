@@ -87,7 +87,7 @@ static GLboolean __glcTextureAtlasGetPosition(__GLCcontext* inContext,
       size >>= 1;
     }
 
-    /* Out of texture memory: abortion */
+    /* Out of texture memory: abort */
     if (i == 3) {
       __glcRaiseError(GLC_RESOURCE_ERROR);
       return GL_FALSE;
@@ -542,7 +542,7 @@ void __glcRenderCharTexture(const __GLCfont* inFont, __GLCcontext* inContext,
       data[18] = data[13];
       data[19] = 0.f;
 
-      /* Size of the buffer data is equal to the number of glyphes than can be
+      /* Size of the buffer data is equal to the number of glyphs than can be
        * stored in the texture times 20 GLfloat (4 vertices made of 3D
        * coordinates plus 2D texture coordinates: 4 * (3 + 2) = 20)
        */
@@ -569,7 +569,7 @@ void __glcRenderCharTexture(const __GLCfont* inFont, __GLCcontext* inContext,
       glNewList(inGlyph->glObject[1], GL_COMPILE);
       glScalef(1. / (64. * inScaleX), 1. / (64. * inScaleY) , 1.);
 
-      /* Modify the bouding box dimensions to compensate the glScalef() */
+      /* Modify the bounding box dimensions to compensate the glScalef() */
       pixBoundingBox[0] *= inScaleX / GLC_TEXTURE_SIZE;
       pixBoundingBox[1] *= inScaleY / GLC_TEXTURE_SIZE;
       pixBoundingBox[2] *= inScaleX / GLC_TEXTURE_SIZE;

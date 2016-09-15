@@ -24,7 +24,7 @@
  */
 
 /** \defgroup context Context State Commands
- *  Commands to get or modify informations of the context state of the current
+ *  Commands to get or modify information of the context state of the current
  *  thread.
  *
  * GLC refers to the current context state whenever it executes a command.
@@ -331,7 +331,7 @@ void APIENTRY glcDisable(GLCenum inAttrib)
  *    equal to 1.0. A call to glScale3f(1., 1., \e thickness ) can be added
  *    before the rendering commands in order to obtain the desired thickness.
  *  - \b GLC_KERNING_QSO: if enabled, GLC uses kerning information when
- *    rendering or measuring a string. Not all fonts have kerning informations.
+ *    rendering or measuring a string. Not all fonts have kerning information.
  *
  *  \param inAttrib A symbolic constant indicating a GLC attribute.
  *  \sa glcDisable()
@@ -1268,9 +1268,9 @@ GLboolean APIENTRY glcIsEnabled(GLCenum inAttrib)
  *  is \b GLC_UCS1.
  *
  *  \note Currently, the string formats UCS2 and UCS4 are interpreted according
- *  to the underlying platform endianess. If the strings are provided in a
- *  different endianess than the platform's, the client must translate the
- *  strings in the correct endianess.
+ *  to the underlying platform endianness. If the strings are provided in a
+ *  different endianness than the platform's, the client must translate the
+ *  strings in the correct endianness.
  *
  *  The value of a character code in a returned string may exceed the range
  *  of the character encoding selected by \b GLC_STRING_TYPE. In this case,

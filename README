@@ -1,4 +1,4 @@
-This file contains general informations about QuesoGLC. For installation
+This file contains general information about QuesoGLC. For installation
 instructions, see the INSTALL file if you run a POSIX platform and INSTALL.win
 if you run Windows.
 
@@ -111,5 +111,5 @@ More info on QuesoGLC
 ---------------------
 
 Although the GLC specs are the authoritative doc, some details are left
-implementation dependant. Read the file 'specific.txt' for more info about
+implementation dependent. Read the file 'specific.txt' for more info about
 that topic concerning QuesoGLC.

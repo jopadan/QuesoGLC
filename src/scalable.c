@@ -744,7 +744,7 @@ void __glcRenderCharScalable(const __GLCfont* inFont,
     } while (extrude);
   }
 
-  /* For extruded glyphes: close the contours */
+  /* For extruded glyphs: close the contours */
   if ((inContext->renderState.renderStyle == GLC_TRIANGLE
        && inContext->enableState.extrude)
       || (inContext->enableState.glObjects && GLEW_ARB_vertex_buffer_object)) {

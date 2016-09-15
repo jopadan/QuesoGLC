@@ -210,7 +210,7 @@ jmp_buf* __glcExceptionThrow(__glcException exception)
 
 
 
-/* Rethrow an exception that has already been catched */
+/* Rethrow an exception that has already been caught */
 __glcException __glcExceptionCatch(void)
 {
   __GLCthreadArea *area = NULL;

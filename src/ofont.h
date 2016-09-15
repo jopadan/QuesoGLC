@@ -115,7 +115,7 @@ static inline GLboolean __glcFontGetBitmap(const __GLCfont* This,
 				inContext);
 }
 
-/* Chek if the outline of the glyph is empty (which means it is a spacing
+/* Check if the outline of the glyph is empty (which means it is a spacing
  * character).
  */
 static inline GLboolean __glcFontOutlineEmpty(const __GLCfont* This)

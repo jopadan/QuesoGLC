@@ -51,7 +51,7 @@ by either downloading it from SourceForge or browsing it on-line on the QuesoGLC
 web site (http://quesoglc.sourceforge.net).
 
 * Mark Kilgard's GLUT (www.opengl.org/resources/libraries/glut.html)
-	It provides platform independant support for OpenGL. The DLL, lib and
+	It provides platform independent support for OpenGL. The DLL, lib and
 	headers can be downloaded at https://user.xmission.com/~nate/glut.html.
 	Do not forget to read cautiously the instruction about GLUT at the MinGW
 	site (http://www.mingw.org/MinGWiki/index.php/Glut).
@@ -83,7 +83,7 @@ in the command above by the relevant path.
 -----------------------------------------------------------
 
 You may need to change some of the parameters depending on your installation of
-the above mentionned tools and libraries. The parameters are prepended by
+the above mentioned tools and libraries. The parameters are prepended by
 comments that are self explanatory, let them guide you. The makefile is named
 'makefile.mgw' (without the quotes as usual).
 
@@ -125,7 +125,7 @@ environment variable. Depending on your shell the command is either
 
 set GLC_PATH=C:\Windows\fonts;C:\whatever\path\to\another\font\directory
 
-Note: the path C:\Windows\fonts usually leads to every fonts installed on your
+Note: the path C:\Windows\fonts usually leads to every font installed on your
 system.
 
 4. Is that really all ?

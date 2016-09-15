@@ -296,7 +296,7 @@ GLfloat* APIENTRY glcGetCharMetric(GLint inCode, GLCenum inMetric,
  *  glcGetStringCharMetric(), which measures characters as part of a string,
  *  that is, influenced by kerning, ligatures, and so on.
  *
- *  This command evaluates the metrics of every fonts in the
+ *  This command evaluates the metrics of every font in the
  *  \b GLC_CURRENT_FONT_LIST. Fonts that are not listed in
  *  \b GLC_CURRENT_FONT_LIST are ignored.
  *

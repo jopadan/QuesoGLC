@@ -373,7 +373,7 @@ GLint APIENTRY glcGetCurrentContext(void)
 /** \ingroup global
  *  Marks for deletion the GLC context identified by \e inContext. If the
  *  marked context is not current to any client thread, the command deletes
- *  the marked context immediatly. Otherwise, the marked context will be
+ *  the marked context immediately. Otherwise, the marked context will be
  *  deleted during the execution of the next glcContext() command that causes
  *  it not to be current to any client thread.
  *
@@ -383,7 +383,7 @@ GLint APIENTRY glcGetCurrentContext(void)
  *  the GLC context that is destroyed. Even if GLC would keep track of the GL
  *  context, it could lead GLC to temporarily change the GL context, delete the
  *  GL objects, then restore the correct GL context. In order not to adversely
- *  impact the performance of most of programs, it is the responsability of the
+ *  impact the performance of most of programs, it is the responsibility of the
  *  user to call glcDeleteGLObjects() on a GLC context that is intended to be
  *  destroyed.
  *
@@ -564,8 +564,8 @@ void APIENTRY glcContext(GLint inContext)
     return;
 
   /* During its initialization, GLEW calls glGetString(GL_VERSION) and
-   * glGetString(GL_EXTENSIONS) so, not only glewInit() allows to determine the
-   * available extensions, but it also allows to be conformant with GLC specs
+   * glGetString(GL_EXTENSIONS) so, not only glewInit() allows determining the
+   * available extensions, but it also allows conformation with GLC specs
    * which require to issue those GL commands.
    *
    * Notice however that not all OpenGL implementations return a result if the

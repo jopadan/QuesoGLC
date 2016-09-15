@@ -494,9 +494,9 @@ GLint __glcMasterFaceCount(__GLCmaster* This, __GLCcontext* inContext)
 
 
 
-/* This subroutine is called whenever the user wants to access to informations
+/* This subroutine is called whenever the user wants to access to information
  * that have not been loaded from the font files yet. In order to reduce disk
- * accesses, informations such as the master format, full name or version are
+ * accesses, information such as the master format, full name or version are
  * read "just in time" i.e. only when the user requests them.
  */
 GLCchar8* __glcMasterGetInfo(__GLCmaster* This, __GLCcontext* inContext,

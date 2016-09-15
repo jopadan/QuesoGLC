@@ -19,7 +19,7 @@
 /* $Id$ */
 
 /** \file
- * Check that glcGetCharMetric() and glcGetStringCharMetric() return consistant
+ * Check that glcGetCharMetric() and glcGetStringCharMetric() return consistent
  * values.
  */
 

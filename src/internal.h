@@ -76,7 +76,7 @@
 #endif
 
 /* Definition of the GLC_INIT_THREAD macro: it is some sort of an equivalent to
- * XInitThreads(). It allows to get rid of pthread_get_specific()/TlsGetValue()
+ * XInitThreads(). It allows getting rid of pthread_get_specific()/TlsGetValue()
  * when only one thread is used and to fallback to the usual thread management
  * if more than one thread is used.
  * If Thread Local Storage is used the macro does nothing.
@@ -159,7 +159,7 @@ extern void __glcLock(void);
 extern void __glcUnlock(void);
 
 /* Callback function type that is called by __glcProcessChar().
- * It allows to unify the character processing before the rendering or the
+ * It allows unifying the character processing before the rendering or the
  * measurement of a character: __glcProcessChar() is called first (see below)
  * then the callback function of type __glcProcessCharFunc is called by
  * __glcProcessChar(). Two functions are defined according to this type:

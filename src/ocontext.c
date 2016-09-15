@@ -48,7 +48,7 @@ static GLboolean __glcContextUpdateHashTable(__GLCcontext *This);
 static GLCchar8* __glcFindIndexList(GLCchar8* inString, const GLuint inIndex,
 				    const GLCchar8* inSeparator)
 {
-  GLuint occurence = 0;
+  GLuint occurrence = 0;
   GLCchar8* s = inString;
   const GLCchar8* sep = inSeparator;
 
@@ -57,8 +57,8 @@ static GLCchar8* __glcFindIndexList(GLCchar8* inString, const GLuint inIndex,
 
   for (; *s != '\0'; s++) {
     if (*s == *sep) {
-      occurence++;
-      if (occurence == inIndex)
+      occurrence++;
+      if (occurrence == inIndex)
 	break;
     }
   }
@@ -586,7 +586,7 @@ __GLCfont* __glcContextGetFont(__GLCcontext *This, const GLint inCode)
 
 
 
-/* Sometimes informations may need to be stored temporarily by a thread.
+/* Sometimes information may need to be stored temporarily by a thread.
  * The so-called 'buffer' is created for that purpose. Notice that it is a
  * component of the GLC state struct hence its lifetime is the same as the
  * GLC state's lifetime.

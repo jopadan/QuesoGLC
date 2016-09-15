@@ -512,7 +512,7 @@ __GLCfont* __glcContextGetFont(__GLCcontext *This, GLint inCode)
 
 
 
-/* Sometimes informations may need to be stored temporarily by a thread.
+/* Sometimes information may need to be stored temporarily by a thread.
  * The so-called 'buffer' is created for that purpose. Notice that it is a
  * component of the GLC state struct hence its lifetime is the same as the
  * GLC state's lifetime.
@@ -581,7 +581,7 @@ static int CALLBACK __glcEnumUpdateHashTable(ENUMLOGFONTEX* inElfe,
 
 
 
-/* Update the hash table that allows to convert master IDs into Fontconfig
+/* Update the hash table that allows converting master IDs into Fontconfig
  * patterns.
  */
 static void __glcContextUpdateHashTable(__GLCcontext *This)

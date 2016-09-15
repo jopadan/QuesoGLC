@@ -35,7 +35,7 @@ Changes made from the "0.7.0" release to the "0.8.0" release:
   instead of being given back to the texture allocator.
 - Fixed a bug which did not include trailing spaces in the calculation of
   bounding boxes.
-- Fixed a bug which caused artifacts when rendering glyphes that extend beyond
+- Fixed a bug which caused artifacts when rendering glyphs that extend beyond
   the EM square.
 - Fixed a bug which prevented letters l and i to be displayed at small scales
   when GLC_HINTING_QSO and GLC_TEXTURE were enabled.
@@ -104,7 +104,7 @@ Changes made from the "0.6.5" release to the "0.7.0" release:
   a space character with no width.
 - glcGenFontID() now creates an empty font in order to reserve the ID for a
   future use. The new ID can be freed by deleting it with glcDeleteFont().
-- Measurement datas of glyphes are now cached in order to accelerate the
+- Measurement datas of glyphs are now cached in order to accelerate the
   measurement commands when GLC_GL_OBJECTS is enabled.
 - Fonts which belong to the same family are now grouped in the same master.
 - Added project files for Microsoft Visual C++ 2005
@@ -164,7 +164,7 @@ Changes made from the "0.6" release to the "0.6.5" release:
   expansive.
 - Removed the useless QUESOGLC_STATIC_LIBRARY
 - Modified QuesoGLC threading implementation in order to use ELF TLS when
-  available. This allows to discard the expansive calls to pthread_get_specific.
+  available. This allows discarding the expansive calls to pthread_get_specific.
 - Removed the useless QUESOGLC_VERSION macro
 - Removed __glcFaceDescGetCharMap() which were buggy for some fonts. Now uses
   Fontconfig patterns instead. This fixes a bug which created a new font for
@@ -230,8 +230,8 @@ Changes made from the "0.5" release to the "0.6" release:
 - Vertex arrays are now used to render characters in GLC_TRIANGLE mode.
 - QuesoGLC now uses GLEW, the OpenGL Extension Wrangler, to manage OpenGL
   extensions.
-- Removed the master object, uses Fontconfig API instead. This allows to not
-  load all the masters in memory: masters are now loaded "just in time" which
+- Removed the master object, uses the Fontconfig API instead. This allows not
+  loading all the masters in memory: masters are now loaded "just in time" which
   reduces the memory footprint of QuesoGLC. Furthermore, when GLC_AUTO_FONT is
   enabled, QuesoGLC takes into account the user preferences for Fontconfig.
 
@@ -331,9 +331,9 @@ Changes made from the "0.3" release to the "0.4" release:
   for Win32 and colon-separated for POSIX platforms.
 - Added a makefile so that QuesoGLC can be built under Win32
 - Removed the pthread dependency for Win32
-- Added a new __glcGlyph object that allow to cache the display list, the
-  texture, the bouding box of a glyph. Those objects are managed by
-  __glcFaceDescriptor which allow to keep the glyphes as long as the face exists
+- Added a new __glcGlyph object that allows caching the display list, the
+  texture, the bounding box of a glyph. Those objects are managed by
+  __glcFaceDescriptor which allows keeping the glyphs as long as the face exists
 - Revamped the code in order to better encapsulate FT_Face in
   __glcFaceDescriptor and FcCharSet in _glcCharMap.
 - The thread local storage is now released when QuesoGLC is unloaded
@@ -476,8 +476,8 @@ Changes made from the "0.2" release to the "0.3" release:
   parent master attributes
 - Fixed glcGenFontID() so that it returns sensible results when it is called
   several times in a row
-- Fixed glcFontFace() so that the face of every fonts of GLC_CURRENT_FONT_LIST
-  are set to the face identified by 'inFace' if 'inFont' is zero (previously
+- Fixed glcFontFace() so that the face of every font of GLC_CURRENT_FONT_LIST
+  is set to the face identified by 'inFace' if 'inFont' is zero (previously
   only one face was modified when 'inFont' was zero)
 - Fixed glcFont() so that the client state is left unchanged if an error occurs
 - The UTF-8 support is an extension of QuesoGLC, hence the GLC_UTF8 enumerant
@@ -560,7 +560,7 @@ Changes made from the "Birth" release to the "0.1" release:
   X window commands.
 - The GLC_RESOLUTION parameter now provides a way for the user to choose the
   precision of de Casteljau's algorithm.
-- Fixed a bug that occured when a context was deleted: its entry was not
+- Fixed a bug that occurred when a context was deleted: its entry was not
   deleted from the 'stateList' array.
 - QuesoGLC now has the ability to use custom memory manager routines
   (see __glcFree, __glcMalloc and __glcRealloc)

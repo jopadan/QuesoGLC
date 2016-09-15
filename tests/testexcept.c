@@ -52,7 +52,7 @@ int main(void)
   __glcException exc = GLC_NO_EXC;
   GLenum err = glcGetError();
   void *data = NULL;
-  int catched = 0;
+  int caught = 0;
 
   if (err) {
     printf("Unexpected error 0x%x\n", (int)err);
@@ -60,7 +60,7 @@ int main(void)
   }
 
   TRY
-    catched = 0;
+    caught = 0;
   CATCH(exc)
     printf("Unexpected catch in the first try/catch block\nException: %d\n", exc);
     return -1;
@@ -71,18 +71,18 @@ int main(void)
     printf("Exception not thrown in the 2nd try/catch block\n");
     RETURN(-1);
   CATCH(exc)
-    catched = 1;
+    caught = 1;
     if (exc != GLC_MEMORY_EXC) {
       printf("Unexpected exception (%d expected)\n", GLC_MEMORY_EXC);
       return -1;
     }
   END_CATCH
 
-  if (!catched) {
+  if (!caught) {
     printf("Failed to catch the exception thrown from the 2nd TRY/CATCH block\n");
     return -1;
   }
-  catched = 0;
+  caught = 0;
 
   TRY
     data = malloc(10);
@@ -91,18 +91,18 @@ int main(void)
     printf("Exception not thrown in the 3rd TRY/CATCH block\n");
     return -1;
   CATCH(exc)
-    catched = 1;
+    caught = 1;
     if (exc != GLC_MEMORY_EXC) {
       printf("Unexpected exception (%d expected)\n", GLC_MEMORY_EXC);
       return -1;
     }
   END_CATCH
 
-  if (!catched) {
+  if (!caught) {
     printf("Failed to catch the exception thrown from the 3rd TRY/CATCH block\n");
     return -1;
   }
-  catched = 0;
+  caught = 0;
 
   TRY
     data = malloc(10);
@@ -111,7 +111,7 @@ int main(void)
     printf("Exception not thrown in the 4th TRY/CATCH block\n");
     return -1;
   CATCH(exc)
-    catched = 1;
+    caught = 1;
     if (exc != GLC_MEMORY_EXC) {
       printf("Unexpected exception (%d expected)\n", GLC_MEMORY_EXC);
       return -1;
@@ -123,11 +123,11 @@ int main(void)
     return -1;
   }
   distant = 0;
-  if (!catched) {
+  if (!caught) {
     printf("Failed to catch the exception thrown from the 4th TRY/CATCH block\n");
     return -1;
   }
-  catched = 0;
+  caught = 0;
 
   TRY
     data = my_malloc(10);
@@ -135,7 +135,7 @@ int main(void)
     printf("Exception not thrown in the 4th TRY/CATCH block\n");
     return -1;
   CATCH(exc)
-    catched = 1;
+    caught = 1;
     if (exc != GLC_MEMORY_EXC) {
       printf("Unexpected exception (%d expected)\n", GLC_MEMORY_EXC);
       return -1;
@@ -147,12 +147,12 @@ int main(void)
     return -1;
   }
   distant = 0;
-  if (!catched) {
+  if (!caught) {
     printf("Failed to catch the exception thrown from the 4th TRY/CATCH block\n");
     return -1;
   }
-  catched = 0;
+  caught = 0;
 
-  printf("Tests successfull\n");
+  printf("Tests successful\n");
   return 0;
 }

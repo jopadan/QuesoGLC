@@ -22,7 +22,7 @@
  * defines the object __GLCcharMap which manage the charmaps of both the fonts
  * and the masters. One of the purpose of this object is to encapsulate the
  * GLYPHSET structure from Win32 GDI and to add it some more functionalities.
- * It also allows to centralize the character map management for easier
+ * It also allows centralizing the character map management for easier
  * maintenance.
  */
 

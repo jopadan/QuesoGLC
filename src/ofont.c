@@ -149,7 +149,7 @@ GLfloat* __glcFontGetBoundingBox(const __GLCfont *This, const GLint inCode,
 				   inScaleX, inScaleY, inContext))
     return NULL;
 
-  /* Special case for glyphes which have no bounding box (i.e. spaces) */
+  /* Special case for glyphs which have no bounding box (i.e. spaces) */
   if ((fabs(outVec[0] - outVec[2]) < GLC_EPSILON)
       || (fabs(outVec[1] - outVec[3]) < GLC_EPSILON)) {
     GLfloat advance[2] = {0.f, 0.f};

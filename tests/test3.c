@@ -98,7 +98,7 @@ int main(int argc, char **argv)
   }
 
   if (return_value) {
-    printf("Main Thread: An error occured in Thread 2\n");
+    printf("Main Thread: An error occurred in Thread 2\n");
     return -1;
   }
 

@@ -50,8 +50,8 @@ void* __glcMalloc(size_t size)
 
 void __glcFree(void *ptr)
 {
-  /* Not all implementations of free() accept NULL. Moreover this allows to
-   * detect useless calls.
+  /* Not all implementations of free() accept NULL. Moreover this allows
+   * detecting useless calls.
    */
   assert(ptr);
 
@@ -76,7 +76,7 @@ void* __glcRealloc(void *ptr, size_t size)
 
 
 #ifndef HAVE_TLS
-/* Each thread has to store specific informations so they can be retrieved
+/* Each thread has to store specific information so they can be retrieved
  * later. __glcGetThreadArea() returns a struct which contains thread specific
  * info for GLC.
  * If the '__GLCthreadArea' of the current thread does not exist, it is created

@@ -73,7 +73,7 @@ void display(void)
   glcGetCharMetric('H', GLC_BASELINE, baseline);
   glTranslatef(baseline[2] - baseline[0], baseline[3] - baseline[1], 0.f);
 
-  /* Render the bouding box of "ello" */
+  /* Render the bounding box of "ello" */
   glcMeasureString(GL_FALSE, "ello");
   glcGetStringMetric(GLC_BOUNDS, bbox);
   glBegin(GL_LINE_LOOP);

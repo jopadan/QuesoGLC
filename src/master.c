@@ -44,7 +44,7 @@
  *  and \c GLC_FACE_LIST=("Regular", "Bold", "Bold Oblique", "Oblique")
  *
  *  Some GLC commands have a parameter \e inMaster. This parameter is an offset
- *  from the the first element in the GLC master list. The command raises
+ *  from the first element in the GLC master list. The command raises
  *  \b GLC_PARAMETER_ERROR if \e inMaster is less than zero or is greater than
  *  or equal to the value of the variable \b GLC_MASTER_COUNT.
  */

@@ -38,7 +38,7 @@
  * system.
  *
  * If GLC cannot find a font that maps the character code in the list
- * \b GLC_CURRENT_FONT_LIST, it attemps to produce an alternate rendering. If
+ * \b GLC_CURRENT_FONT_LIST, it attempts to produce an alternate rendering. If
  * the value of the boolean variable \b GLC_AUTO_FONT is set to \b GL_TRUE, GLC
  * searches for a font that has the character that maps the character code. If
  * the search succeeds, the font's ID is appended to \b GLC_CURRENT_FONT_LIST
@@ -56,7 +56,7 @@
  * GLC calls the function. The callback function provides the character code to
  * the user and allows loading of the appropriate font. After the callback
  * returns, GLC tries to render the character code again.
- * -# Otherwise, the command attemps to render the character sequence
+ * -# Otherwise, the command attempts to render the character sequence
  * <em>\\\<hexcode\></em>, where \\ is the character REVERSE SOLIDUS (U+5C),
  * \< is the character LESS-THAN SIGN (U+3C), \> is the character GREATER-THAN
  * SIGN (U+3E), and \e hexcode is the character code represented as a sequence
@@ -377,7 +377,7 @@ static void __glcRenderCountedString(__GLCcontext* inContext,
   }
 
 
-  /* Allocate a buffer to store the glyphes informations of the string to be
+  /* Allocate a buffer to store the glyphs information of the string to be
    * rendered.
    */
   if (inContext->enableState.glObjects
