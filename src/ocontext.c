@@ -619,7 +619,7 @@ GLCchar* __glcContextQueryBuffer(__GLCcontext *This, const size_t inSize)
 
 
 /* Update the hash table that which is used to convert master IDs into
- * FontConfig patterns.
+ * Fontconfig patterns.
  */
 static GLboolean __glcContextUpdateHashTable(__GLCcontext *This)
 {

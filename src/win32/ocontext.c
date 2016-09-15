@@ -581,7 +581,7 @@ static int CALLBACK __glcEnumUpdateHashTable(ENUMLOGFONTEX* inElfe,
 
 
 
-/* Update the hash table that allows to convert master IDs into FontConfig
+/* Update the hash table that allows to convert master IDs into Fontconfig
  * patterns.
  */
 static void __glcContextUpdateHashTable(__GLCcontext *This)

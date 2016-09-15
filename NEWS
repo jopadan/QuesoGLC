@@ -230,10 +230,10 @@ Changes made from the "0.5" release to the "0.6" release:
 - Vertex arrays are now used to render characters in GLC_TRIANGLE mode.
 - QuesoGLC now uses GLEW, the OpenGL Extension Wrangler, to manage OpenGL
   extensions.
-- Removed the master object, uses FontConfig API instead. This allows to not
+- Removed the master object, uses Fontconfig API instead. This allows to not
   load all the masters in memory: masters are now loaded "just in time" which
   reduces the memory footprint of QuesoGLC. Furthermore, when GLC_AUTO_FONT is
-  enabled, QuesoGLC takes into account the user preferences for FontConfig.
+  enabled, QuesoGLC takes into account the user preferences for Fontconfig.
 
 * Brandon Casey:
 
@@ -337,7 +337,7 @@ Changes made from the "0.3" release to the "0.4" release:
 - Revamped the code in order to better encapsulate FT_Face in
   __glcFaceDescriptor and FcCharSet in _glcCharMap.
 - The thread local storage is now released when QuesoGLC is unloaded
-- Modified the python script that builds the character names database: the
+- Modified the Python script that builds the character names database: the
   number of character names can be given as a command-line parameter.
 - The master object (defined in omaster.h) now uses __glcCharMap instead of
   FcCharSet.

@@ -45,7 +45,7 @@ web site (http://quesoglc.sourceforge.net).
 * Doxygen (www.stack.nl/~dimitri/doxygen)
 	A documentation system for several language (including C) that
 	generates the on-line documentation (in HTML) and the off-line
-	reference manual (in Latex/PDF/HTML) of QuesoGLC
+	reference manual (in LaTeX/PDF/HTML) of QuesoGLC
 
 2. OK, all those libs and headers are installed on my machine.
 What shall I do now ?
@@ -86,8 +86,8 @@ Doxygen:
   cd docs
   doxygen
 
-This should build the docs in HTML and Latex/PDF (the later needs latex and
-pdflatex to be installed on your system).
+This should build the docs in HTML and LaTeX/PDF (the later needs latex and
+pdflatex commands to be installed on your system).
 
 3. Is that all ?
 ================

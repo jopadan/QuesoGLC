@@ -62,7 +62,7 @@ int main(int argc, char **argv)
    * to another. It even vary from one Linux distribution to another !!! So we
    * can not rely on a font name; instead, we will look for masters with
    * specific properties: here we search for masters that contain the letter
-   * 'A' (which usually means that the whole latin alphabet is available) and
+   * 'A' (which usually means that the whole Latin alphabet is available) and
    * that have at least 2 faces so that we can choose another face than the
    * default one.
    */

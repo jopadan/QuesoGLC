@@ -230,7 +230,7 @@ void _init(void)
   const pthread_once_t onceInit = PTHREAD_ONCE_INIT;
 #endif
 
-  /* Initialize fontconfig */
+  /* Initialize Fontconfig */
   if (!FcInit())
     goto FatalError;
 

@@ -405,7 +405,7 @@ GLboolean __glcCharMapHasChar(const __GLCcharMap* This, const GLint inCode)
 
 
 /* This function counts the number of bits that are set in c1
- * Copied from Keith Packard's fontconfig
+ * Copied from Keith Packard's Fontconfig
  */
 static GLCchar32 __glcCharSetPopCount(const GLCchar32 c1)
 {
