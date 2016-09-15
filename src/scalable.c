@@ -84,7 +84,7 @@ static void __glcComputePixelCoordinates(GLfloat* inCoord,
  * guessing the exact location of the best chord. This could lead to slightly
  * sub-optimal lines, but it provides a fast method for choosing the
  * subdivision point. This guess can be refined by lengthening the lines.
- */ 
+ */
 int __glcdeCasteljauConic(void *inUserData)
 {
   __GLCrendererData *data = (__GLCrendererData *) inUserData;
@@ -225,7 +225,7 @@ int __glcdeCasteljauConic(void *inUserData)
  *   renders cubic Bezier curves using the de Casteljau subdivision algorithm
  *
  * See also remarks about __glcdeCasteljauConic.
- */ 
+ */
 int __glcdeCasteljauCubic(void *inUserData)
 {
   __GLCrendererData *data = (__GLCrendererData *) inUserData;
@@ -699,7 +699,7 @@ void __glcRenderCharScalable(const __GLCfont* inFont,
     }
   }
 
-  /* Now that the tesselation is done, the actual rendering for GLC_TRIANGLE 
+  /* Now that the tesselation is done, the actual rendering for GLC_TRIANGLE
    * begins.
    */
   if (inContext->renderState.renderStyle == GLC_TRIANGLE) {
@@ -761,7 +761,7 @@ void __glcRenderCharScalable(const __GLCfont* inFont,
     /* Prepare the VBO for the contour */
     if (inContext->enableState.glObjects && GLEW_ARB_vertex_buffer_object) {
       GLuint nVertices = 0;
-	
+
       glGenBuffersARB(1, &inGlyph->glObject[3]);
       if (!inGlyph->glObject[3]) {
 	__glcRaiseError(GLC_RESOURCE_ERROR);
@@ -790,7 +790,7 @@ void __glcRenderCharScalable(const __GLCfont* inFont,
 
     /* Compute the vertices and the normals of the contour */
     for (i = 0; i < GLC_ARRAY_LENGTH(rendererData.endContour)-1; i++) {
-      if (!(inContext->enableState.glObjects && GLEW_ARB_vertex_buffer_object)) 
+      if (!(inContext->enableState.glObjects && GLEW_ARB_vertex_buffer_object))
 	glBegin(GL_TRIANGLE_STRIP);
 
       for (j = endContour[i]; j < endContour[i+1]; j++) {

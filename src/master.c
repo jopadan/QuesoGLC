@@ -228,7 +228,7 @@ const GLCchar* APIENTRY glcGetMasterListc(GLint inMaster, GLCenum inAttrib,
  *                  character.
  *  \param inCode The integer ID of character in the master map.
  *  \return The string name of the character that \e inCode is mapped to.
- *  \sa glcGetMasterListc() 
+ *  \sa glcGetMasterListc()
  *  \sa glcGetMasterc()
  *  \sa glcGetMasteri()
  */

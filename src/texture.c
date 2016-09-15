@@ -450,7 +450,7 @@ void __glcRenderCharTexture(const __GLCfont* inFont, __GLCcontext* inContext,
     if (GLEW_VERSION_1_2 || GLEW_SGIS_texture_lod)
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, level - 1);
     else {
-      /* The OpenGL driver does not support the extension GL_EXT_texture_lod 
+      /* The OpenGL driver does not support the extension GL_EXT_texture_lod
        * We must finish the pixmap until the mipmap level is 1x1.
        * Here the smaller mipmap levels will be transparent, no glyph will be
        * rendered.

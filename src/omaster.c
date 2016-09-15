@@ -192,7 +192,7 @@ static GLboolean __glcFindMasterIndex(FcFontSet* GLC_UNUSED_ARG(inFontSet),
 				      int GLC_UNUSED_ARG(inFont), void* inData)
 {
   const __GLCmaster* This = ((__GLCdata*)inData)->master;
-  GLint *idx = ((__GLCdata*)inData)->index; 
+  GLint *idx = ((__GLCdata*)inData)->index;
   FcBool equal = FcPatternEqual(inPattern, This->pattern);
 
   if (equal) {
@@ -287,7 +287,7 @@ static GLboolean __glcCountFaces(FcFontSet* GLC_UNUSED_ARG(inFontSet),
 				 int GLC_UNUSED_ARG(inFont), void* inData)
 {
   const __GLCmaster* This = ((__GLCdata*)inData)->master;
-  GLint *count = ((__GLCdata*)inData)->index; 
+  GLint *count = ((__GLCdata*)inData)->index;
   FcBool equal = FcPatternEqual(inPattern, This->pattern);
 
   if (equal)

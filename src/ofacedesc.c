@@ -1218,7 +1218,7 @@ GLboolean __glcFaceDescGetBitmap(const __GLCfaceDescriptor* This,
     dx -= (inWidth << 5) - (width >> 1);
     dy -= (inHeight << 5) - (height >> 1);
   }
-  
+
   pixmap.width = inWidth;
   pixmap.rows = inHeight;
   pixmap.buffer = (unsigned char*)inBuffer;

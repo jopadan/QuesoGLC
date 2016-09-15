@@ -124,7 +124,7 @@ Changes made from the "0.6.5" release to the "0.7.0" release:
 - Fixed bug #1834256 (part II) : The configure script now guesses the correct
   flags to use in order to cross-compile QuesoGLC for MinGW32
 - Fixed bug #1834256 (part I) : An option has been added to the build scripts
-  in order to disable the build of tests and examples 
+  in order to disable the build of tests and examples
 - Fixed bug #1640256 (RTL scripts were wrongly supported and the fix introduced
   for release 0.6 was actually a partial fix).
 - Improved tests coverage (all GLC functions are now tested at least once with
@@ -266,7 +266,7 @@ Changes made from the "0.5" release to the "0.6" release:
   necessary and breaks if hinting is enabled and rendering bitmap.
 - Fixed kerning adjustment in __glcGetCharMetric().
 - Moved point size adjustments into ofacedesc.c functions to mimic
-  __glcFaceDescGetBoundingBox() 
+  __glcFaceDescGetBoundingBox()
 - Replaced __glcFree() by free() when glc allocation functions didn't allocate
   the memory.
 - Fixed glcExtensions string in test6.c
@@ -343,7 +343,7 @@ Changes made from the "0.3" release to the "0.4" release:
   FcCharSet.
 - Brandon Casey fixed the rendering commands so that the character sequence
   \<0> is not issued when glcRenderString is called with a zero length string
-  (i.e. a string that only contains the null terminator) 
+  (i.e. a string that only contains the null terminator)
 - Brandon Casey fixed the measurement commands so that they give correct values
   for the minimum y coordinate
 - Brandon Casey changed the GL_TEXTURE_ENV_MODE to GL_MODULATE instead of

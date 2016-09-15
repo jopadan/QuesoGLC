@@ -27,7 +27,7 @@
  * // Call measurement commands on a string which includes a character which is
  * // not mapped in the fonts of GLC_CURRENT_FONT_LIST
  * glcMeasureString(GL_FALSE, string);
- * 
+ *
  * glcMeasureString() then modifies the font map while it should not.
  */
 

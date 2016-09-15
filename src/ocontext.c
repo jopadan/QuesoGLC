@@ -820,7 +820,7 @@ GLCchar8* __glcContextGetCatalogPath(const __GLCcontext* This,
     __glcRaiseError(GLC_PARAMETER_ERROR);
     return NULL;
   }
-    
+
   return ((GLCchar8**)GLC_ARRAY_DATA(This->catalogList))[inIndex];
 }
 

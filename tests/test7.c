@@ -206,7 +206,7 @@ int main(int argc, char **argv) {
 
   area = 0.;
   for (i = 0; i < 3; i++) {
-    area += boundingBox1[2*i] * boundingBox1[2*(i+1)+1] 
+    area += boundingBox1[2*i] * boundingBox1[2*(i+1)+1]
       - boundingBox1[2*(i+1)] * boundingBox1[2*i+1];
   }
 

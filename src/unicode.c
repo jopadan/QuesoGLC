@@ -210,7 +210,7 @@ static int __glcUtf8ToUcs1(const GLCchar8* src_orig,
        * Microsoft has not implemented for their operating systems. Return
        * value is length of the string that would have been written into
        * the destination buffer not including the terminating null had their
-       * been enough space. Truncation has occurred if return value is >= 
+       * been enough space. Truncation has occurred if return value is >=
        * destination buffer size. */
       if (*dstlen >= GLC_OUT_OF_RANGE_LEN)
         *dstlen = GLC_OUT_OF_RANGE_LEN - 1;
@@ -263,7 +263,7 @@ static int __glcUtf8ToUcs2(const GLCchar8* src_orig,
        * Microsoft has not implemented for their operating systems. Return
        * value is length of the string that would have been written into
        * the destination buffer not including the terminating null had their
-       * been enough space. Truncation has occurred if return value is >= 
+       * been enough space. Truncation has occurred if return value is >=
        * destination buffer size. */
       if (*dstlen >= GLC_OUT_OF_RANGE_LEN)
         *dstlen = GLC_OUT_OF_RANGE_LEN - 1;

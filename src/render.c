@@ -187,17 +187,17 @@ static void __glcRenderCharPixmap(const __GLCfont* inFont,
 	     NULL);
   }
   else {
-    glBitmap(0, 0, 0.f, 0.f, 
-	     pixBoundingBox[0] >> 6, 
-	     pixBoundingBox[1] >> 6, 
+    glBitmap(0, 0, 0.f, 0.f,
+	     pixBoundingBox[0] >> 6,
+	     pixBoundingBox[1] >> 6,
 	     NULL);
 
     glDrawPixels(pixWidth, pixHeight, GL_ALPHA, GL_UNSIGNED_BYTE, pixBuffer);
 
     glBitmap(0, 0, 0.f, 0.f,
-	     advance[0] * transform[0] + advance[1] * transform[2] - 
+	     advance[0] * transform[0] + advance[1] * transform[2] -
 	     (pixBoundingBox[0] >> 6),
-	     advance[0] * transform[1] + advance[1] * transform[3] - 
+	     advance[0] * transform[1] + advance[1] * transform[3] -
 	     (pixBoundingBox[1] >> 6),
 	     NULL);
   }
@@ -248,7 +248,7 @@ static void* __glcRenderChar(const GLint inCode, const GLint inPrevCode,
       if ((inContext->renderState.renderStyle == GLC_BITMAP)
           || (inContext->renderState.renderStyle == GLC_PIXMAP_QSO))
 	glBitmap(0, 0, 0, 0,
-		 kerning[0] * inContext->bitmapMatrix[0] 
+		 kerning[0] * inContext->bitmapMatrix[0]
 		 + kerning[1] * inContext->bitmapMatrix[2],
 		 kerning[0] * inContext->bitmapMatrix[1]
 		 + kerning[1] * inContext->bitmapMatrix[3],

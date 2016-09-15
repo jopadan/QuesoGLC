@@ -210,12 +210,12 @@ void* __glcProcessChar(__GLCcontext *inContext, const GLint inCode,
 			    inProcessCharData, GL_FALSE);
     inPrevCode->code = repCode;
     inPrevCode->font = font;
-    return ret; 
+    return ret;
   }
   else {
     /* If we get there, we failed to render both the character that inCode maps
      * to and the replacement code. Now, we will try to render the character
-     * sequence "\<hexcode>", where '\' is the character REVERSE SOLIDUS 
+     * sequence "\<hexcode>", where '\' is the character REVERSE SOLIDUS
      * (U+5C), '<' is the character LESS-THAN SIGN (U+3C), '>' is the character
      * GREATER-THAN SIGN (U+3E), and 'hexcode' is inCode represented as a
      * sequence of hexadecimal digits. The sequence has no leading zeros, and
@@ -348,7 +348,7 @@ static void __glcMultMatrices(const GLfloat* inMatrix1,
 
   for (i = 0; i < 4; i++) {
     for (j = 0; j < 4; j++) {
-      outMatrix[i*4+j] = 
+      outMatrix[i*4+j] =
 	inMatrix1[i*4+0]*inMatrix2[0*4+j] +
 	inMatrix1[i*4+1]*inMatrix2[1*4+j] +
 	inMatrix1[i*4+2]*inMatrix2[2*4+j] +

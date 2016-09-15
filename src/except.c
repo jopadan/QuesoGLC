@@ -62,7 +62,7 @@ jmp_buf* __glcExceptionCreateContext(void)
 {
   __GLCthreadArea *area = NULL;
   __GLCexceptContext *xContext = NULL;
- 
+
   area = GLC_GET_THREAD_AREA();
   assert(area);
 

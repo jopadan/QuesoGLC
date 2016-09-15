@@ -1,13 +1,13 @@
 QuesoGLC draft-1
 
-This file contains notes about non-conformance and "extensions" to 
+This file contains notes about non-conformance and "extensions" to
 the GLC specs 0.2
 
 Preface
 -------
 SGI provides the GLC specs 0.2 at www.opengl.org but they have stayed in a draft
 version since 1996 (hence the 0.2 version number) and then they are far from
-completion. Some things are ambiguous or even not documented at all. 
+completion. Some things are ambiguous or even not documented at all.
 
 In order to provide a complete, self-consistent libary, I have been led to take
 some arbitrary decisions on how to implement some aspects of QuesoGLC. These
@@ -44,7 +44,7 @@ Arbitrary choices:
 - Fonts are rendered at the default size of 1 point. If the user wants to
   display his text at a different size, he should use glScale() or glcScale()
   to precise the actual size he wants.
-  
+
 - The GLC API is designed to support a variety of master formats, but the
   current implementation supports only masters in scalable formats that can be
   read by FreeType.

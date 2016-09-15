@@ -766,7 +766,7 @@ static GLint __glcMeasureCountedString(__GLCcontext *inContext,
  *  that instead of rendering a string, the command measures the resulting
  *  layout and stores the measurement in the GLC measurement buffer. The
  *  string comprises the first \e inCount elements of the array \e inString,
- *  which need not be followed by a zero element. 
+ *  which need not be followed by a zero element.
  *
  *  If the value \e inMeasureChars is nonzero, the command computes metrics for
  *  each character and for the overall string, and it assigns the value

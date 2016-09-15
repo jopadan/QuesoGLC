@@ -52,7 +52,7 @@ int main(int argc, char **argv)
 
   numCatalogs = glcGeti(GLC_CATALOG_COUNT);
   printf("Catalogs : %d\n", numCatalogs);
-  
+
   for (i = 0; i < numCatalogs; i++)
     printf("Catalog #%d : %s\n", i,
 	   (const char *)glcGetListc(GLC_CATALOG_LIST, i));
@@ -71,7 +71,7 @@ int main(int argc, char **argv)
     printf("- Is Fixed Pitch : %s\n", glcGetMasteri(i, GLC_IS_FIXED_PITCH) ?
 	   "YES" : "NO");
     for (j = 0; j < numFaces; j++)
-      printf("- Face #%d : %s\n", j, 
+      printf("- Face #%d : %s\n", j,
 	     (char *)glcGetMasterListc(i, GLC_FACE_LIST, j));
     printf("- Master #%d maps 0x%X to %s\n", i, 65 + i,
 	   (char *)glcGetMasterMap(i, 65 + i));

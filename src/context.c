@@ -460,7 +460,7 @@ const GLCchar* APIENTRY glcGetListc(GLCenum inAttrib, GLint inIndex)
    *    then there is no need to care about optimization.
    */
 
-  /* FIXME: Is the use of strlen() adequate here ? 
+  /* FIXME: Is the use of strlen() adequate here ?
    * What if 'catalog' is encoded in UCS2 format or any other weird format ?
    */
   length = strlen((const char*) catalog) + 1;

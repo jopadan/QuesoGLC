@@ -566,14 +566,14 @@ void APIENTRY glcContext(GLint inContext)
   /* During its initialization, GLEW calls glGetString(GL_VERSION) and
    * glGetString(GL_EXTENSIONS) so, not only glewInit() allows to determine the
    * available extensions, but it also allows to be conformant with GLC specs
-   * which require to issue those GL commands. 
+   * which require to issue those GL commands.
    *
    * Notice however that not all OpenGL implementations return a result if the
    * function glGetString() is called while no GL context is bound to the
    * current thread. Since this behaviour is not required by the GL specs, such
    * calls may just fail or lead to weird results or even crash the app (on
    * Mac OSX). It is the user's responsibility to make sure that it does not
-   * happen since the GLC specs state clearly that : 
+   * happen since the GLC specs state clearly that :
    *   1. glGetString() is called by glcContext()
    *   2. the behaviour of GLC is undefined if no GL context is current while
    *      issuing GL commands.

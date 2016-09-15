@@ -20,7 +20,7 @@
 
 /** \file
  * Regression test for bug #1935557
- * 
+ *
  * Fonts are not rendered properly when the resolution is changed while the
  * render style is GLC_TEXTURE.
  *

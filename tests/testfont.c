@@ -171,7 +171,7 @@ int main(int argc, char **argv)
   printf("- Min Mapped Code : %d\n", glcGetMasteri(i,GLC_MIN_MAPPED_CODE));
   printf("- Max Mapped Code : %d\n", glcGetMasteri(i,GLC_MAX_MAPPED_CODE));
   printf("- Char Count : %d\n", last);
-  printf("- Last Character : %s\n", 
+  printf("- Last Character : %s\n",
 	 (char *)glcGetMasterListc(i, GLC_CHAR_LIST, last-1));
 
   glcDeleteFont(font);

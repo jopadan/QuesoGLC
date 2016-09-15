@@ -1,10 +1,10 @@
-/* 
-   glclogo.c - Rendering Adobe Type1 fonts via GLC. 
+/*
+   glclogo.c - Rendering Adobe Type1 fonts via GLC.
 
    cc -o glclogo glclogo.c -lglut -lGLC -lGLU -lGL -lXmu -lX11 -lm
 */
 
-/* 
+/*
    Copyright (c) Gerard Lanois, 1998.
 
    This program is freely distributable without licensing fees and is
@@ -57,7 +57,7 @@ static void check_glc_error(char* routine_name);
 static void draw_letters(void);
 static void access_font();
 
-static void 
+static void
 draw_letters(void)
 {
 
@@ -140,7 +140,7 @@ access_font()
    /* When using SGI's implementation of GLC, don't call glcGetError()   */
    /* after  this  glcGenContext()  call  because  it  always  returns   */
    /* GLC_STATE_ERROR. That's probably a bug in SGI's GLC. This behavior */
-   /* doesn't occur in QuesoGLC.                                         */ 
+   /* doesn't occur in QuesoGLC.                                         */
    /* So, in order to let glclogo run with both implementations, just    */
    /* validate the context. If it's OK, then go for it.                  */
    glc_context = glcGenContext();
@@ -159,9 +159,9 @@ access_font()
 
       /* Choose a master and a face. */
       master_count = glcGeti(GLC_MASTER_COUNT);
-      master = 0; 
+      master = 0;
       for (i = 0; i < master_count; i++) {
-         if (!strcmp((const char*)glcGetMasterc(i, GLC_FAMILY), 
+         if (!strcmp((const char*)glcGetMasterc(i, GLC_FAMILY),
                      master_name)) {
             face_count = glcGetMasteri(i, GLC_FACE_COUNT);
             for (j = 0; j < face_count; j++) {
@@ -175,7 +175,7 @@ access_font()
 
       if (i < master_count) {
         /* Access the font family. */
-        result = glcNewFontFromFamily(glc_font_id, 
+        result = glcNewFontFromFamily(glc_font_id,
                                       glcGetMasterc(master, GLC_FAMILY));
         check_glc_error("glcNewFontFromFamily()");
         if (result == glc_font_id) {
@@ -285,14 +285,14 @@ do_persp(GLboolean use_jitter, GLdouble jx, GLdouble jy)
 }
 
 
-void 
+void
 my_reshape(int w, int h)
 {
    width  = w;
    height = h;
 }
 
-void 
+void
 my_handle_key(GLubyte key, GLint x, GLint y)
 {
   (void)x;
@@ -306,7 +306,7 @@ my_handle_key(GLubyte key, GLint x, GLint y)
 
    default:
       break;
-   } 
+   }
 }
 
 void
@@ -377,7 +377,7 @@ static jitter_point_type j8[] =
 };
 #endif
 
-void 
+void
 my_display(void)
 {
 #ifdef ANTIALIASING
@@ -585,7 +585,7 @@ my_menu(int value)
    glutPostRedisplay();
 }
 
-int 
+int
 main(int argc, char **argv)
 {
 

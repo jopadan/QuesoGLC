@@ -29,12 +29,12 @@ color : #314e96;
 
 A:hover {
 text-decoration: none;
-color : #fe7405;	
+color : #fe7405;
 }
 
-BODY {	
-background-color: #ffffff;	
-margin-top: 10px;	
+BODY {
+background-color: #ffffff;
+margin-top: 10px;
 font-family: Verdana, Arial, sans-serif;
 /*font-size: 14px;*/
 }
@@ -271,8 +271,8 @@ CAPTION { font-weight: bold }
   font-size: 80%;
   color: #606060;
   font-weight: normal;
-} 
-.memnav { 
+}
+.memnav {
   background-color: #e8eef2;
   border: 1px solid #84b0c7;
   text-align: center;
@@ -326,7 +326,7 @@ background-color: #ffffff;
 color: #314e96;
 font-family: Verdana, Arial, sans-serif;
 font-size: 12px;
-font-weight: normal;	
+font-weight: normal;
 border: 1px #314e96 solid;
 }
 
@@ -443,7 +443,7 @@ background-color: #ffffff;
 color: #fe7405;
 font-family: Verdana, Arial, sans-serif;
 font-size: 12px;
-font-weight: normal;	
+font-weight: normal;
 border: 1px #fe7405 solid;
 }
 

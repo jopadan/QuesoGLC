@@ -404,7 +404,7 @@ GLboolean __glcCharMapHasChar(const __GLCcharMap* This, const GLint inCode)
 
 
 
-/* This function counts the number of bits that are set in c1 
+/* This function counts the number of bits that are set in c1
  * Copied from Keith Packard's fontconfig
  */
 static GLCchar32 __glcCharSetPopCount(const GLCchar32 c1)
@@ -431,7 +431,7 @@ const GLCchar8* __glcCharMapGetCharNameByIndex(const __GLCcharMap* This,
    * integer). If a bit is set then the corresponding character is in the
    * character map otherwise it is not.
    * In order not to store pages of 0's, the character map begins at the
-   * character which codepoint is 'base'. 
+   * character which codepoint is 'base'.
    * Pages are also gathered in blocks of 'FC_CHARSET_MAP_SIZE' pages in order
    * to prevent Fontconfig to store heaps of 0's if the character codes are
    * sparsed.
@@ -518,7 +518,7 @@ GLint __glcCharMapGetMaxMappedCode(const __GLCcharMap* This)
     if (map[i]) break;
 
   /* If the map contains no char then something went wrong... */
-  assert(i >= 0); 
+  assert(i >= 0);
 
   /* Parse the bits of the last page in descending order to find the last
    * character of the page
@@ -573,7 +573,7 @@ GLint __glcCharMapGetMinMappedCode(const __GLCcharMap* This)
     if (map[i]) break;
 
   /* If the map contains no char then something went wrong... */
-  assert(i >= 0); 
+  assert(i >= 0);
 
   /* Parse the bits of the first page in ascending order to find the first
    * character of the page

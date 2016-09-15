@@ -22,7 +22,7 @@
  * General documentation : this file contains documentation used to introduce
  * the source documentation. It also serves for the web site.
  */
- 
+
 /** \mainpage QuesoGLC
 \section whatisglc What is GLC ?
 The OpenGL Character Renderer (GLC) is a state machine that provides OpenGL
@@ -183,7 +183,7 @@ to each thread. However a context can only be bound to one thread at a time.
 GLC grabs font files from directories that are called "catalogs" in the GLC
 specifications. Depending on the implementation, a GLC context may or may not
 have default directories where to look for font files and may or may not
-provide some default fonts. 
+provide some default fonts.
 
 QuesoGLC uses the Fontconfig library to automagically find the fonts that are
 available on your system. Moreover, the environment variable \c GLC_PATH can be
@@ -279,7 +279,7 @@ glColor3f(1.f, 0.f, 0.f);
 glRasterPos2f(50.f, 50.f);
 \endcode
 
-Now, our text will be rendered at coordinates (50, 50) in red color. 
+Now, our text will be rendered at coordinates (50, 50) in red color.
 
 It is time now to render the famous <em>"Hello world!"</em> string :
 
@@ -1043,7 +1043,7 @@ the master grid. However, to make it readable at small pixel sizes, hinting
 tends to enlarge its scaled outline in order to keep its three legs distinctly
 visible, resulting in a larger character bitmap.
 
-The glyph metrics are also influenced by the grid-fitting process: 
+The glyph metrics are also influenced by the grid-fitting process:
 
 - The image's width and height are altered. Even if this is only by one pixel,
   it can make a big difference at small pixel sizes.
@@ -1085,7 +1085,7 @@ Likewise, the glyph's "advance width" is the increment to apply to the pen
 position during layout, and is not related to the glyph's "width", which really
 is the glyph's bounding width.
 
-The same conventions apply to strings of text. This means that: 
+The same conventions apply to strings of text. This means that:
 
 - The bounding box of a given string of text doesn't necessarily contain the
   text cursor, nor is the latter located on one of its corners.
