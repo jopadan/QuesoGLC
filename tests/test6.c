@@ -703,7 +703,7 @@ int main(int argc, char **argv)
     return -1;
 
   if (memcmp(glcGetc(GLC_EXTENSIONS), __glcExtensionsUCS2,
-      strlen(__glcExtensions)+1)*2) {
+      (strlen(__glcExtensions)+1)*2)) {
     printf("GLC_EXTENSIONS in UCS2 is wrong\n");
     return -1;
   }
@@ -712,7 +712,7 @@ int main(int argc, char **argv)
     return -1;
 
   if (memcmp(glcGetc(GLC_RELEASE), __glcReleaseUCS2,
-      strlen(__glcRelease)+1)*2) {
+      (strlen(__glcRelease)+1)*2)) {
     printf("GLC_RELEASE in UCS2 is wrong\n");
     return -1;
   }
@@ -721,7 +721,7 @@ int main(int argc, char **argv)
     return -1;
 
   if (memcmp(glcGetc(GLC_VENDOR), __glcVendorUCS2,
-      strlen(__glcVendor)+1)*2) {
+      (strlen(__glcVendor)+1)*2)) {
     printf("GLC_VENDOR in UCS2 is wrong\n");
     return -1;
   }
@@ -735,7 +735,7 @@ int main(int argc, char **argv)
     return -1;
 
   if (memcmp(glcGetc(GLC_EXTENSIONS), __glcExtensionsUCS4,
-      strlen(__glcExtensions)+1)*4) {
+      (strlen(__glcExtensions)+1)*4)) {
     printf("GLC_EXTENSIONS in UCS4 is wrong\n");
     return -1;
   }
@@ -744,7 +744,7 @@ int main(int argc, char **argv)
     return -1;
 
   if (memcmp(glcGetc(GLC_RELEASE), __glcReleaseUCS4,
-      strlen(__glcRelease)+1)*4) {
+      (strlen(__glcRelease)+1)*4)) {
     printf("GLC_RELEASE in UCS4 is wrong\n");
     return -1;
   }
@@ -753,7 +753,7 @@ int main(int argc, char **argv)
     return -1;
 
   if (memcmp(glcGetc(GLC_VENDOR), __glcVendorUCS4,
-      strlen(__glcVendor)+1)*4) {
+      (strlen(__glcVendor)+1)*4)) {
     printf("GLC_VENDOR in UCS4 is wrong\n");
     return -1;
   }
