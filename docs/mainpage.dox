@@ -116,7 +116,7 @@ If you know other projects that use QuesoGLC please let
 
 GLC is a library that provides font services for OpenGL applications.
 When using GLC, there is no need for you to look for font directories, manage
-the font files, load and interpret glyphs data, tesselate polygons, antialias
+the font files, load and interpret glyphs data, tessellate polygons, antialias
 characters and issue GL commands to render text, since GLC takes care of that
 for you.
 

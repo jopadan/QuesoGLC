@@ -420,7 +420,7 @@ static void CALLBACK __glcCombineCallback(GLdouble coords[3],
 
 
 /* Callback function that is called by the GLU when it is rendering the
- * tesselated polygon. This function is needed to convert the indices of the
+ * tessellated polygon. This function is needed to convert the indices of the
  * vertex array into the coordinates of the vertex.
  */
 static void CALLBACK __glcVertexCallback(void* vertex_data, void* inUserData)
@@ -465,7 +465,7 @@ static void CALLBACK __glcBeginCallback(GLenum mode, void* inUserData)
 
 
 /* Callback function that is called by the GLU whenever an error occur during
- * the tesselation of the polygon.
+ * the tessellation of the polygon.
  */
 static void CALLBACK __glcCallbackError(GLenum GLC_UNUSED_ARG(inErrorCode))
 {
@@ -478,7 +478,7 @@ static void CALLBACK __glcCallbackError(GLenum GLC_UNUSED_ARG(inErrorCode))
  * for the GLC_LINE and the GLC_TRIANGLE types. It transforms the outlines of
  * the glyph in polygon contour. If the rendering type is GLC_LINE then the
  * contour is rendered as is and if the rendering type is GLC_TRIANGLE then the
- * contour defines a polygon that is tesselated in triangles by the GLU library
+ * contour defines a polygon that is tessellated in triangles by the GLU library
  * before being rendered.
  */
 void __glcRenderCharScalable(const __GLCfont* inFont,
@@ -627,7 +627,7 @@ void __glcRenderCharScalable(const __GLCfont* inFont,
     }
   }
 
-  /* Tesselate the polygon defined by the contour returned by
+  /* Tessellate the polygon defined by the contour returned by
    * __glcFontOutlineDecompose().
    */
   if (inContext->renderState.renderStyle == GLC_TRIANGLE
@@ -640,7 +640,7 @@ void __glcRenderCharScalable(const __GLCfont* inFont,
       (GLfloat(*)[2])GLC_ARRAY_DATA(rendererData.vertexArray);
     GLdouble coords[3] = {0., 0., 0.};
 
-    /* Initialize the GLU tesselator */
+    /* Initialize the GLU tessellator */
     gluTessProperty(tess, GLU_TESS_WINDING_RULE, GLU_TESS_WINDING_ODD);
     gluTessProperty(tess, GLU_TESS_BOUNDARY_ONLY, GL_FALSE);
 
@@ -671,7 +671,7 @@ void __glcRenderCharScalable(const __GLCfont* inFont,
       gluTessEndContour(tess);
     }
 
-    /* Close the polygon and run the tesselation */
+    /* Close the polygon and run the tessellation */
     gluTessEndPolygon(tess);
 
     /* Free memory */
@@ -699,7 +699,7 @@ void __glcRenderCharScalable(const __GLCfont* inFont,
     }
   }
 
-  /* Now that the tesselation is done, the actual rendering for GLC_TRIANGLE
+  /* Now that the tessellation is done, the actual rendering for GLC_TRIANGLE
    * begins.
    */
   if (inContext->renderState.renderStyle == GLC_TRIANGLE) {
@@ -884,7 +884,7 @@ void __glcRenderCharScalable(const __GLCfont* inFont,
   }
 
   if (inContext->renderState.renderStyle == GLC_LINE) {
-    /* For GLC_LINE, there is no need to tesselate. The vertices are contained
+    /* For GLC_LINE, there is no need to tessellate. The vertices are contained
      * in an array so we use the OpenGL function glDrawArrays().
      */
     int i = 0;

@@ -100,7 +100,7 @@ int main(int argc, char **argv)
     return -1;
   }
   if (glcIsEnabled(GLC_GL_OBJECTS)) {
-    printf("GLC_GL_OBJECTS should be disbled\n");
+    printf("GLC_GL_OBJECTS should be disabled\n");
     return -1;
   }
   if (!glcIsEnabled(GLC_MIPMAP)) {

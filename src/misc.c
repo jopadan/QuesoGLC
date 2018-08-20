@@ -337,7 +337,7 @@ static GLboolean __glcInvertMatrix(const GLfloat* inMatrix, GLfloat* outMatrix)
 
 
 
-/* Mutiply two 4x4 matrices, the operands are stored in inMatrix1 and inMatrix2
+/* Multiply two 4x4 matrices, the operands are stored in inMatrix1 and inMatrix2
  * The result is stored in outMatrix which can be neither inMatrix1 nor
  * inMatrix2.
  */

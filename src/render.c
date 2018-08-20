@@ -955,7 +955,7 @@ void APIENTRY glcResolution(GLfloat inVal)
  *  identified by \e inAttrib which must be chosen in the table below.
  *
  *  - \b GLC_PARAMETRIC_TOLERANCE_QSO specifies the maximum distance, in object
- *    space, between the tesselation line contours and the curves they
+ *    space, between the tessellation line contours and the curves they
  *    approximate. This parameter is only relevant for the \b GLC_LINE and
  *    \b GLC_TRIANGLE rendering types.
  *
