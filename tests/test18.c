@@ -74,10 +74,10 @@ int main(int argc, char **argv)
 
   /* Display the name of the font and cross-check that it does not map string[0]
    */
-  printf("Font #%d: %s\n", font, glcGetFontc(font, GLC_FAMILY));
+  printf("Font #%d: %s\n", font, (char*)glcGetFontc(font, GLC_FAMILY));
   if (glcGetFontMap(font, string[0])) {
     printf("The char 0x%x is mapped in %s while it should not\n", string[0],
-	   glcGetFontc(font, GLC_FAMILY));
+	   (char*)glcGetFontc(font, GLC_FAMILY));
     return -1;
   }
 

@@ -20,24 +20,24 @@
 #
 # $Id$
 
-import urllib, string, sqlite3
+import urllib.request, string, sqlite3
 
-print "Open URL..."
-unicodata = urllib.urlopen("http://www.unicode.org/Public/UNIDATA/UnicodeData.txt")
-print "Read data from URL..."
+print("Open URL...")
+unicodata = urllib.request.urlopen("http://www.unicode.org/Public/UNIDATA/UnicodeData.txt")
+print("Read data from URL...")
 lignes = unicodata.readlines()
-print "Close URL..."
+print("Close URL...")
 unicodata.close()
 
-print "Open SQLite DB..."
+print("Open SQLite DB...")
 connection = sqlite3.connect('quesoglc.db')
 db = connection.cursor()
 db.execute('''create table unicode (rank INTEGER PRIMARY KEY, code INTEGER, name TEXT)''')
 
-print "Write data into SQLite DB..."
+print("Write data into SQLite DB...")
 for s in lignes:
-    liste = string.split(s, ';')
-    code = eval('0x'+liste[0])
+    liste = s.split(';'.encode())
+    code = eval('0x'.encode()+liste[0])
     name = liste[1]
     if name == '<control>':
         continue
@@ -46,4 +46,4 @@ for s in lignes:
 connection.commit()
 db.close()
 
-print "Success !!!"
+print("Success !!!")
