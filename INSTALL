@@ -66,15 +66,25 @@ install QuesoGLC to another location, use the --prefix option of configure:
 
   ./configure --prefix=/another/location
 
-By default, both the static and the dynamic library are built, but if you only
-want the static library you can use the --disable-shared option of the
-configure script:
-
-  ./configure --disable-shared
-
 For more information about the options of the configure script, just type:
 
   ./configure --help
+
+On latest mainstream AMD64 multilib Unix-like platforms the most common configuration is:
+
+64-bit:
+
+  COMMON_FLAGS="-march=native -mfpmath=sse -O3" \
+  CFLAGS="${COMMON_FLAGS} -std=gnu2x" \
+  CXXFLAGS="${COMMON_FLAGS} -std=gnu++26" \
+  ./configure --prefix=/usr --libdir=/usr/lib64 --enable-static
+
+32-bit:
+
+  COMMON_FLAGS="-march=native -mfpmath=sse -O3 -m32" \
+  CFLAGS="${COMMON_FLAGS} -std=gnu2x" \
+  CXXFLAGS="${COMMON_FLAGS} -std=gnu++26" \
+  ./configure --prefix=/usr --libdir=/usr/lib --enable-static
 
 2.2 Build the docs (optional):
 -------------------------------
